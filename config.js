@@ -9,6 +9,7 @@ window.BTL_CONFIG = {
     appId: "1:85293783824:web:73e2571b99431c453ee395"
   },
   vapidKey: "BHXmfjZ5NStRt-y69bWkaLp7068SCO2w2v-aRjs_DfZddLdtSZiEA6piLRQXx40jqwXplqIkUWK5bZT8-TsKV1o",
+  telegramBot: "BTLSchoolBot",
   // يُملأ بعد نشر سكربت Google (GAS)
   apiUrl: ""
 };
