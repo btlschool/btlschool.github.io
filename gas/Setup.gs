@@ -14,7 +14,7 @@ var SCHEMA = {
   Teachers:      ['teacher_id','name','languages','phone','telegram_id','active','notes'],
   Groups:        ['group_id','code','language','level','sublevel','age_group','teacher_id','start_date','end_date','schedule_json','seats_min','seats_max','price','status','telegram_chat_id','created_at'],
   Enrollments:   ['enroll_id','user_id','group_id','status','price','discount_pct','discount_reason','early_renewal','payment_id','created_at','confirmed_by','confirmed_at','sessions_done','sessions_total','stopped_at','stop_type'],
-  PayAccounts:   ['account_id','label','ccp_number','rip','holder_name','telegram_chat_id','active','sort'],
+  PayAccounts:   ['account_id','label','ccp_number','rip','holder_name','telegram_chat_id','active','sort','holder_staff_id','commission_pct','balance_ceiling','is_main','opening_balance','opening_date'],
   Payments:      ['payment_id','enroll_id','vip_id','user_id','amount','method','account_id','receipt_file_id','status','submitted_at','reviewed_by','reviewed_at','note'],
   VipRequests:   ['vip_id','user_id','language','package_hours','price','times_json','goals_json','goal_text','status','teacher_id','created_at','updated_at'],
   Trials:        ['trial_id','user_id','language','slot','status','created_at'],
@@ -26,6 +26,10 @@ var SCHEMA = {
   Staff:         ['staff_id','email','name','role','active','telegram_id','created_at'],
   Audit:         ['ts','actor','action','target','details'],
   Counters:      ['key','value','updated_at'],
+  Ledger:        ['entry_id','entry_date','period','account_id','type','category','amount','status','ref_type','ref_id','user_id','counterparty','note','receipt_file_id','transfer_pair_id','reverses_entry_id','created_by','created_at','confirmed_by','confirmed_at'],
+  Categories:    ['code','label_ar','type','sort','active'],
+  Budgets:       ['period','category','amount','note'],
+  Reconciliations:['recon_id','account_id','period','book_balance','actual_balance','diff','note','by','at'],
   Legacy:        ['legacy_id','source_sheet','phone','name','language','level','status_old','status_new','user_id','imported_at','notes']
 };
 
@@ -54,8 +58,29 @@ var DEFAULT_SETTINGS = [
   ['next_level_gap_min_days','7','أقل فاصل لبداية المستوى التالي'],
   ['next_level_gap_max_days','15','أقصى فاصل لبداية المستوى التالي'],
   ['invite_expire_hours','48','صلاحية رابط الانضمام لتلغرام (ساعة)'],
+  ['commission_pct_default','5','عمولة صاحب الحساب الافتراضية على كل مدخول (%)'],
+  ['balance_ceiling_default','0','سقف رصيد الحساب الافتراضي قبل التحويل للحساب الرئيسي (دج) - يضبط لكل حساب'],
+  ['approval_threshold','0','مبلغ المصروف الذي يحتاج موافقة الإدارة (0 = غير مفعل)'],
   ['registration_open','1','1 = التسجيل مفتوح، 0 = متوقف (مفتاح الطوارئ)'],
   ['payments_open','1','1 = الدفع مفتوح، 0 = متوقف']
+];
+
+var DEFAULT_CATEGORIES = [
+  ['fees_adult','رسوم دروس الكبار','income',1,1],
+  ['fees_kids','رسوم دروس الصغار','income',2,1],
+  ['fees_vip','رسوم دروس VIP','income',3,1],
+  ['other_income','مداخيل أخرى','income',4,1],
+  ['wages','أجور الأساتذة','expense',10,1],
+  ['marketing','تسويق وإعلان','expense',11,1],
+  ['admin','مصاريف إدارية','expense',12,1],
+  ['tools','اشتراكات وأدوات (Zoom وغيرها)','expense',13,1],
+  ['bank_fees','رسوم بنكية وبريدية','expense',14,1],
+  ['commission','عمولة صاحب الحساب','expense',15,1],
+  ['refund','استرجاع رسوم','expense',16,1],
+  ['other_expense','مصاريف أخرى','expense',17,1],
+  ['transfer','تحويل بين الحسابات','transfer',20,1],
+  ['adjustment','تسوية','adjustment',21,1],
+  ['opening','رصيد افتتاحي','opening',22,1]
 ];
 
 var DEFAULT_STATUSES = [
@@ -90,6 +115,8 @@ function setupDatabase() {
   if (def && ss.getSheets().length > 1) ss.deleteSheet(def);
   seedIfEmpty_(ss.getSheetByName('Settings'), DEFAULT_SETTINGS);
   seedIfEmpty_(ss.getSheetByName('Statuses'), DEFAULT_STATUSES);
+  seedIfEmpty_(ss.getSheetByName('Categories'), DEFAULT_CATEGORIES);
+  ensureSettings_(ss.getSheetByName('Settings'), DEFAULT_SETTINGS);
   Logger.log('تم. أوراق جديدة: ' + (created.join(', ') || 'لا شيء'));
   return created;
 }
@@ -97,4 +124,11 @@ function setupDatabase() {
 function seedIfEmpty_(sh, rows) {
   if (sh.getLastRow() > 1) return;
   sh.getRange(2, 1, rows.length, rows[0].length).setValues(rows);
+}
+
+/** يضيف مفاتيح الإعدادات الجديدة فقط دون المساس بالقيم الموجودة. */
+function ensureSettings_(sh, rows) {
+  var have = sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues().map(function (r) { return String(r[0]); }) : [];
+  var add = rows.filter(function (r) { return have.indexOf(r[0]) === -1; });
+  if (add.length) sh.getRange(sh.getLastRow() + 1, 1, add.length, add[0].length).setValues(add);
 }
