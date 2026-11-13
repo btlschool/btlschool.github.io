@@ -26,7 +26,7 @@ var SCHEMA = {
   Staff:         ['staff_id','email','name','role','active','telegram_id','created_at'],
   Audit:         ['ts','actor','action','target','details'],
   Counters:      ['key','value','updated_at'],
-  Ledger:        ['entry_id','entry_date','period','account_id','type','category','amount','status','ref_type','ref_id','user_id','counterparty','note','receipt_file_id','transfer_pair_id','reverses_entry_id','created_by','created_at','confirmed_by','confirmed_at'],
+  Ledger:        ['entry_id','entry_date','period','account_id','type','category','method','amount','status','ref_type','ref_id','user_id','counterparty','note','receipt_file_id','transfer_pair_id','reverses_entry_id','created_by','created_at','confirmed_by','confirmed_at'],
   Categories:    ['code','label_ar','type','sort','active'],
   Budgets:       ['period','category','amount','note'],
   Reconciliations:['recon_id','account_id','period','book_balance','actual_balance','diff','note','by','at'],
