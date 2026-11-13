@@ -78,16 +78,16 @@ function tgOnContact_(m) {
     return;
   }
   var raw = String(c.phone_number || '');
-  var phone = normPhone_(/^\d/.test(raw) ? '+' + raw : raw);
+  var phone = normPhone_(/^\+/.test(raw) ? raw : '+' + raw);
   if (!phone) {
-    tg_('sendMessage', { chat_id: m.chat.id, text: 'هذا الرقم ليس رقما جزائريا. تواصل معنا عبر واتساب: ' + getSetting_('whatsapp', '') });
+    tg_('sendMessage', { chat_id: m.chat.id, text: 'تعذر قراءة هذا الرقم. تواصل معنا عبر واتساب: ' + getSetting_('whatsapp', '') });
     return;
   }
   var token = CacheService.getScriptCache().get('tgstart_' + m.from.id) || '';
   audit_('telegram', 'phone_verified', phone, 'tg_id=' + m.from.id + ' start=' + token);
   tg_('sendMessage', {
     chat_id: m.chat.id,
-    text: 'تم تأكيد رقمك: ' + phone + '\nيمكنك العودة إلى منصة BTL.',
+    text: 'تم تأكيد رقمك: ' + phoneDisplay_(phone) + '\nيمكنك العودة إلى منصة BTL.',
     reply_markup: { remove_keyboard: true }
   });
 }

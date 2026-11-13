@@ -134,12 +134,38 @@ function sha256_(s) {
   return d.map(function (b) { return ('0' + (b < 0 ? b + 256 : b).toString(16)).slice(-2); }).join('');
 }
 
-/** رقم هاتف جزائري موحّد: 0XXXXXXXXX (10 أرقام) أو null. */
-function normPhone_(p) {
-  var s = String(p || '').replace(/[\s\-().]/g, '');
+var DIAL_CODES = { DZ:'213', FR:'33', SA:'966', AE:'971', QA:'974', KW:'965', BH:'973', OM:'968', JO:'962',
+  CA:'1', US:'1', GB:'44', DE:'49', ES:'34', IT:'39', BE:'32', CH:'41', NL:'31', SE:'46',
+  TR:'90', TN:'216', MA:'212', LY:'218', EG:'20', MR:'222' };
+
+/**
+ * يوحّد أي رقم إلى الصيغة الدولية E.164 (مثل +213779343047) أو يعيد null.
+ * يقبل: مسافات ونقاط وشرطات وأقواس وأرقام عربية، مع صفر أو بدونه، ومع +213 أو 00213 أو 213.
+ * country: رمز الدولة المختارة (الافتراضي DZ) ويُستعمل فقط عند غياب الرمز الدولي.
+ */
+function normPhone_(raw, country) {
+  var s = String(raw || '');
   s = s.replace(/[٠-٩]/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); });
-  s = s.replace(/^(\+|00)213/, '0');
-  return /^0[567]\d{8}$/.test(s) ? s : null;
+  s = s.replace(/[۰-۹]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); });
+  var plus = /^\s*\+/.test(s);
+  s = s.replace(/[^\d]/g, '');
+  if (!s) return null;
+  var cc = DIAL_CODES[country || 'DZ'] || DIAL_CODES.DZ, digits;
+  if (plus) { digits = s; }
+  else if (s.indexOf('00') === 0) { digits = s.slice(2); }
+  else if (cc === '213' && /^213[567]\d{8}$/.test(s)) { digits = s; }
+  else if (cc === '213' && /^0?[567]\d{8}$/.test(s)) { digits = '213' + s.replace(/^0/, ''); }
+  else if (cc !== '213') { digits = (s.indexOf(cc) === 0 && s.length > 10 ? s : cc + s.replace(/^0/, '')); }
+  else { return null; }
+  if (digits.indexOf('213') === 0 && !/^213[567]\d{8}$/.test(digits)) return null;
+  if (!/^[1-9]\d{7,14}$/.test(digits)) return null;
+  return '+' + digits;
+}
+
+/** للعرض: الجزائري بصيغته المحلية 0XXXXXXXXX وغيره كما هو. */
+function phoneDisplay_(e164) {
+  var p = String(e164 || '');
+  return p.indexOf('+213') === 0 ? '0' + p.slice(4) : p;
 }
 
 function log_(action, target, details) {
