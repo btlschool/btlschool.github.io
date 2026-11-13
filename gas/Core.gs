@@ -81,14 +81,20 @@ function findRow_(name, key, value) {
 function appendRow_(name, obj) {
   var sh = sheet_(name), h = headers_(sh);
   var row = h.map(function (k) { return safeCell_(obj[k]); });
-  sh.appendRow(row);
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    var r = sh.getLastRow() + 1;
+    // نص صريح قبل الكتابة: يحفظ الصفر الأول في أرقام الهاتف ويمنع تحويل القيم
+    sh.getRange(r, 1, 1, h.length).setNumberFormat('@').setValues([row]);
+  } finally { lock.releaseLock(); }
 }
 
 function updateRow_(name, rowNum, patch) {
   var sh = sheet_(name), h = headers_(sh);
   Object.keys(patch).forEach(function (k) {
     var c = h.indexOf(k);
-    if (c !== -1) sh.getRange(rowNum, c + 1).setValue(safeCell_(patch[k]));
+    if (c !== -1) sh.getRange(rowNum, c + 1).setNumberFormat('@').setValue(safeCell_(patch[k]));
   });
 }
 
