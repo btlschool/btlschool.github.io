@@ -44,7 +44,12 @@ function handleTelegram_(e) {
   try { up = JSON.parse(e.postData.contents); } catch (err) { return ok; }
   var m = up.message;
   if (!m || !m.chat || m.chat.type !== 'private') return ok;
+  // منع تكرار المعالجة: تلغرام يعيد الإرسال إذا تأخر الرد
+  var cache = CacheService.getScriptCache(), dk = 'up_' + up.update_id;
+  if (cache.get(dk)) return ok;
+  cache.put(dk, '1', 600);
   try {
+    log_('tg_in', String(m.from && m.from.id), (m.contact ? 'contact' : 'text') + ' uid=' + (m.contact && m.contact.user_id) + ' from=' + (m.from && m.from.id));
     if (m.contact) { tgOnContact_(m); }
     else if (m.text && m.text.indexOf('/start') === 0) { tgOnStart_(m); }
     else { tgAskContact_(m.chat.id); }
