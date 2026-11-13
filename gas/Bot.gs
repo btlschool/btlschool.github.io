@@ -17,18 +17,24 @@ function tg_(method, payload) {
   return JSON.parse(r.getContentText());
 }
 
-/** شغّلها مرة واحدة بعد نشر تطبيق الويب: تولّد السر وتربط البوت بالرابط. */
+/** رابط النشر العام (/exec) - ليس سرا. لا تستعمل رابط /dev لأنه يتطلب تسجيل دخول. */
+var WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwHCUJHQ7498sfH-1bcWAExYmnwOkHKaR1iZfneXqvxdNyLoupKIy-mAjUhLmhrtQUP/exec';
+
+/** شغّلها بعد كل نشر جديد للرابط: تولّد سرا جديدا في كل مرة وتربط البوت برابط /exec. */
 function setupWebhook() {
   var props = PropertiesService.getScriptProperties();
-  var secret = props.getProperty('WEBHOOK_SECRET');
-  if (!secret) { secret = Utilities.getUuid().replace(/-/g, ''); props.setProperty('WEBHOOK_SECRET', secret); }
-  var url = ScriptApp.getService().getUrl() + '?k=' + secret;
-  var res = tg_('setWebhook', { url: url, allowed_updates: ['message'], drop_pending_updates: true });
+  var secret = Utilities.getUuid().replace(/-/g, '');
+  props.setProperty('WEBHOOK_SECRET', secret);
+  var res = tg_('setWebhook', { url: WEBAPP_URL + '?k=' + secret, allowed_updates: ['message'], drop_pending_updates: true });
   Logger.log(JSON.stringify(res));
   return res;
 }
 
-function webhookInfo() { Logger.log(JSON.stringify(tg_('getWebhookInfo'))); }
+function webhookInfo() {
+  var r = tg_('getWebhookInfo');
+  if (r.result && r.result.url) r.result.url = r.result.url.replace(/k=.*/, 'k=***');
+  Logger.log(JSON.stringify(r));
+}
 
 function handleTelegram_(e) {
   var ok = ContentService.createTextOutput('ok');
