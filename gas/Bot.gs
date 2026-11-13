@@ -44,10 +44,16 @@ function handleTelegram_(e) {
   try { up = JSON.parse(e.postData.contents); } catch (err) { return ok; }
   var m = up.message;
   if (!m || !m.chat || m.chat.type !== 'private') return ok;
-  // منع تكرار المعالجة: تلغرام يعيد الإرسال إذا تأخر الرد
-  var cache = CacheService.getScriptCache(), dk = 'up_' + up.update_id;
-  if (cache.get(dk)) return ok;
-  cache.put(dk, '1', 600);
+  // منع تكرار المعالجة: تلغرام يعيد إرسال التحديث كل نحو 10 دقائق ما دام لا يتلقى رد 200 مباشر.
+  // نحفظ آخر update_id معالَج بشكل دائم (معرّفات التحديثات تتزايد دائما).
+  var props = PropertiesService.getScriptProperties();
+  var lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    var last = Number(props.getProperty('TG_LAST_UPDATE') || 0);
+    if (up.update_id <= last) return ok;
+    props.setProperty('TG_LAST_UPDATE', String(up.update_id));
+  } finally { lock.releaseLock(); }
   try {
     log_('tg_in', String(m.from && m.from.id), (m.contact ? 'contact' : 'text') + ' uid=' + (m.contact && m.contact.user_id) + ' from=' + (m.from && m.from.id));
     if (m.contact) { tgOnContact_(m); }
