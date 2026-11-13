@@ -14,6 +14,7 @@ function doGet(e) {
 }
 
 function doPost(e) {
+  if (e.parameter && e.parameter.k) { return handleTelegram_(e); }
   var req, res;
   try {
     req = JSON.parse(e.postData.contents);
