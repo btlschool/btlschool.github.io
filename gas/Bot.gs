@@ -91,6 +91,9 @@ function tgOnContact_(m) {
   }
   var token = CacheService.getScriptCache().get('tgstart_' + m.from.id) || '';
   audit_('telegram', 'phone_verified', phone, 'tg_id=' + m.from.id + ' start=' + token);
+  // يربط تلغرام بالحساب الرئيسي لهذا الرقم (دليل الملكية لاستعادة الرمز لاحقا)
+  var pu = findPrimaryByPhone_(phone);
+  if (pu) updateRow_('Users', pu._row, { telegram_id: String(m.from.id), telegram_username: String(m.from.username || ''), phone_verified: '1' });
   tg_('sendMessage', {
     chat_id: m.chat.id,
     text: 'تم تأكيد رقمك: ' + phoneDisplay_(phone) + '\nيمكنك العودة إلى منصة BTL.',

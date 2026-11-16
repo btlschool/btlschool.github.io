@@ -5,10 +5,21 @@
 
 var API_VERSION = '0.1.0';
 var PUBLIC_ACTIONS = {   // أفعال مسموحة بدون جلسة (الدوال تُستدعى عند الطلب فلا يهم ترتيب الملفات)
+  reg_contact: function (c) { return act_regContact_(c); },
+  login: function (c) { return act_login_(c); },
+  login_request_code: function (c) { return act_loginRequestCode_(c); },
+  staff_login: function (c) { return act_staffLogin_(c); },
   price_preview: function (c) { return act_pricePreview_(c); },
   offers_now: function (c) { return act_offersNow_(c); }
 };
-var USER_ACTIONS = {};     // أفعال تحتاج جلسة مشارك
+var USER_ACTIONS = {       // أفعال تحتاج جلسة مشارك
+  me: function (c) { return act_me_(c); },
+  logout: function (c) { return act_logout_(c); },
+  logout_all: function (c) { return act_logoutAll_(c); },
+  reg_profile: function (c) { return act_regProfile_(c); },
+  reg_add_child: function (c) { return act_regAddChild_(c); }
+};
+var TEST_SCOPE_ACTIONS = {};  // أفعال يسمح بها لجلسة رابط الاختبار (scope=test) فقط، وتُملأ مع وحدة الاختبار
 var STAFF_ACTIONS = {};    // أفعال تحتاج صلاحية إدارية
 
 // ---------- الموجّه ----------
@@ -31,7 +42,7 @@ function doPost(e) {
     var fn = null, ctx = { data: req.data || {}, user: null, staff: null };
     if (req.action === 'ping') { return json_({ ok: true, version: API_VERSION, time: new Date().toISOString() }); }
     if (PUBLIC_ACTIONS[req.action]) { fn = PUBLIC_ACTIONS[req.action]; }
-    else if (USER_ACTIONS[req.action]) { ctx.user = requireUser_(req.token); fn = USER_ACTIONS[req.action]; }
+    else if (USER_ACTIONS[req.action]) { ctx.user = requireUser_(req.token, !!TEST_SCOPE_ACTIONS[req.action]); fn = USER_ACTIONS[req.action]; }
     else if (STAFF_ACTIONS[req.action]) { ctx.staff = requireStaff_(req.token); fn = STAFF_ACTIONS[req.action]; }
     else { return json_({ ok: false, error: 'unknown_action' }); }
     res = fn(ctx);
@@ -186,7 +197,3 @@ function rateLimit_(key, max, sec) {
   cache.put(k, String(n), sec);
   if (n > max) fail_('rate_limited');
 }
-
-// ---------- الجلسات (تُستكمل في Auth.gs) ----------
-function requireUser_(token) { fail_('auth_not_ready'); }
-function requireStaff_(token) { fail_('auth_not_ready'); }

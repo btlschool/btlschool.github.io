@@ -1,0 +1,67 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert'),crypto=require('crypto'),path=require('path');
+const ctx={};vm.createContext(ctx);
+for(const f of ['Core','Pricing','Auth'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../gas/'+f+'.gs'),'utf8'),ctx);
+// ---- fakes
+let CLOCK='2026-11-16T10:00:00';const DB={Users:[],AuthSessions:[],Audit:[],Staff:[]};const SET={};const CNT={};
+const hex=b=>Buffer.from(b).toString('hex');
+ctx.Utilities={getUuid:()=>crypto.randomUUID(),computeHmacSha256Signature:(m,k)=>[...crypto.createHmac('sha256',k).update(m).digest()].map(x=>x>127?x-256:x),formatDate:(d,tz,f)=>{const p=new Date(d.getTime()+3600e3).toISOString().slice(0,19);return f.includes('yyyy-MM')?p:p.slice(0,4)}};
+ctx.PropertiesService={getScriptProperties:()=>({getProperty:k=>k==='AUTH_PEPPER'?'pepper-test':null})};
+ctx.CacheService={getScriptCache:()=>({get:()=>null,put:()=>{},remove:()=>{}})};
+const nr=(t,o)=>Object.assign({_row:DB[t].length+2},o);
+Object.assign(ctx,{
+ now_:()=>CLOCK,getSetting_:(k,d)=>SET[k]===undefined?String(d):SET[k],
+ rows_:t=>DB[t].map((r,i)=>Object.assign({},r,{_row:i+2})),
+ appendRow_:(t,o)=>{DB[t].push(Object.assign({},o));},
+ updateRow_:(t,row,patch)=>Object.assign(DB[t][row-2],patch),
+ findRowFast_:(t,k,v)=>{const i=DB[t].findIndex(r=>String(r[k])===String(v));return i<0?null:Object.assign({},DB[t][i],{_row:i+2})},
+ findPrimaryByPhone_:p=>{const i=DB.Users.findIndex(r=>r.phone===p&&!ctx.nz_(r.guardian_id));return i<0?null:Object.assign({},DB.Users[i],{_row:i+2})},
+ audit_:(a,b,c,d)=>DB.Audit.push({a,b,c,d}),log_:()=>{},
+ rateLimit_:(k,max,sec)=>{CNT[k]=(CNT[k]||0)+1;if(CNT[k]>max)ctx.fail_('rate_limited')},
+ tg_:(m,p)=>{TG.push({m,p});return{}},
+ normPhone_:ctx.normPhone_,
+});
+const TG=[];let n=0;const t=(name,fn)=>{fn();n++;console.log('ok',name)};
+const err=(fn)=>{try{fn();}catch(e){return e.code||e.message}return null};
+const call=(a,data,token,allowTest)=>{const c={data:data||{}};return a(c)};
+// ---- pure helpers
+t('cleanName',()=>{assert.equal(ctx.cleanName_('  amine   BEN-ali  '),'Amine Ben-Ali');assert.equal(ctx.cleanName_("o'brien 12"),"O'Brien");assert.equal(ctx.cleanName_('أمين'),null);assert.equal(ctx.cleanName_('a'),null);assert.equal(ctx.cleanName_('x'.repeat(50)),null);assert.equal(ctx.cleanName_('=cmd()'),'Cmd')});
+const AC={adultMin:15,kidsMin:8,floorAge:5,maxAge:90};
+t('ageInfo',()=>{assert.equal(ctx.ageInfo_(2011,2026,AC).group,'adult');assert.equal(ctx.ageInfo_(2012,2026,AC).group,'kids');assert.equal(ctx.ageInfo_(2012,2026,AC).age,14);assert.equal(ctx.ageInfo_(2018,2026,AC).young,false);assert.equal(ctx.ageInfo_(2000,2026,AC).group,'adult');assert.equal(ctx.ageInfo_(2019,2026,AC).young,true);assert.equal(ctx.ageInfo_(2022,2026,AC),null);assert.equal(ctx.ageInfo_(2021,2026,AC).young,true);assert.equal(ctx.ageInfo_(1900,2026,AC),null);assert.equal(ctx.ageInfo_('abc',2026,AC),null);assert.equal(ctx.ageInfo_(2027,2026,AC),null)});
+t('langs',()=>{assert.deepEqual(ctx.cleanLangs_(['en','FR','en']),['EN','FR']);assert.equal(ctx.cleanLangs_(['ES']),null);assert.equal(ctx.cleanLangs_([]),null);assert.equal(ctx.cleanLangs_('EN'),null)});
+t('code format & alphabet',()=>{const seen=new Set();for(let i=0;i<2000;i++){const c=ctx.genCode_();assert.match(c,/^[2-9A-HJ-NP-Za-km-z]{2}[#@$%&*][2-9A-HJ-NP-Za-km-z]{3}-[2-9A-HJ-NP-Za-km-z]{4}$/);seen.add(c)}assert.equal(seen.size,2000)});
+t('code char spread ~uniform',()=>{const cnt={};for(let i=0;i<4000;i++)for(const ch of ctx.genCode_())cnt[ch]=(cnt[ch]||0)+1;const alpha=[...'23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz'];const vals=alpha.map(a=>cnt[a]||0);assert.ok(Math.min(...vals)>0.6*Math.max(...vals),'skew '+Math.min(...vals)+' '+Math.max(...vals))});
+t('safeEq',()=>{assert.ok(ctx.safeEq_('abc','abc'));assert.ok(!ctx.safeEq_('abc','abd'));assert.ok(!ctx.safeEq_('abc','abcd'));assert.ok(!ctx.safeEq_('',' '))});
+// ---- registration flow
+let tok1,uid1;
+t('reg_contact creates user + session',()=>{const r=ctx.act_regContact_({data:{name:'amine ben ali',phone:'0779343047',country:'DZ',device:'Pixel'}});assert.equal(r.existing,false);assert.equal(r.token.length,64);assert.equal(r.name,'Amine Ben Ali');tok1=r.token;uid1=DB.Users[0].user_id;assert.equal(DB.Users[0].phone,'+213779343047');assert.equal(DB.AuthSessions[0].token_hash.length,64);assert.notEqual(DB.AuthSessions[0].token_hash,tok1)});
+t('token not stored in clear',()=>{assert.ok(!JSON.stringify(DB).includes(tok1))});
+t('reg_contact rejects bad input',()=>{assert.equal(err(()=>ctx.act_regContact_({data:{name:'Amine',phone:'123'}})),'bad_phone');assert.equal(err(()=>ctx.act_regContact_({data:{name:'أمين',phone:'0779343048'}})),'bad_name')});
+t('registration closed',()=>{SET.registration_open='0';assert.equal(err(()=>ctx.act_regContact_({data:{name:'Amine',phone:'0779343049'}})),'registration_closed');delete SET.registration_open});
+t('requireUser accepts token, rejects garbage',()=>{const u=ctx.requireUser_(tok1,false);assert.equal(u.user_id,uid1);assert.equal(err(()=>ctx.requireUser_('x'.repeat(64),false)),'unauthorized');assert.equal(err(()=>ctx.requireUser_('short',false)),'unauthorized');assert.equal(err(()=>ctx.requireUser_(undefined,false)),'unauthorized')});
+t('reg_profile sets group',()=>{const u=ctx.requireUser_(tok1,false);const r=ctx.act_regProfile_({data:{gender:'M',birthYear:1995,languages:['en','fr']},user:u});assert.equal(r.ageGroup,'adult');assert.equal(DB.Users[0].languages,'EN,FR');assert.equal(err(()=>ctx.act_regProfile_({data:{gender:'X',birthYear:1995,languages:['EN']},user:u})),'bad_gender')});
+t('reclaim unpaid registration revokes old session',()=>{const r=ctx.act_regContact_({data:{name:'Other Person',phone:'0779343047',device:'PC'}});assert.equal(r.existing,false);assert.equal(DB.Users.length,1);assert.equal(DB.Users[0].name_latin,'Other Person');assert.equal(err(()=>ctx.requireUser_(tok1,false)),'unauthorized');tok1=r.token});
+// ---- access code & login
+let code;
+t('issue code stores only hmac',()=>{code=ctx.issueAccessCode_(uid1);assert.ok(code);assert.ok(!JSON.stringify(DB).includes(code));assert.equal(DB.Users[0].code_hash.length,64)});
+t('reg_contact for paid number => existing, no session',()=>{const before=DB.AuthSessions.length;const r=ctx.act_regContact_({data:{name:'Hacker',phone:'0779343047'}});assert.deepEqual(r,{existing:true});assert.equal(DB.AuthSessions.length,before);assert.equal(DB.Users[0].name_latin,'Other Person')});
+t('login success (any phone format, spaces in code)',()=>{const r=ctx.act_login_({data:{phone:'+213 779 34 30 47',code:code.slice(0,3)+' '+code.slice(3),device:'iPhone'}});assert.equal(r.token.length,64);assert.equal(r.user.id,uid1);assert.equal(r.user.phone,'0779343047')});
+t('login wrong code generic error + counts',()=>{DB.Users[0].failed_logins='0';assert.equal(err(()=>ctx.act_login_({data:{phone:'0779343047',code:'Zz#999-9999'}})),'bad_credentials');assert.equal(DB.Users[0].failed_logins,'1')});
+t('login unknown phone same error',()=>{assert.equal(err(()=>ctx.act_login_({data:{phone:'0555000111',code:code}})),'bad_credentials');assert.equal(err(()=>ctx.act_login_({data:{phone:'abc',code:code}})),'bad_credentials');assert.equal(err(()=>ctx.act_login_({data:{phone:'0779343047',code:''}})),'bad_credentials')});
+t('lockout after 5 fails, even correct code refused, then expires',()=>{DB.Users[0].failed_logins='0';for(let i=0;i<5;i++)err(()=>ctx.act_login_({data:{phone:'0779343047',code:'Bad#123-4567'}}));assert.ok(DB.Users[0].locked_until);assert.equal(err(()=>ctx.act_login_({data:{phone:'0779343047',code}})),'bad_credentials');CLOCK='2026-11-16T10:20:00';const r=ctx.act_login_({data:{phone:'0779343047',code}});assert.ok(r.token);CLOCK='2026-11-16T10:00:00'});
+t('rate limit per phone',()=>{for(const k of Object.keys(CNT))delete CNT[k];let last=null;for(let i=0;i<25;i++)last=err(()=>ctx.act_login_({data:{phone:'0779343047',code:'Bad#123-4567'}}));assert.equal(last,'rate_limited')});
+t('new code invalidates old',()=>{for(const k of Object.keys(CNT))delete CNT[k];DB.Users[0].locked_until='';const c2=ctx.issueAccessCode_(uid1);assert.notEqual(c2,code);assert.equal(err(()=>ctx.act_login_({data:{phone:'0779343047',code}})),'bad_credentials');assert.ok(ctx.act_login_({data:{phone:'0779343047',code:c2}}).token);code=c2});
+t('blocked user cannot login or use session',()=>{const r=ctx.act_login_({data:{phone:'0779343047',code}});DB.Users[0].status='blocked';assert.equal(err(()=>ctx.requireUser_(r.token,false)),'unauthorized');assert.equal(err(()=>ctx.act_login_({data:{phone:'0779343047',code}})),'bad_credentials');DB.Users[0].status='studying'});
+t('expired session rejected',()=>{const r=ctx.act_login_({data:{phone:'0779343047',code}});CLOCK='2028-01-01T00:00:00';assert.equal(err(()=>ctx.requireUser_(r.token,false)),'unauthorized');CLOCK='2026-11-16T10:00:00'});
+t('max sessions per user evicts oldest',()=>{DB.AuthSessions.length=0;const toks=[];for(let i=0;i<7;i++){CLOCK='2026-11-16T10:0'+i+':00';toks.push(ctx.act_login_({data:{phone:'0779343047',code}}).token)}CLOCK='2026-11-16T10:30:00';assert.equal(err(()=>ctx.requireUser_(toks[0],false)),'unauthorized');assert.equal(err(()=>ctx.requireUser_(toks[1],false)),'unauthorized');assert.ok(ctx.requireUser_(toks[6],false));assert.equal(DB.AuthSessions.filter(s=>s.revoked!=='1').length,5);CLOCK='2026-11-16T11:00:00'});
+t('logout revokes',()=>{const r=ctx.act_login_({data:{phone:'0779343047',code}});const u=ctx.requireUser_(r.token,false);ctx.act_logout_({user:u});assert.equal(err(()=>ctx.requireUser_(r.token,false)),'unauthorized')});
+t('logout_all revokes everything',()=>{const a=ctx.act_login_({data:{phone:'0779343047',code}}).token,b=ctx.act_login_({data:{phone:'0779343047',code}}).token;ctx.act_logoutAll_({user:ctx.requireUser_(a,false)});assert.equal(err(()=>ctx.requireUser_(a,false)),'unauthorized');assert.equal(err(()=>ctx.requireUser_(b,false)),'unauthorized')});
+// ---- children
+t('add child shares guardian phone, kids only, limit',()=>{const tk=ctx.act_login_({data:{phone:'0779343047',code}}).token;const u=ctx.requireUser_(tk,false);const r=ctx.act_regAddChild_({user:u,data:{name:'yacine',gender:'M',birthYear:2015,languages:['EN']}});assert.ok(r.childId);const kid=DB.Users[DB.Users.length-1];assert.equal(kid.phone,'+213779343047');assert.equal(kid.guardian_id,uid1);assert.equal(kid.age_group,'kids');assert.equal(err(()=>ctx.act_regAddChild_({user:u,data:{name:'adult',gender:'M',birthYear:1990,languages:['EN']}})),'bad_birth_year');const me=ctx.act_me_({user:u});assert.equal(me.children.length,1);assert.equal(me.children[0].name,'Yacine');for(let i=0;i<7;i++)ctx.act_regAddChild_({user:u,data:{name:'kid'+'abcdefgh'[i],gender:'F',birthYear:2014,languages:['FR']}});assert.equal(err(()=>ctx.act_regAddChild_({user:u,data:{name:'extra',gender:'F',birthYear:2014,languages:['FR']}})),'too_many_children');assert.ok(ctx.findPrimaryByPhone_('+213779343047').user_id===uid1)});
+t('child session cannot create children (guardian only)',()=>{const kid=DB.Users.find(u=>ctx.nz_(u.guardian_id));assert.equal(err(()=>ctx.act_regAddChild_({user:kid,data:{name:'x y',gender:'F',birthYear:2014,languages:['FR']}})),'forbidden')});
+// ---- code request via telegram
+t('request code: sends to verified telegram only, same reply always',()=>{TG.length=0;const a=ctx.act_loginRequestCode_({data:{phone:'0779343047'}});assert.deepEqual(a,{sent:true});assert.equal(TG.length,0);DB.Users[0].telegram_id='555';DB.Users[0].phone_verified='1';const old=code;const b=ctx.act_loginRequestCode_({data:{phone:'0779343047'}});assert.deepEqual(b,{sent:true});assert.equal(TG.length,1);assert.equal(TG[0].p.chat_id,'555');const sent=TG[0].p.text.match(/\S+-\S{4}/)[0];assert.equal(err(()=>ctx.act_login_({data:{phone:'0779343047',code:old}})),'bad_credentials');assert.ok(ctx.act_login_({data:{phone:'0779343047',code:sent}}).token);const un=ctx.act_loginRequestCode_({data:{phone:'0555123456'}});assert.deepEqual(un,{sent:true});assert.equal(TG.length,1)});
+t('request code rate limited',()=>{let last;for(let i=0;i<5;i++)last=err(()=>ctx.act_loginRequestCode_({data:{phone:'0779343047'}}));assert.equal(last,'rate_limited')});
+// ---- test-scope sessions & staff
+t('test-scope session blocked unless allowed',()=>{const tk=ctx.createSession_(uid1,'test','link',1);assert.equal(err(()=>ctx.requireUser_(tk,false)),'forbidden');assert.equal(ctx.requireUser_(tk,true)._scope,'test')});
+t('staff session cannot act as user; requireStaff works',()=>{DB.Staff.push({staff_id:'s1',email:'a@b.c',name:'Adm',role:'finance',active:'1'});const tk=ctx.createSession_('s1','staff','pc',14);assert.equal(err(()=>ctx.requireUser_(tk,true)),'forbidden');const s=ctx.requireStaff_(tk);assert.equal(s.staff_id,'s1');assert.equal(err(()=>ctx.requireRole_(s,['admin'])),'forbidden');ctx.requireRole_(s,['finance']);DB.Staff[0].active='0';assert.equal(err(()=>ctx.requireStaff_(tk)),'unauthorized');const ut=ctx.act_login_({data:{phone:'0779343047',code:ctx.issueAccessCode_(uid1)}}).token;assert.equal(err(()=>ctx.requireStaff_(ut)),'unauthorized')});
+console.log(n+' tests passed');
