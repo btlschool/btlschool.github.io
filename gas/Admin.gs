@@ -84,3 +84,13 @@ function act_staffLogout_(ctx) {
   if (r) { updateRow_('AuthSessions', r._row, { revoked: '1' }); try { revokeSessionCache_(h); } catch (e) {} }
   return { ok: true };
 }
+
+/** شغّلها يدويا مرة واحدة من المحرر بعد أي تحديث للصلاحيات: تطلب كل الأذونات (Drive وSheets والشبكة والمؤقّتات) دفعة واحدة. */
+function authorizeAll() {
+  var out = [];
+  out.push('sheets: ' + SpreadsheetApp.getActiveSpreadsheet().getName());
+  out.push('drive: ' + DriveApp.getRootFolder().getName());
+  out.push('triggers: ' + ScriptApp.getProjectTriggers().length);
+  out.push('fetch: ' + UrlFetchApp.fetch('https://www.google.com', { muteHttpExceptions: true }).getResponseCode());
+  Logger.log(out.join('\n'));
+}

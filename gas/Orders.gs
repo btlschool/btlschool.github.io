@@ -174,7 +174,9 @@ function act_orderReceipt_(ctx) {
   if (!RECEIPT_MIME_[mime]) fail_('bad_file');
   if (b64.length < 200 || b64.length > 3000000 || !/^[A-Za-z0-9+\/=\s]+$/.test(b64)) fail_('bad_file');
   rateLimit_('receipt|' + ctx.user.user_id, 6, 3600);
-  var fileId = receiptStore_('receipt-' + o.order_id + '-' + now_().replace(/[^0-9]/g, '') + '.' + RECEIPT_MIME_[mime], mime, b64.replace(/\s/g, ''));
+  var fileId;
+  try { fileId = receiptStore_('receipt-' + o.order_id + '-' + now_().replace(/[^0-9]/g, '') + '.' + RECEIPT_MIME_[mime], mime, b64.replace(/\s/g, '')); }
+  catch (e) { log_('receipt_store_error', String(o.order_id), String(e)); fail_('storage_error'); }
   var pid = uid_('pay'), acc = findRowFast_('PayAccounts', 'account_id', String(o.account_id));
   appendRow_('Payments', { payment_id: pid, user_id: String(o.payer_user_id), amount: String(o.net), method: 'ccp', account_id: String(o.account_id), receipt_file_id: fileId, status: 'pending', submitted_at: now_(), order_id: String(o.order_id) });
   updateRow_('Orders', o._row, { status: 'paid_pending', payment_id: pid, updated_at: now_() });
