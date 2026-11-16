@@ -32,7 +32,8 @@ var SCHEMA = {
   Reconciliations:['recon_id','account_id','period','book_balance','actual_balance','diff','note','by','at'],
   Orders:        ['order_id','payer_user_id','status','gross','discount','net','discount_json','lines_json','account_id','payment_id','created_at','updated_at','expires_at'],
   Offers:        ['offer_id','name','pct','scope_type','scope_value','starts_at','ends_at','active','banner_text','created_by','created_at'],
-  TestInvites:   ['invite_id','token_hash','order_id','user_id','phone','created_by','created_at','expires_at','used_at','reminders_sent','status'],
+  TestInvites:   ['invite_id','token_hash','order_id','user_id','phone','created_by','created_at','expires_at','used_at','reminders_sent','status','mode','tg_hash','tg_expires'],
+  Outreach:      ['outreach_id','user_id','kind','ref_id','status','channel_tried','created_at','last_attempt_at','done_at','done_by','note'],
   Legacy:        ['legacy_id','source_sheet','phone','name','language','level','status_old','status_new','user_id','imported_at','notes']
 };
 
@@ -54,6 +55,10 @@ var DEFAULT_SETTINGS = [
   ['discount_tier2_pct','10','نسبة الخصم الثاني (%)'],
   ['test_questions','24','عدد أسئلة اختبار المستوى'],
   ['test_invite_hours','24','صلاحية رابط الاختبار المرسل لشخص آخر (ساعة)'],
+  ['app_url','https://btlschool.github.io/','رابط التطبيق (تُبنى منه روابط الاختبار)'],
+  ['bot_username','BTLSchoolBot','اسم بوت تلغرام بلا @'],
+  ['tg_link_days','7','صلاحية رابط ربط تلغرام الشخصي (يوم)'],
+  ['outreach_tg_wait_hours','24','بعد كم ساعة من مراسلة تلغرام دون استجابة يُقترح واتساب'],
   ['test_remind_hours','2,24','تذكير صاحب الرابط بعد كم ساعة (قائمة مفصولة بفاصلة)'],
   ['order_expire_hours','72','انتهاء صلاحية طلب لم يُدفع (ساعة)'],
   ['adult_min_age','15','أقل عمر للكبار'],

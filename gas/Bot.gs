@@ -73,6 +73,7 @@ function tgAskContact_(chatId) {
 
 function tgOnStart_(m) {
   var parts = String(m.text).split(' ');
+  if (/^i_/.test(parts[1] || '')) { tgBindInvite_(m, String(parts[1]).slice(2)); return; }
   CacheService.getScriptCache().put('tgstart_' + m.from.id, parts[1] || '', 3600);
   tgAskContact_(m.chat.id);
 }

@@ -10,11 +10,21 @@
 | login | phone, country, code, device | `{token, user}` أو خطأ `bad_credentials` موحّد |
 | login_request_code | phone, country | `{sent:true}` دائما (يُرسل لتلغرام الموثّق فقط) |
 | staff_login | idToken (Google), device | `{token, staff}` |
+| invite_open | token (64 حرفا من رابط الاختبار)، device | `{token, user}`: جلسة scope=test للشخص المدعو (تصلح لأفعال الاختبار فقط). خطأ موحّد `invalid_link` |
 | price_preview | items:[{type:'group',ageGroup:'adult'\|'kids',language} \| {type:'vip',hours:10\|20\|30,language}] | حساب كامل مع الخصم والصافي (السعر من الخادم فقط) |
 | offers_now | - | لافتة العرض السارية مع endsAt |
 
 ## مشارك (token)
 me، logout، logout_all، reg_profile {gender:'M'\|'F', birthYear, languages:['EN','FR']}، reg_add_child {name, gender, birthYear, languages}
+
+### دعوة شخص بالغ آخر (مشارك)
+| action | data | النتيجة |
+|---|---|---|
+| invite_create | name, gender, birthYear (بالغ فقط), languages, phone (هاتفه الخاص), country, mode:'device'\|'admin' | `{invite_id, person_id, mode, expires_at}`. device: يجري اختباره الآن على جهازك (test_start مع person_id). admin: تتولى الإدارة إرسال رابطه (تلغرام ثم واتساب) |
+| invite_list | - | دعواتك: `{invite_id, person_id, name, languages, mode, status: waiting\|opened\|tested\|expired}`. لا تحوي أي نتيجة |
+| invite_cancel | invite_id | `{ok:true}` (قبل أن ينهي اختباره) |
+
+رابط الاختبار: `<app_url>t.html#<token>` (الرمز في الجزء بعد # فلا يصل إلى سجلات الخوادم). الصفحة تقرأه وتستدعي invite_open ثم test_start بالجلسة الناتجة. الرابط صالح `test_invite_hours` ويُجدَّد (والقديم يبطل) كلما أعادت الإدارة إرساله. المسجِّل يتلقى إشعارا عند انتهاء اختبار الشخص (دون النتيجة) وتذكيرا بعد `test_remind_hours`.
 
 ### اختبار المستوى (يعمل أيضا بجلسة رابط الاختبار scope=test)
 | action | data | النتيجة |
@@ -27,5 +37,14 @@ me، logout، logout_all، reg_profile {gender:'M'\|'F', birthYear, languages:['
 
 المؤقت يفرضه الخادم (`test_minutes`، مهلة `test_grace_sec`). كل أرقام السحب والعتبات من Settings (`test_*`). لا يُعرض المستوى الفرعي (1/2): يحدده الفوج المتاح.
 
+## إدارة (token موظف، دور support أو admin)
+| action | data | النتيجة |
+|---|---|---|
+| staff_outreach_list | - | قائمة «بانتظار التواصل»: `{id, kind: test_link\|code_ready, status, person:{name,phone,telegram}, requested_by, since, channel_tried, last_attempt_at, suggested:'tg'\|'wa', urgent}` والأحوج أولا |
+| staff_outreach_prepare | outreach_id, channel:'tg'\|'wa' | tg: يرسل عبر البوت `{sent:true}` أو `{sent:false, fallback:'wa'}`. wa: `{wa_url, message}` (رابط واتساب بالرسالة جاهزة، ومعها رابط ربط البوت إن لم يكن مربوطا) |
+| staff_outreach_done | outreach_id, note? | `{ok:true}` |
+
+رابط ربط تلغرام الشخصي: `https://t.me/<bot>?start=i_<24 hex>` يربط حساب تلغرام بالشخص بضغطة «ابدأ» دون مشاركة رقم (صالح `tg_link_days`)، ويرسل له رابط اختباره فورا. هذا الربط لا يُعدّ توثيقا للهاتف، فلا تُرسَل إليه رموز الاستعادة.
+
 ## أخطاء
-bad_phone, bad_name, bad_gender, bad_birth_year, bad_languages, registration_closed, rate_limited, unauthorized, forbidden, bad_credentials, too_many_children, bad_items, price_not_set, bad_language, profile_incomplete, retake_limit, bank_empty, bad_choice, bad_question, test_closed, time_up, not_found, not_allowed, not_finished, maintenance, auth_not_ready
+bad_phone, bad_name, bad_gender, bad_birth_year, bad_languages, registration_closed, rate_limited, unauthorized, forbidden, bad_credentials, too_many_children, bad_items, price_not_set, bad_language, profile_incomplete, retake_limit, bank_empty, bad_choice, bad_question, test_closed, time_up, not_found, not_allowed, not_finished, invalid_link, same_phone, phone_taken, bad_mode, bad_channel, telegram_not_linked, maintenance, auth_not_ready

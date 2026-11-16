@@ -277,6 +277,7 @@ function finishTest_(row, bm, cfg, opt) {
   if (!untouched) {
     var u = findRowFast_('Users', 'user_id', String(row.user_id));
     if (u && (!nz_(u.status) || String(u.status) === 'new')) updateRow_('Users', u._row, { status: 'tested' });
+    try { onTestFinished_(row); } catch (e) { log_('on_test_finished_error', String(row.user_id), String(e)); }
   }
   return r;
 }

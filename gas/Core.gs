@@ -10,7 +10,8 @@ var PUBLIC_ACTIONS = {   // أفعال مسموحة بدون جلسة (الدو�
   login_request_code: function (c) { return act_loginRequestCode_(c); },
   staff_login: function (c) { return act_staffLogin_(c); },
   price_preview: function (c) { return act_pricePreview_(c); },
-  offers_now: function (c) { return act_offersNow_(c); }
+  offers_now: function (c) { return act_offersNow_(c); },
+  invite_open: function (c) { return act_inviteOpen_(c); }
 };
 var USER_ACTIONS = {       // أفعال تحتاج جلسة مشارك
   me: function (c) { return act_me_(c); },
@@ -22,10 +23,17 @@ var USER_ACTIONS = {       // أفعال تحتاج جلسة مشارك
   test_answer: function (c) { return act_testAnswer_(c); },
   test_beginner_stop: function (c) { return act_testBeginnerStop_(c); },
   test_finish: function (c) { return act_testFinish_(c); },
-  test_result: function (c) { return act_testResult_(c); }
+  test_result: function (c) { return act_testResult_(c); },
+  invite_create: function (c) { return act_inviteCreate_(c); },
+  invite_list: function (c) { return act_inviteList_(c); },
+  invite_cancel: function (c) { return act_inviteCancel_(c); }
 };
 var TEST_SCOPE_ACTIONS = { me: 1, logout: 1, test_start: 1, test_answer: 1, test_beginner_stop: 1, test_finish: 1, test_result: 1 };  // أفعال تسمح بها جلسة رابط الاختبار (scope=test) إضافة إلى جلسة المشارك
-var STAFF_ACTIONS = {};    // أفعال تحتاج صلاحية إدارية
+var STAFF_ACTIONS = {      // أفعال تحتاج صلاحية إدارية
+  staff_outreach_list: function (c) { return act_staffOutreachList_(c); },
+  staff_outreach_prepare: function (c) { return act_staffOutreachPrepare_(c); },
+  staff_outreach_done: function (c) { return act_staffOutreachDone_(c); }
+};
 
 // ---------- الموجّه ----------
 function doGet(e) {
