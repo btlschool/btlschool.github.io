@@ -127,3 +127,36 @@ function act_staffStopDone_(ctx) {
   audit_(String(ctx.staff.staff_id), 'stop_handled', id, String(ctx.data.note || '').slice(0, 200));
   return { ok: true };
 }
+
+// ---------- حسابات الدفع (CCP): مدير فقط. الإيقاف لا يحذف ----------
+function maskNum_(s) { s = String(s || ''); return s.length > 4 ? s.slice(0, 4) + '••••' + s.slice(-2) : s; }
+function accountAdminView_(a, pend) {
+  return { account_id: String(a.account_id), label: String(a.label || ''), holder_name: String(a.holder_name || ''), ccp_number: String(a.ccp_number || ''), rip: String(a.rip || ''), ccp_masked: maskNum_(a.ccp_number),
+    telegram_chat_id: String(a.telegram_chat_id || ''), telegram_linked: nz_(a.telegram_chat_id), active: String(a.active) === '1', sort: Number(a.sort || 0), pending: pend[String(a.account_id)] || 0 };
+}
+function act_staffAccountsList_(ctx) {
+  requireRole_(ctx.staff, []);
+  ensureAccountIds_();
+  var pend = {}; rows_('Payments').forEach(function (p) { if (String(p.status) === 'pending') pend[String(p.account_id)] = (pend[String(p.account_id)] || 0) + 1; });
+  var list = rows_('PayAccounts').sort(function (x, y) { return Number(x.sort || 0) - Number(y.sort || 0); }).map(function (a) { return accountAdminView_(a, pend); });
+  return { accounts: list };
+}
+/** staff_account_save: data {account_id? (للتعديل), label?, holder_name, ccp_number, rip, telegram_chat_id?, active}. */
+function act_staffAccountSave_(ctx) {
+  requireRole_(ctx.staff, []);
+  var d = ctx.data, holder = String(d.holder_name || '').trim(), ccp = String(d.ccp_number || '').replace(/\s/g, ''), rip = String(d.rip || '').replace(/\s/g, ''), chat = String(d.telegram_chat_id || '').trim();
+  if (holder.length < 2 || holder.length > 60) fail_('bad_value');
+  if (!/^\d{6,14}$/.test(ccp)) fail_('bad_ccp');
+  if (!/^\d{20}$/.test(rip)) fail_('bad_rip');
+  if (chat && !/^-?\d{5,20}$/.test(chat)) fail_('bad_value');
+  var all = rows_('PayAccounts'), active = d.active ? '1' : '0', cur = nz_(d.account_id) ? all.filter(function (r) { return String(r.account_id) === String(d.account_id); })[0] : null;
+  if (nz_(d.account_id) && !cur) fail_('not_found');
+  if (all.some(function (r) { return String(r.ccp_number) === ccp && (!cur || String(r.account_id) !== String(cur.account_id)); })) fail_('account_exists');
+  if (active === '0' && !all.some(function (r) { return String(r.active) === '1' && (!cur || String(r.account_id) !== String(cur.account_id)); })) fail_('last_active_account');
+  var label = String(d.label || '').trim().slice(0, 40) || (cur ? String(cur.label) : 'CCP ' + (all.length + 1));
+  var rec = { label: label, holder_name: holder, ccp_number: ccp, rip: rip, telegram_chat_id: chat, active: active };
+  if (cur) updateRow_('PayAccounts', cur._row, rec);
+  else { rec.account_id = uid_('acc'); rec.sort = String(all.reduce(function (m, r) { return Math.max(m, Number(r.sort || 0)); }, 0) + 1); appendRow_('PayAccounts', rec); }
+  audit_(String(ctx.staff.staff_id), cur ? 'account_update' : 'account_create', String(cur ? cur.account_id : rec.account_id), maskNum_(ccp) + ' active=' + active);
+  return { ok: true };
+}
