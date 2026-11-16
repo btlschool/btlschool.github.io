@@ -72,12 +72,12 @@ function groupView_(g, isNew, left, ageGroup) {
 }
 
 /** مقترح الفوج لشخص ولغة. لا يكتب شيئا في الشيت. */
-function suggestGroup_(subject, language) {
-  var res = latestTestResult_(subject.user_id, language);
+function suggestGroup_(subject, language, forcedLevel) {
+  var res = forcedLevel ? { level: '' } : latestTestResult_(subject.user_id, language);
   if (!res) return { language: language, status: 'test_required' };
   var ageGroup = String(subject.age_group) === 'kids' ? 'kids' : 'adult', counts = seatCounts_(), open = openGroups_(language, ageGroup, counts);
   var openLevels = {}; open.forEach(function (g) { openLevels[String(g.level)] = true; });
-  var level = ageGroup === 'kids' ? kidLevelCode_(res.level) : adultLevelPick_(res.level, openLevels);
+  var level = forcedLevel ? forcedLevel : ageGroup === 'kids' ? kidLevelCode_(res.level) : adultLevelPick_(res.level, openLevels);
   var cands = open.filter(function (g) { return String(g.level) === level; });
   var max = Number(getSetting_('group_max', 12));
   if (cands.length) { var g = cands[0]; return { language: language, status: 'ok', level_code: level, group: groupView_(g, false, Number(g.seats_max || max) - (counts[String(g.group_id)] || 0), ageGroup) }; }
@@ -126,4 +126,11 @@ function ensureGroup_(language, levelCode, ageGroup) {
     audit_('system', 'group_auto_created', row.group_id, row.code);
     return { group: row, created: true };
   } finally { lock.releaseLock(); }
+}
+
+
+/** المستوى التالي بعد مستوى فوج (null إن كان الأخير). */
+function nextLevelCode_(levelCode, ageGroup) {
+  var order = ageGroup === 'kids' ? ['K1', 'K2', 'K3', 'K4', 'K5', 'K6'] : LEVELS_, i = order.indexOf(String(levelCode));
+  return i >= 0 && order[i + 1] ? order[i + 1] : null;
 }

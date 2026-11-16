@@ -16,22 +16,41 @@ function activeOrderOf_(userId) {
   return list.length ? list[list.length - 1] : null;
 }
 
-function enrollmentConflict_(personId, language, exceptOrderId) {
+function enrollmentConflict_(personId, language, exceptOrderId, exceptEnrollId) {
   return rows_('Enrollments').some(function (e) {
     if (String(e.user_id) !== String(personId) || String(e.order_id) === String(exceptOrderId)) return false;
+    if (exceptEnrollId && String(e.enroll_id) === String(exceptEnrollId)) return false;
     var s = String(e.status); if (!(s === 'reserved' || s === 'pending' || s === 'confirmed' || s === 'active')) return false;
     var g = findRowFast_('Groups', 'group_id', String(e.group_id));
     return g && String(g.language) === language;
   });
 }
 
-function stateOfLine_(person, language) {
+/** يتحقق أن التسجيل صالح للتجديد المبكر ويعيد {enr, group, level, pct} أو null. */
+function renewalOf_(person, enrollId) {
+  var e = findRowFast_('Enrollments', 'enroll_id', String(enrollId));
+  if (!e || String(e.user_id) !== String(person.user_id) || ['confirmed', 'active'].indexOf(String(e.status)) < 0) return null;
+  var g = findRowFast_('Groups', 'group_id', String(e.group_id));
+  if (!g) return null;
+  var total = Number(e.sessions_total) || 0, prog = total ? Number(e.sessions_done || 0) * 100 / total : 0;
+  if (prog < Number(getSetting_('early_renewal_from_progress', 70))) return null;
+  if (String(g.end_date) && todayYmd_() > String(g.end_date)) return null;
+  var ageGroup = String(g.age_group) === 'kids' ? 'kids' : 'adult', next = nextLevelCode_(g.level, ageGroup);
+  if (!next) return null;
+  return { enr: e, group: g, level: next, ageGroup: ageGroup, pct: Number(getSetting_('early_renewal_pct', 5)) };
+}
+function stateOfLine_(person, language, line) {
+  if (line && nz_(line.renew_enroll_id)) {
+    var rn = renewalOf_(person, line.renew_enroll_id);
+    if (!rn) return { state: 'waiting_test', sug: null };
+    return { state: 'ready', sug: suggestGroup_(person, language, rn.level), renew: rn };
+  }
   var sug = suggestGroup_(person, language);
   return sug.status === 'ok' ? { state: 'ready', sug: sug } : { state: 'waiting_test', sug: null };
 }
 
 function priceReady_(order, ready) {
-  var items = ready.map(function (r, i) { return { ref: r.ref, type: 'group', language: r.language, ageGroup: String(r.person.age_group) === 'kids' ? 'kids' : 'adult', level: r.sug.level_code, groupCode: r.sug.group.code, amount: itemPrice_({ type: 'group', ageGroup: String(r.person.age_group) === 'kids' ? 'kids' : 'adult' }) }; });
+  var items = ready.map(function (r, i) { return { ref: r.ref, type: 'group', language: r.language, ageGroup: String(r.person.age_group) === 'kids' ? 'kids' : 'adult', level: r.sug.level_code, groupCode: r.sug.group.code, renewPct: r.renew ? r.renew.pct : 0, amount: itemPrice_({ type: 'group', ageGroup: String(r.person.age_group) === 'kids' ? 'kids' : 'adult' }) }; });
   return items.length ? priceOrder_(items, rows_('Offers'), discountCfg_(), now_()) : null;
 }
 
@@ -43,8 +62,8 @@ function orderView_(o, user) {
     if (frozen) { views.push({ ref: l.ref, person_id: l.person_id, name: l.name, language: l.language, state: 'ready', group_code: l.group_code, start_date: l.start_date }); return; }
     var p = findRowFast_('Users', 'user_id', String(l.person_id));
     if (!p) return;
-    var st = stateOfLine_(p, l.language), v = { ref: l.ref, person_id: String(p.user_id), name: String(p.name_latin), language: l.language, state: st.state };
-    if (st.sug) { v.group_code = st.sug.group.code; v.start_date = st.sug.group.start_date; v.is_new = st.sug.group.is_new; v.seats = st.sug.group.seats; v.hours = st.sug.group.hours; v.per_week = st.sug.group.per_week; ready.push({ ref: l.ref, language: l.language, person: p, sug: st.sug }); }
+    var st = stateOfLine_(p, l.language, l), v = { ref: l.ref, person_id: String(p.user_id), name: String(p.name_latin), language: l.language, state: st.state };
+    if (st.sug) { v.group_code = st.sug.group.code; v.start_date = st.sug.group.start_date; v.is_new = st.sug.group.is_new; v.seats = st.sug.group.seats; v.hours = st.sug.group.hours; v.per_week = st.sug.group.per_week; ready.push({ ref: l.ref, language: l.language, person: p, sug: st.sug, renew: st.renew || null }); if (st.renew) v.renewal = true; }
     views.push(v);
   });
   var out = { order_id: String(o.order_id), status: String(o.status), lines: views, expires_at: String(o.expires_at) };
@@ -74,8 +93,10 @@ function act_orderSave_(ctx) {
     if (!LANGS[lang]) fail_('bad_language');
     if (String(p.languages).split(',').indexOf(lang) === -1) fail_('bad_language');
     var k = p.user_id + '|' + lang; if (seen[k]) fail_('duplicate_line'); seen[k] = true;
-    if (enrollmentConflict_(p.user_id, lang, '')) fail_('already_enrolled');
-    lines.push({ ref: 'l' + (i + 1), person_id: String(p.user_id), language: lang });
+    var rid = nz_(l.renew_enroll_id) ? String(l.renew_enroll_id) : '';
+    if (rid && !renewalOf_(p, rid)) fail_('renewal_unavailable');
+    if (enrollmentConflict_(p.user_id, lang, '', rid)) fail_('already_enrolled');
+    lines.push(rid ? { ref: 'l' + (i + 1), person_id: String(p.user_id), language: lang, renew_enroll_id: rid } : { ref: 'l' + (i + 1), person_id: String(p.user_id), language: lang });
   });
   var exp = isoPlus_(Number(getSetting_('order_expire_hours', 72)) * 3600000), id;
   if (cur) { id = String(cur.order_id); updateRow_('Orders', cur._row, { lines_json: JSON.stringify(lines), updated_at: now_(), expires_at: exp }); }
@@ -131,13 +152,13 @@ function act_orderCheckout_(ctx) {
   var view = orderView_(o, ctx.user);
   if (!view.can_checkout) fail_('not_ready');
   var ls = lines_(o), ready = [];
-  ls.forEach(function (l) { var p = findRowFast_('Users', 'user_id', String(l.person_id)); var st = stateOfLine_(p, l.language); if (enrollmentConflict_(p.user_id, l.language, String(o.order_id))) fail_('line_taken'); ready.push({ ref: l.ref, language: l.language, person: p, sug: st.sug }); });
+  ls.forEach(function (l) { var p = findRowFast_('Users', 'user_id', String(l.person_id)); var st = stateOfLine_(p, l.language, l); if (enrollmentConflict_(p.user_id, l.language, String(o.order_id), l.renew_enroll_id)) fail_('line_taken'); ready.push({ ref: l.ref, language: l.language, person: p, sug: st.sug, renew: st.renew || null, renew_enroll_id: l.renew_enroll_id || '' }); });
   var acc = pickPayAccount_(), r = priceReady_(o, ready), frozen = [];
   ready.forEach(function (x, i) {
     var age = String(x.person.age_group) === 'kids' ? 'kids' : 'adult', g = ensureGroup_(x.language, x.sug.level_code, age).group, pl = r.lines[i], kids = age === 'kids';
     var eid = uid_('en'), total = Math.round(Number(getSetting_(kids ? 'level_hours_kids' : 'level_hours_adult', kids ? 36 : 48)) / Number(getSetting_(kids ? 'session_hours_kids' : 'session_hours_adult', kids ? 1.5 : 2)));
-    appendRow_('Enrollments', { enroll_id: eid, user_id: String(x.person.user_id), group_id: String(g.group_id), status: 'reserved', price: String(pl.netCents), discount_pct: String(pl.pct), discount_reason: pl.reason, early_renewal: '0', created_at: now_(), sessions_done: '0', sessions_total: String(total), order_id: String(o.order_id), gross_price: String(pl.grossCents), offer_id: pl.offerId });
-    frozen.push({ ref: x.ref, person_id: String(x.person.user_id), name: String(x.person.name_latin), language: x.language, group_id: String(g.group_id), group_code: String(g.code), start_date: String(g.start_date), level: x.sug.level_code,
+    appendRow_('Enrollments', { enroll_id: eid, user_id: String(x.person.user_id), group_id: String(g.group_id), status: 'reserved', price: String(pl.netCents), discount_pct: String(pl.pct), discount_reason: pl.reason, early_renewal: x.renew ? '1' : '0', created_at: now_(), sessions_done: '0', sessions_total: String(total), order_id: String(o.order_id), gross_price: String(pl.grossCents), offer_id: pl.offerId });
+    frozen.push({ ref: x.ref, person_id: String(x.person.user_id), name: String(x.person.name_latin), language: x.language, group_id: String(g.group_id), group_code: String(g.code), start_date: String(g.start_date), level: x.sug.level_code, renew_enroll_id: x.renew_enroll_id || '',
       gross_cents: pl.grossCents, pct: pl.pct, reason: pl.reason, offer_id: pl.offerId, discount_cents: pl.discountCents, net_cents: pl.netCents, enroll_id: eid });
   });
   updateRow_('Orders', o._row, { status: 'checkout', lines_json: JSON.stringify(frozen), gross: String(r.grossCents), discount: String(r.discountCents), net: String(r.netCents), discount_json: JSON.stringify({ tierPct: r.tierPct, offerIds: r.appliedOfferIds }),
@@ -327,7 +348,7 @@ function act_home_(ctx) {
     var g = groups[String(e.group_id)] || {}, done = Number(e.sessions_done) || 0, total = Number(e.sessions_total) || 0;
     return { enroll_id: String(e.enroll_id), language: String(g.language || ''), group_code: String(g.code || ''), started: String(g.start_date || '') <= today,
       start_date: String(g.start_date || ''), end_date: String(g.end_date || ''), done: done, total: total, left: Math.max(0, total - done),
-      pct: total ? Math.min(100, Math.round(done * 100 / total)) : 0, next: nextSessionOf_(g, sessions, today), has_group_chat: !!nz_(g.telegram_chat_id) };
+      pct: total ? Math.min(100, Math.round(done * 100 / total)) : 0, next: nextSessionOf_(g, sessions, today), has_group_chat: !!nz_(g.telegram_chat_id), renewal: renewalOffer_(ctx.user, e, enr) };
   });
   var pays = rows_('Payments').filter(function (p) { return String(p.user_id) === uid && String(p.status) !== 'draft'; })
     .sort(function (a, b) { return String(a.submitted_at) < String(b.submitted_at) ? 1 : -1; }).slice(0, 10).map(function (p) {
@@ -335,4 +356,19 @@ function act_home_(ctx) {
       return { code: g ? String(g.code) : '', date: String(p.submitted_at).slice(0, 10), amount: fmtDA_(Number(p.amount) || 0), status: String(p.status) };
     });
   return { subs: subs, payments: pays };
+}
+
+/** عرض التجديد المبكر في الصفحة الرئيسية (سعر محسوب في الخادم). */
+function renewalOffer_(user, e, enr) {
+  var rn = renewalOf_(user, e.enroll_id);
+  if (!rn) return null;
+  var lang = String(rn.group.language), later = enr.some(function (x) {
+    if (String(x.enroll_id) === String(e.enroll_id)) return false;
+    var s = String(x.status); if (['reserved', 'pending', 'confirmed', 'active'].indexOf(s) < 0) return false;
+    var xg = findRowFast_('Groups', 'group_id', String(x.group_id));
+    return xg && String(xg.language) === lang && String(xg.start_date) >= String(rn.group.start_date) && String(x.enroll_id) !== String(e.enroll_id);
+  });
+  if (later) return null;
+  var r = priceOrder_([{ ref: 'r', type: 'group', language: lang, ageGroup: rn.ageGroup, level: rn.level, groupCode: '', renewPct: rn.pct, amount: itemPrice_({ type: 'group', ageGroup: rn.ageGroup }) }], rows_('Offers'), discountCfg_(), now_()), l = r.lines[0];
+  return { enroll_id: String(e.enroll_id), language: lang, next_level: rn.level, pct: l.pct, gross: fmtDA_(l.grossCents), net: fmtDA_(l.netCents), net_cents: l.netCents };
 }

@@ -63,6 +63,7 @@ function priceOrder_(items, offers, cfg, nowIso) {
       });
       if (best && Number(best.pct) > tier) { pct = Number(best.pct); reason = 'offer'; offerId = String(best.offer_id); used[offerId] = true; }
       else if (tier > 0) { pct = tier; reason = 'tier'; }
+      if (Number(it.renewPct) > pct) { pct = Number(it.renewPct); reason = 'renewal'; offerId = ''; }
     }
     var d = pctOfCents_(g, pct);
     lines.push({ ref: it.ref, type: it.type, grossCents: g, pct: pct, reason: reason, offerId: offerId, discountCents: d, netCents: g - d });
