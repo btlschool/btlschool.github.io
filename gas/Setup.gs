@@ -6,17 +6,17 @@
 var SCHEMA = {
   Settings:      ['key','value','description'],
   Statuses:      ['code','label_ar','sort','color','auto','active'],
-  Users:         ['user_id','phone','name_latin','gender','phone2','role','status','age_group','languages','telegram_id','telegram_username','source','legacy_ref','installed','installed_at','notif_status','platform','created_at','last_login','last_seen','notes'],
+  Users:         ['user_id','phone','name_latin','gender','phone2','role','status','age_group','languages','telegram_id','telegram_username','source','legacy_ref','installed','installed_at','notif_status','platform','created_at','last_login','last_seen','notes','guardian_id','birth_year'],
   AuthSessions:  ['token_hash','user_id','created_at','expires_at','device','revoked'],
   OtpCodes:      ['phone','code_hash','expires_at','attempts','used','created_at'],
   Questions:     ['qid','language','skill','level','type','stem','options_json','answer_key','audio_url','image_url','active','times_used'],
   Tests:         ['test_id','user_id','language','attempt_no','started_at','deadline_at','finished_at','question_ids_json','answers_json','score','level','sublevel','skills_json','status'],
   Teachers:      ['teacher_id','name','languages','phone','telegram_id','active','notes'],
   Groups:        ['group_id','code','language','level','sublevel','age_group','teacher_id','start_date','end_date','schedule_json','seats_min','seats_max','price','status','telegram_chat_id','created_at'],
-  Enrollments:   ['enroll_id','user_id','group_id','status','price','discount_pct','discount_reason','early_renewal','payment_id','created_at','confirmed_by','confirmed_at','sessions_done','sessions_total','stopped_at','stop_type'],
+  Enrollments:   ['enroll_id','user_id','group_id','status','price','discount_pct','discount_reason','early_renewal','payment_id','created_at','confirmed_by','confirmed_at','sessions_done','sessions_total','stopped_at','stop_type','order_id','gross_price','offer_id'],
   PayAccounts:   ['account_id','label','ccp_number','rip','holder_name','telegram_chat_id','active','sort','holder_staff_id','commission_pct','balance_ceiling','is_main','opening_balance','opening_date'],
-  Payments:      ['payment_id','enroll_id','vip_id','user_id','amount','method','account_id','receipt_file_id','status','submitted_at','reviewed_by','reviewed_at','note'],
-  VipRequests:   ['vip_id','user_id','language','package_hours','price','times_json','goals_json','goal_text','status','teacher_id','created_at','updated_at'],
+  Payments:      ['payment_id','enroll_id','vip_id','user_id','amount','method','account_id','receipt_file_id','status','submitted_at','reviewed_by','reviewed_at','note','order_id'],
+  VipRequests:   ['vip_id','user_id','language','package_hours','price','times_json','goals_json','goal_text','status','teacher_id','created_at','updated_at','order_id'],
   Trials:        ['trial_id','user_id','language','slot','status','created_at'],
   Sessions:      ['session_id','group_id','session_no','date','start','end','teacher_id','recording_url','attendance_json','status'],
   Ratings:       ['rating_id','user_id','group_id','teacher_id','language','level','rating_teacher','rating_curriculum','rating_motivation','rating_admin','rating_benefit','recommend','comment','created_at','source'],
@@ -30,6 +30,9 @@ var SCHEMA = {
   Categories:    ['code','label_ar','type','sort','active'],
   Budgets:       ['period','category','amount','note'],
   Reconciliations:['recon_id','account_id','period','book_balance','actual_balance','diff','note','by','at'],
+  Orders:        ['order_id','payer_user_id','status','gross','discount','net','discount_json','lines_json','account_id','payment_id','created_at','updated_at','expires_at'],
+  Offers:        ['offer_id','name','pct','scope_type','scope_value','starts_at','ends_at','active','banner_text','created_by','created_at'],
+  TestInvites:   ['invite_id','token_hash','order_id','user_id','phone','created_by','created_at','expires_at','used_at','reminders_sent','status'],
   Legacy:        ['legacy_id','source_sheet','phone','name','language','level','status_old','status_new','user_id','imported_at','notes']
 };
 
@@ -45,8 +48,14 @@ var DEFAULT_SETTINGS = [
   ['vip_10h','15000','باقة VIP 10 ساعات'],
   ['vip_20h','24000','باقة VIP 20 ساعة'],
   ['vip_30h','30000','باقة VIP 30 ساعة'],
-  ['discount_two_pct','10','خصم ابنين أو لغتين (%)'],
-  ['discount_both_pct','20','خصم ابنين ولغتين (%)'],
+  ['discount_tier1_min','2','أقل عدد أفواج جماعية في الدفعة الواحدة للخصم الأول'],
+  ['discount_tier1_pct','5','نسبة الخصم الأول (%)'],
+  ['discount_tier2_min','4','أقل عدد أفواج للخصم الثاني'],
+  ['discount_tier2_pct','10','نسبة الخصم الثاني (%)'],
+  ['test_questions','24','عدد أسئلة اختبار المستوى'],
+  ['test_invite_hours','24','صلاحية رابط الاختبار المرسل لشخص آخر (ساعة)'],
+  ['test_remind_hours','2,24','تذكير صاحب الرابط بعد كم ساعة (قائمة مفصولة بفاصلة)'],
+  ['order_expire_hours','72','انتهاء صلاحية طلب لم يُدفع (ساعة)'],
   ['early_renewal_pct','5','خصم التجديد المبكر (%)'],
   ['early_renewal_from_progress','70','يظهر خصم التجديد عند هذه النسبة من التقدم (%)'],
   ['test_minutes','15','مدة الاختبار (دقيقة)'],
@@ -116,9 +125,19 @@ function setupDatabase() {
   seedIfEmpty_(ss.getSheetByName('Settings'), DEFAULT_SETTINGS);
   seedIfEmpty_(ss.getSheetByName('Statuses'), DEFAULT_STATUSES);
   seedIfEmpty_(ss.getSheetByName('Categories'), DEFAULT_CATEGORIES);
+  removeSettings_(ss.getSheetByName('Settings'), OBSOLETE_SETTINGS);
   ensureSettings_(ss.getSheetByName('Settings'), DEFAULT_SETTINGS);
   Logger.log('تم. أوراق جديدة: ' + (created.join(', ') || 'لا شيء'));
   return created;
+}
+
+/** إعدادات ألغيت بقرار جديد (الخصم صار بحسب عدد الأفواج في دفعة واحدة). */
+var OBSOLETE_SETTINGS = ['discount_two_pct', 'discount_both_pct'];
+
+function removeSettings_(sh, keys) {
+  for (var r = sh.getLastRow(); r >= 2; r--) {
+    if (keys.indexOf(String(sh.getRange(r, 1).getValue())) !== -1) sh.deleteRow(r);
+  }
 }
 
 function seedIfEmpty_(sh, rows) {

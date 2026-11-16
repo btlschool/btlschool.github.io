@@ -4,7 +4,10 @@
  */
 
 var API_VERSION = '0.1.0';
-var PUBLIC_ACTIONS = {};   // أفعال مسموحة بدون جلسة (تُسجَّل في ملفات الوحدات)
+var PUBLIC_ACTIONS = {   // أفعال مسموحة بدون جلسة (الدوال تُستدعى عند الطلب فلا يهم ترتيب الملفات)
+  price_preview: function (c) { return act_pricePreview_(c); },
+  offers_now: function (c) { return act_offersNow_(c); }
+};
 var USER_ACTIONS = {};     // أفعال تحتاج جلسة مشارك
 var STAFF_ACTIONS = {};    // أفعال تحتاج صلاحية إدارية
 
