@@ -1,6 +1,6 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert'),crypto=require('crypto'),path=require('path');
 const ctx={};vm.createContext(ctx);
-for(const f of ['Core','Auth','Test','Invites','Bot','QuestionBank'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../gas/'+f+'.gs'),'utf8'),ctx);
+for(const f of ['Core','Auth','Test','Invites','Bot','QuestionBank','Notify','Push'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../gas/'+f+'.gs'),'utf8'),ctx);
 let CLOCK='2026-11-16T10:00:00';const SET={};const CNT={};
 const DB={Users:[],AuthSessions:[],Tests:[],TestInvites:[],Outreach:[],Notifications:[],Questions:[],Audit:[],Staff:[]};const TG=[];let TGOK=true;
 ctx.Utilities={getUuid:()=>crypto.randomUUID(),computeHmacSha256Signature:(m,k)=>[...crypto.createHmac('sha256',k).update(m).digest()].map(x=>x>127?x-256:x),formatDate:(d,tz,f)=>{const p=new Date(d.getTime()+3600e3).toISOString().slice(0,19);return f.includes('yyyy-MM')?p:p.slice(0,4)}};

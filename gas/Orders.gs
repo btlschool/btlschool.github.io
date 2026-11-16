@@ -218,6 +218,7 @@ function act_orderReceipt_(ctx) {
     if (p) { updateRow_('Users', p._row, { status: 'pending_payment' }); if (!nz_(p.guardian_id) && String(p.user_id) !== String(o.payer_user_id)) { if (!rows_('Outreach').some(function (r) { return String(r.user_id) === String(p.user_id) && String(r.kind) === 'code_ready' && OUTREACH_OPEN_[String(r.status)]; })) outreachCreate_(p.user_id, 'code_ready', ''); } }
   });
   var payer = findRowFast_('Users', 'user_id', String(o.payer_user_id));
+  try { notifyEvent_('payment_received', String(o.payer_user_id), {}); notifyStaff_('staff_receipt_new', { name: String(payer ? payer.name_latin : ''), amount: fmtDA_(Number(o.net)) }); } catch (e) { log_('notify_receipt_error', pid, String(e)); }
   forwardReceipt_(acc, o, fileId, 'وصل جديد · ' + String(payer ? payer.name_latin : '') + ' · ' + fmtDA_(Number(o.net)) + ' DA · ' + pid);
   audit_(String(ctx.user.user_id), 'receipt_uploaded', pid, String(o.order_id));
   return { payment_id: pid, status: 'pending' };
@@ -281,7 +282,7 @@ function act_staffPaymentReview_(ctx) {
     updateRow_('Orders', o._row, { status: 'checkout', updated_at: now_() });
     rows_('Enrollments').filter(function (e) { return String(e.order_id) === String(o.order_id) && String(e.status) === 'pending'; }).forEach(function (e) { updateRow_('Enrollments', e._row, { status: 'reserved' }); });
     audit_(by, 'payment_rejected', String(p.payment_id), note);
-    notifyUser_(String(p.user_id), 'payment_rejected', 'لم نتمكن من تأكيد الدفع', note + ' يمكنك رفع وصل جديد من حالة اشتراكك.', 'pay');
+    notifyEvent_('payment_rejected', String(p.user_id), { note: note });
     return { status: 'rejected' };
   }
   if (d.decision !== 'confirm') fail_('bad_decision');
@@ -300,7 +301,7 @@ function act_staffPaymentReview_(ctx) {
   });
   setSetting_('seats_since_founding', String(Number(getSetting_('seats_since_founding', 0)) + seats));
   audit_(by, 'payment_confirmed', String(p.payment_id), 'seats=' + seats);
-  ls.forEach(function (l) { notifyUser_(String(l.person_id), 'payment_confirmed', 'تم تأكيد اشتراكك', 'فوجك ' + l.group_code + ' يبدأ ' + l.start_date + '. ستجد رابط مجموعة تلغرام في منصتك.', 'home'); });
+  ls.forEach(function (l) { notifyEvent_('payment_confirmed', String(l.person_id), { group: l.group_code, date: l.start_date }); });
   return { status: 'confirmed', seats: seats };
 }
 
@@ -310,7 +311,7 @@ function ordersTick_() {
   var now = now_();
   rows_('Orders').forEach(function (o) {
     var s = String(o.status);
-    if ((s === 'open' || s === 'checkout') && nz_(o.expires_at) && String(o.expires_at) <= now) cancelOrder_(o, 'expired', 'system');
+    if ((s === 'open' || s === 'checkout') && nz_(o.expires_at) && String(o.expires_at) <= now) { cancelOrder_(o, 'expired', 'system'); if (s === 'checkout') { try { notifyEvent_('order_expired', String(o.payer_user_id), { group: lines_(o).map(function (l) { return l.group_code; }).join(' + ') }); } catch (e) {} } }
   });
 }
 function hourlyTick_() { invitesTick_(); ordersTick_(); backupTick_(); }
@@ -401,6 +402,7 @@ function act_stopSend_(ctx) {
   var when = type === 'temporary' && STOP_WHEN_.indexOf(String(d.resume_when)) >= 0 ? String(d.resume_when) : '';
   appendRow_('StopReasons', { stop_id: uid_('st'), user_id: String(u.user_id), enroll_id: String(e.enroll_id), stop_type: type, reasons_json: JSON.stringify(reasons), resume_when: when, comment: String(d.comment || '').slice(0, 500), created_at: now_() });
   updateRow_('Enrollments', e._row, { stopped_at: now_(), stop_type: type });
+  try { var gg = findRowFast_('Groups', 'group_id', String(e.group_id)); notifyStaff_('staff_stop_request', { name: String(u.name_latin), group: gg ? String(gg.code) : '', type: type === 'final' ? 'نهائي' : 'مؤقت' }); } catch (e2) {}
   audit_(String(u.user_id), 'stop_reason', String(e.enroll_id), type + ':' + reasons.join(','));
   return { ok: true };
 }

@@ -11,13 +11,14 @@ function fillTpl_(tpl, vars) { return String(tpl).replace(/\{(\w+)\}/g, function
 function newTgToken_() { return Utilities.getUuid().replace(/-/g, '').slice(0, 24); }
 
 // ---------- إشعار عام (داخل التطبيق + تلغرام إن وُجد) ----------
-function notifyUser_(userId, type, title, body, url) {
+function notifyUser_(userId, type, title, body, url, opts) {
+  opts = opts || {};
   appendRow_('Notifications', { notif_id: uid_('n'), user_id: String(userId), type: type, title: title, body: body, url: url || '', created_at: now_(), status: 'pending' });
   try {
     var u = findRowFast_('Users', 'user_id', String(userId));
-    if (u && nz_(u.telegram_id)) tg_('sendMessage', { chat_id: String(u.telegram_id), text: title + '\n' + body });
+    if (u && nz_(u.telegram_id) && opts.tg !== false) tg_('sendMessage', { chat_id: String(u.telegram_id), text: title + '\n' + body });
   } catch (e) { log_('notify_tg_error', String(userId), String(e)); }
-  try { pushToUser_(userId, title, body, url); } catch (e) { log_('notify_push_error', String(userId), String(e)); }
+  try { if (opts.push !== false) pushToUser_(userId, title, body, url); } catch (e) { log_('notify_push_error', String(userId), String(e)); }
 }
 
 // ---------- طابور التواصل ----------
@@ -205,7 +206,7 @@ function onTestFinished_(testRow) {
   var inv = invs[invs.length - 1], p = findRowFast_('Users', 'user_id', uid);
   updateRow_('TestInvites', inv._row, { status: 'tested', used_at: nz_(inv.used_at) ? inv.used_at : now_() });
   outreachClose_(uid, 'test_link', 'done', 'system', 'auto');
-  if (nz_(inv.created_by)) notifyUser_(String(inv.created_by), 'invitee_tested', 'أنهى ' + String(p ? p.name_latin : '') + ' اختباره', 'يمكنك الآن متابعة التسجيل والدفع من سلتك.', 'cart');
+  if (nz_(inv.created_by)) notifyEvent_('invitee_tested', String(inv.created_by), { name: String(p ? p.name_latin : '') });
 }
 
 /** مؤقّت كل ساعة: تذكير المسجِّل (test_remind_hours) ثم إسقاط الدعوات المنتهية. */
@@ -217,7 +218,7 @@ function invitesTick_() {
     var sent = Number(r.reminders_sent || 0), age = secBetween_(String(r.created_at), now) / 3600;
     if (sent < hrs.length && age >= hrs[sent] && nz_(r.created_by)) {
       var p = findRowFast_('Users', 'user_id', String(r.user_id));
-      notifyUser_(String(r.created_by), 'invitee_reminder', String(p ? p.name_latin : '') + ' لم ينهِ اختباره بعد', 'ذكّره بإجراء اختبار المستوى ليكتمل تسجيلكما.', 'cart');
+      notifyEvent_('invitee_reminder', String(r.created_by), { name: String(p ? p.name_latin : '') });
       updateRow_('TestInvites', r._row, { reminders_sent: String(sent + 1) });
     }
     if (String(r.expires_at) <= now) updateRow_('TestInvites', r._row, { status: 'expired' });
@@ -226,7 +227,8 @@ function invitesTick_() {
 
 /** شغّلها مرة واحدة: تنشئ المؤقّتات الدورية (كل ساعة: تذكيرات الدعوات وانتهاء الطلبات). النسخ الاحتياطي اليومي يُضاف لاحقا هنا. */
 function installTriggers() {
-  ScriptApp.getProjectTriggers().forEach(function (t) { var h = t.getHandlerFunction(); if (h === 'invitesTick_' || h === 'hourlyTick_') ScriptApp.deleteTrigger(t); });
+  ScriptApp.getProjectTriggers().forEach(function (t) { var h = t.getHandlerFunction(); if (h === 'invitesTick_' || h === 'hourlyTick_' || h === 'notifTick_') ScriptApp.deleteTrigger(t); });
   ScriptApp.newTrigger('hourlyTick_').timeBased().everyHours(1).create();
+  ScriptApp.newTrigger('notifTick_').timeBased().everyMinutes(10).create();
   Logger.log('تم تثبيت المؤقّتات');
 }

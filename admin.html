@@ -101,15 +101,15 @@ function initG(){
 $('out').onclick=function(){var t=TOK;api('staff_logout',{},true).then(function(){},function(){});TOK='';store('t',null);logout()};
 
 // ---------- الهيكل ----------
-var ICON={stops:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',inbox:'<path d="M3 13l2-8h14l2 8M3 13v6h18v-6M3 13h5l1 2h6l1-2h5"/>',pay:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/>',contact:'<path d="M21 12a8 8 0 01-11.5 7.2L4 20l1-4.5A8 8 0 1121 12z"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 000 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/>'};
+var ICON={notif:'<path d="M6 8a6 6 0 1112 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 004 0"/>',stops:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',inbox:'<path d="M3 13l2-8h14l2 8M3 13v6h18v-6M3 13h5l1 2h6l1-2h5"/>',pay:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/>',contact:'<path d="M21 12a8 8 0 01-11.5 7.2L4 20l1-4.5A8 8 0 1121 12z"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 000 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/>'};
 function renderNav(){
   var tabs=[['inbox','الوارد'],['pay','المدفوعات'],['contact','التواصل'],['stops','التوقف']];
-  if(STAFF&&STAFF.role==='admin')tabs.push(['settings','الإعدادات']);
+  if(STAFF&&STAFF.role==='admin'){tabs.push(['notif','الإشعارات']);tabs.push(['settings','الإعدادات'])}
   var cnt={pay:INBOX&&INBOX.payments_pending,contact:INBOX&&INBOX.outreach_pending,stops:INBOX&&INBOX.stops_pending};
   $('nav').innerHTML=tabs.map(function(t){return '<button data-t="'+t[0]+'" class="'+(TAB===t[0]?'on':'')+'"><svg viewBox="0 0 24 24">'+ICON[t[0]]+'</svg>'+t[1]+(cnt[t[0]]?'<span class="badge">'+cnt[t[0]]+'</span>':'')+'</button>'}).join('');
   Array.prototype.forEach.call($('nav').children,function(b){b.onclick=function(){go(b.getAttribute('data-t'))}});
 }
-function go(t){TAB=t;var f={inbox:vInbox,pay:vPay,contact:vContact,stops:vStops,settings:vSettings}[t];$('title').textContent={inbox:'الإدارة',pay:'المدفوعات',contact:'بانتظار التواصل',stops:'طلبات التوقف',settings:'الإعدادات'}[t];renderNav();f()}
+function go(t){TAB=t;var f={inbox:vInbox,pay:vPay,contact:vContact,stops:vStops,notif:vNotif,settings:vSettings}[t];$('title').textContent={inbox:'الإدارة',pay:'المدفوعات',contact:'بانتظار التواصل',stops:'طلبات التوقف',notif:'الإشعارات',settings:'الإعدادات'}[t];renderNav();f()}
 function start(){
   $('login').classList.add('hidden');$('app').classList.remove('hidden');$('who').textContent=(STAFF&&STAFF.name)||'';
   api('staff_inbox').then(function(x){INBOX=x;STAFF=Object.assign({},STAFF,x.staff);$('who').textContent=STAFF.name;go('inbox')},function(e){renderNav();fail(e)});
@@ -186,6 +186,33 @@ function vStops(){
     Array.prototype.forEach.call($('view').querySelectorAll('[data-w]'),function(b){b.onclick=function(){
       ask('<h2 style="margin:0">تسجيل المتابعة</h2><p class="mute">اكتب ما تم مع الطالب (اختياري).</p><textarea id="nt" placeholder="مثال: اتصلت به، سيعود في الصيف"></textarea><div class="btns"><button class="btn" id="ok">حفظ</button><button class="btn sec" id="no">إلغاء</button></div>',function(m){
         m.querySelector('#no').onclick=closeModal;m.querySelector('#ok').onclick=function(){var nt=m.querySelector('#nt').value;closeModal();api('staff_stop_done',{stop_id:b.getAttribute('data-w'),note:nt}).then(function(){toast('تم');refreshInbox();vStops()},function(e){fail(e);vStops()})}})}});
+  },fail)
+}
+
+// ---------- الإشعارات ----------
+function vNotif(){
+  api('staff_notif_list').then(function(r){
+    var sec={},order=[];r.rules.forEach(function(x){if(!sec[x.aud_label]){sec[x.aud_label]=[];order.push(x.aud_label)}sec[x.aud_label].push(x)});
+    function card(x){var staff=x.aud==='staff';return '<div class="card" data-e="'+esc(x.event)+'"><div class="row"><b>'+esc(x.label)+'</b><label style="display:flex;gap:6px;align-items:center;font-weight:800"><input type="checkbox" class="on" '+(x.enabled?'checked':'')+' style="width:auto"> مفعّل</label></div><div class="mute">'+esc(x.desc)+'</div>'+
+      '<div style="display:flex;gap:14px;margin:10px 0;flex-wrap:wrap">'+(staff?'':'<label style="display:flex;gap:6px;align-items:center"><input type="checkbox" class="push" '+(x.push?'checked':'')+' style="width:auto"> إشعار الهاتف</label>')+'<label style="display:flex;gap:6px;align-items:center"><input type="checkbox" class="tg" '+(x.tg?'checked':'')+' style="width:auto"> تلغرام</label></div>'+
+      '<input class="ti" value="'+esc(x.title)+'" placeholder="العنوان"><textarea class="bd" style="margin-top:8px;direction:rtl;text-align:right">'+esc(x.body)+'</textarea>'+
+      (x.timing?'<div style="margin-top:8px"><label class="mute">'+esc(x.timing.label)+'</label><input class="tm ltr" type="number" inputmode="decimal" value="'+x.timing.value+'"></div>':'')+
+      '<div class="btns"><button class="btn" data-s="save">حفظ</button><button class="btn sec" data-s="reset">استعادة الافتراضي</button></div></div>'}
+    $('view').innerHTML='<div class="card"><b>رسالة جماعية</b><p class="mute" style="margin:6px 0 0">أرسل إعلانا يدويا لمشتركين أو لغة أو فوج معيّن.</p><div class="btns"><button class="btn" id="bc">رسالة جديدة</button></div></div>'+
+      '<p class="mute">المتغيرات التي يمكن استعمالها في النص: '+r.vars.map(function(v){return '<span class="amt">{'+esc(v)+'}</span>'}).join(' ')+'. ساعات الهدوء ('+r.quiet.from+':00 إلى '+r.quiet.to+':00) تؤجَّل فيها الإشعارات غير العاجلة، وتُعدَّل من «الإعدادات».</p>'+
+      order.map(function(k){return '<h2>'+esc(k)+'</h2>'+sec[k].map(card).join('')}).join('');
+    Array.prototype.forEach.call($('view').querySelectorAll('[data-e]'),function(c){
+      function save(reset){var d={event:c.getAttribute('data-e'),enabled:c.querySelector('.on').checked,push:c.querySelector('.push')?c.querySelector('.push').checked:false,tg:c.querySelector('.tg').checked,title:c.querySelector('.ti').value,body:c.querySelector('.bd').value,reset:!!reset};if(c.querySelector('.tm'))d.timing=c.querySelector('.tm').value;api('staff_notif_save',d).then(function(){toast(reset?'أُعيد الافتراضي':'تم الحفظ');vNotif()},fail)}
+      c.querySelector('[data-s=save]').onclick=function(){save(false)};c.querySelector('[data-s=reset]').onclick=function(){save(true)};
+      c.querySelector('.on').onchange=function(){save(false)}});
+    $('bc').onclick=function(){
+      ask('<h2 style="margin:0">رسالة جماعية</h2><label class="mute">المستلمون</label><select id="au"><option value="subscribed">كل المشتركين</option><option value="all">كل الطلاب</option><option value="language:EN">مشتركو الإنجليزية</option><option value="language:FR">مشتركو الفرنسية</option><option value="group">فوج معيّن (اكتب كوده)</option></select><input id="gv" class="ltr hidden" placeholder="EN - B1.1 - NOV26"><input id="bt" placeholder="العنوان"><textarea id="bb" style="direction:rtl;text-align:right" placeholder="نص الرسالة"></textarea><div style="display:flex;gap:14px"><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="bp" checked style="width:auto"> إشعار الهاتف</label><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="bg" checked style="width:auto"> تلغرام</label></div><div class="btns"><button class="btn" id="bs">إرسال</button><button class="btn sec" id="bn">إلغاء</button></div>',function(m){
+        m.querySelector('#au').onchange=function(){m.querySelector('#gv').classList.toggle('hidden',this.value!=='group')};
+        m.querySelector('#bn').onclick=closeModal;
+        m.querySelector('#bs').onclick=function(){var v=m.querySelector('#au').value,a;if(v==='group')a={type:'group',value:m.querySelector('#gv').value.trim()};else if(v.indexOf('language:')===0)a={type:'language',value:v.split(':')[1]};else a={type:v};
+          var d={audience:a,title:m.querySelector('#bt').value,body:m.querySelector('#bb').value,push:m.querySelector('#bp').checked,tg:m.querySelector('#bg').checked};
+          if(!d.title.trim()||!d.body.trim())return toast('اكتب العنوان والرسالة',true);
+          closeModal();api('staff_notif_broadcast',d).then(function(x){toast('أُرسلت إلى '+x.recipients+' مستلما')},fail)}})};
   },fail)
 }
 

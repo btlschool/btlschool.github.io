@@ -7,7 +7,7 @@ var SETTING_GROUPS_ = [
   ['pricing', 'الأسعار والخصومات', /^(price_|discount_|vip_|order_)/],
   ['test', 'الاختبار', /^test_/],
   ['groups', 'الأفواج والجداول', /^(group_|level_hours|session_hours|seats_)/],
-  ['messages', 'الرسائل والتذكيرات', /^(msg_|outreach_|tg_link|test_remind)/],
+  ['messages', 'الرسائل والتذكيرات', /^(msg_|outreach_|tg_link|test_remind|notif_|broadcast_)/],
   ['backup', 'النسخ الاحتياطي', /^backup_/],
   ['system', 'النظام', /./]
 ];
@@ -65,7 +65,7 @@ function backupTick_() {
     var keep = Number(getSetting_('backup_keep_days', 14)), cut = addDays_(today, -keep), it = folder.getFiles();
     while (it.hasNext()) { var f = it.next(), m = /^BTL-backup-(\d{4}-\d{2}-\d{2})$/.exec(f.getName()); if (m && m[1] < cut) f.setTrashed(true); }
     audit_('system', 'backup_done', today, '');
-  } catch (e) { log_('backup_error', today, String(e)); audit_('system', 'backup_failed', today, String(e).slice(0, 200)); }
+  } catch (e) { log_('backup_error', today, String(e)); audit_('system', 'backup_failed', today, String(e).slice(0, 200)); try { notifyStaff_('staff_backup_failed', { error: String(e).slice(0, 200) }); } catch (e2) {} }
 }
 
 /** staff_inbox: أرقام «يحتاج إلى انتباهك» للوحة الإدارة (أي إداري فعّال). */
