@@ -26,9 +26,11 @@ var USER_ACTIONS = {       // أفعال تحتاج جلسة مشارك
   test_result: function (c) { return act_testResult_(c); },
   invite_create: function (c) { return act_inviteCreate_(c); },
   invite_list: function (c) { return act_inviteList_(c); },
-  invite_cancel: function (c) { return act_inviteCancel_(c); }
+  invite_cancel: function (c) { return act_inviteCancel_(c); },
+  group_suggest: function (c) { return act_groupSuggest_(c); },
+  group_options: function (c) { return act_groupOptions_(c); }
 };
-var TEST_SCOPE_ACTIONS = { me: 1, logout: 1, test_start: 1, test_answer: 1, test_beginner_stop: 1, test_finish: 1, test_result: 1 };  // أفعال تسمح بها جلسة رابط الاختبار (scope=test) إضافة إلى جلسة المشارك
+var TEST_SCOPE_ACTIONS = { me: 1, logout: 1, test_start: 1, test_answer: 1, test_beginner_stop: 1, test_finish: 1, test_result: 1, group_suggest: 1, group_options: 1 };  // أفعال تسمح بها جلسة رابط الاختبار (scope=test) إضافة إلى جلسة المشارك
 var STAFF_ACTIONS = {      // أفعال تحتاج صلاحية إدارية
   staff_outreach_list: function (c) { return act_staffOutreachList_(c); },
   staff_outreach_prepare: function (c) { return act_staffOutreachPrepare_(c); },

@@ -26,6 +26,12 @@ me، logout، logout_all، reg_profile {gender:'M'\|'F', birthYear, languages:['
 
 رابط الاختبار: `<app_url>t.html#<token>` (الرمز في الجزء بعد # فلا يصل إلى سجلات الخوادم). الصفحة تقرأه وتستدعي invite_open ثم test_start بالجلسة الناتجة. الرابط صالح `test_invite_hours` ويُجدَّد (والقديم يبطل) كلما أعادت الإدارة إرساله. المسجِّل يتلقى إشعارا عند انتهاء اختبار الشخص (دون النتيجة) وتذكيرا بعد `test_remind_hours`.
 
+### اقتراح الفوج (مشارك أو جلسة اختبار)
+| action | data | النتيجة |
+|---|---|---|
+| group_suggest | person_id?, languages? | لكل لغة: `{language, status:'test_required'}` أو `{language, status:'ok', level_code:'B1.1'\|'K3', group:{group_id\|null, code, level, start_date, schedule:[{d,t}], per_week, hours, months, price, price_cents, seats:'available'\|'few', is_new}}`. لا يكتب شيئا. لا تُعرض عبارة «لا يوجد فوج» أبدا: عند عدم وجود فوج مفتوح يُقترح فوج جديد (is_new:true) يُنشأ فعليا عند حجز المقعد |
+| group_options | person_id?, language | `{language, suggested_level, groups:[...]}`: الأفواج المفتوحة في المستوى المقترح وما قبله وما بعده (للزر «تغيير الفوج») |
+
 ### اختبار المستوى (يعمل أيضا بجلسة رابط الاختبار scope=test)
 | action | data | النتيجة |
 |---|---|---|
