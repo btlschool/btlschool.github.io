@@ -44,7 +44,9 @@ var STAFF_ACTIONS = {      // أفعال تحتاج صلاحية إدارية
   staff_outreach_done: function (c) { return act_staffOutreachDone_(c); },
   staff_payment_list: function (c) { return act_staffPaymentList_(c); },
   staff_payment_receipt: function (c) { return act_staffPaymentReceipt_(c); },
-  staff_payment_review: function (c) { return act_staffPaymentReview_(c); }
+  staff_payment_review: function (c) { return act_staffPaymentReview_(c); },
+  staff_settings_get: function (c) { return act_staffSettingsGet_(c); },
+  staff_settings_set: function (c) { return act_staffSettingsSet_(c); }
 };
 
 // ---------- الموجّه ----------

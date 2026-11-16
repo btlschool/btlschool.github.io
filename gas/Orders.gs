@@ -280,4 +280,4 @@ function ordersTick_() {
     if ((s === 'open' || s === 'checkout') && nz_(o.expires_at) && String(o.expires_at) <= now) cancelOrder_(o, 'expired', 'system');
   });
 }
-function hourlyTick_() { invitesTick_(); ordersTick_(); }
+function hourlyTick_() { invitesTick_(); ordersTick_(); backupTick_(); }

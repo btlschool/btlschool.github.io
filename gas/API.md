@@ -74,3 +74,11 @@ bad_phone, bad_name, bad_gender, bad_birth_year, bad_languages, registration_clo
 أخطاء جديدة: `bad_lines`, `duplicate_line`, `already_enrolled`, `order_locked`, `nothing_ready`, `not_ready`, `line_taken`, `payments_closed`, `no_pay_account`, `bad_file`, `not_allowed`, `code_exists`, `note_required`, `bad_decision`.
 المؤقّت `hourlyTick_` (كل ساعة): تذكيرات الدعوات + إنهاء الطلبات غير المدفوعة بعد `order_expire_hours` (72). الطلب `paid_pending` لا ينتهي.
 إعدادات جديدة: `session_hours_adult` 2، `session_hours_kids` 1.5، `receipts_folder_id`.
+
+## مركز الإعدادات والنسخ الاحتياطي (Admin.gs)
+| الفعل | الصلاحية | المدخل | المخرج |
+|---|---|---|---|
+| `staff_settings_get` | admin | — | مجموعات `[{id,title,items:[{key,label,value,default,kind}]}]` (kind: number/json/text) بلا أي سر |
+| `staff_settings_set` | admin | `{changes:{key:value}}` | `{saved:n}`؛ أخطاء: `bad_changes`, `unknown_setting`, `bad_value`؛ يسجَّل في التدقيق القديم والجديد |
+
+النسخ الاحتياطي: `backupTick_` ضمن `hourlyTick_`؛ ينسخ ملف قاعدة البيانات إلى `BTL-backup-YYYY-MM-DD` مرة يوميا بعد `backup_hour` (3)، ويحذف ما هو أقدم من `backup_keep_days` (14). الإعدادات: `backup_enabled`, `backup_hour`, `backup_keep_days`, `backup_folder_id`. الفشل يُسجَّل في التدقيق (`backup_failed`) ولا يوقف المؤقّت.
