@@ -81,6 +81,7 @@ function issueAccessCode_(userId) {
 // ---------- أدوات الشيت السريعة ----------
 /** بحث سريع بالقيمة الكاملة في عمود (TextFinder) بدل قراءة الورقة كلها. */
 function findRowFast_(sheetName, key, value) {
+  if (value === undefined || value === null || String(value) === '') return null;
   var sh = sheet_(sheetName), h = headers_(sh), c = h.indexOf(key);
   if (c === -1) fail_('bad_column');
   var last = sh.getLastRow();

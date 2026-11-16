@@ -87,7 +87,7 @@ function act_orderGet_(ctx) {
   var o = activeOrderOf_(ctx.user.user_id);
   if (!o) return null;
   var v = orderView_(o, ctx.user);
-  if (String(o.status) !== 'open') { v.account = accountView_(findRowFast_('PayAccounts', 'account_id', String(o.account_id))); }
+  if (String(o.status) !== 'open') { v.account = accountView_(orderAccount_(o)); }
   return v;
 }
 
@@ -104,8 +104,18 @@ function act_orderDropWaiting_(ctx) {
 }
 
 /** يختار حساب CCP: الأقل استلاما (طلبات قيد الدفع/المؤكدة آخر 7 أيام) بين الحسابات الفعّالة، ثم الأصغر ترتيبا. */
+function ensureAccountIds_() {
+  rows_('PayAccounts').forEach(function (a) { if (!nz_(a.account_id)) updateRow_('PayAccounts', a._row, { account_id: uid_('acc') }); });
+}
+/** حساب الطلب: يُصلح الطلب الذي بلا حساب (صفوف قديمة بلا معرّف) بإسناد حساب فعّال. */
+function orderAccount_(o) {
+  var acc = nz_(o.account_id) ? findRowFast_('PayAccounts', 'account_id', String(o.account_id)) : null;
+  if (!acc) { acc = pickPayAccount_(); updateRow_('Orders', o._row, { account_id: String(acc.account_id) }); o.account_id = String(acc.account_id); }
+  return acc;
+}
 function pickPayAccount_() {
-  var accs = rows_('PayAccounts').filter(function (a) { return String(a.active) === '1'; });
+  ensureAccountIds_();
+  var accs = rows_('PayAccounts').filter(function (a) { return String(a.active) === '1' && nz_(a.account_id); });
   if (!accs.length) fail_('no_pay_account');
   var since = isoAdd_(now_(), -7 * 86400000), load = {};
   rows_('Payments').forEach(function (p) { if (String(p.submitted_at) >= since && String(p.status) !== 'rejected') load[String(p.account_id)] = (load[String(p.account_id)] || 0) + 1; });
@@ -177,7 +187,7 @@ function act_orderReceipt_(ctx) {
   var fileId;
   try { fileId = receiptStore_('receipt-' + o.order_id + '-' + now_().replace(/[^0-9]/g, '') + '.' + RECEIPT_MIME_[mime], mime, b64.replace(/\s/g, '')); }
   catch (e) { log_('receipt_store_error', String(o.order_id), String(e)); fail_('storage_error'); }
-  var pid = uid_('pay'), acc = findRowFast_('PayAccounts', 'account_id', String(o.account_id));
+  var pid = uid_('pay'), acc = orderAccount_(o);
   appendRow_('Payments', { payment_id: pid, user_id: String(o.payer_user_id), amount: String(o.net), method: 'ccp', account_id: String(o.account_id), receipt_file_id: fileId, status: 'pending', submitted_at: now_(), order_id: String(o.order_id) });
   updateRow_('Orders', o._row, { status: 'paid_pending', payment_id: pid, updated_at: now_() });
   var ls = lines_(o);
