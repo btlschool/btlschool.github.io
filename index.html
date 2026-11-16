@@ -64,7 +64,7 @@ input:focus,select:focus{outline:0;border-color:var(--brand)}.ltr{direction:ltr;
 'use strict';
 var testIv=0,CFG=window.BTL_CONFIG||{},S={token:'',me:null,results:{},order:null,rev:false,T:null,sel:{}},timers=[];
 var LANG={EN:'الإنجليزية',FR:'الفرنسية'},DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],SK={grammar:'القواعد',vocab:'المفردات',reading:'القراءة',listening:'الاستماع'};
-var ERR={bad_phone:'رقم الهاتف غير صالح',bad_name:'اكتب الاسم واللقب بالحروف اللاتينية',bad_gender:'اختر الجنس',bad_birth_year:'سنة الميلاد غير مقبولة',bad_languages:'اختر لغة واحدة على الأقل',registration_closed:'التسجيل مغلق مؤقتا',rate_limited:'محاولات كثيرة، انتظر قليلا ثم أعد',unauthorized:'انتهت الجلسة، سجّل الدخول من جديد',bad_credentials:'الرقم أو رمز الدخول غير صحيح',retake_limit:'استنفدت محاولاتك لهذه اللغة، تواصل مع الإدارة',time_up:'انتهى وقت الاختبار',already_enrolled:'أنت مشترك بالفعل في هذه اللغة',not_ready:'أكمل الاختبار أولا',line_taken:'هذا الفوج لم يعد متاحا لك',payments_closed:'الدفع متوقف مؤقتا',no_pay_account:'لا يوجد حساب دفع متاح حاليا',bad_file:'صورة الوصل غير صالحة (jpeg أو png)',not_allowed:'هذا الإجراء غير متاح الآن',code_exists:'ظهر رمزك من قبل',maintenance:'المنصة في الصيانة، عد لاحقا',network:'تعذر الاتصال، تحقق من الشبكة',timeout:'تأخر الخادم في الرد، أعد المحاولة',order_locked:'طلبك قيد الدفع بالفعل',invalid_link:'الرابط غير صالح أو انتهت صلاحيته'};
+var ERR={bad_phone:'رقم الهاتف غير صالح',bad_name:'اكتب الاسم واللقب بالحروف اللاتينية',bad_gender:'اختر الجنس',bad_birth_year:'سنة الميلاد غير مقبولة',bad_languages:'اختر لغة واحدة على الأقل',registration_closed:'التسجيل مغلق مؤقتا',rate_limited:'محاولات كثيرة، انتظر قليلا ثم أعد',unauthorized:'انتهت الجلسة، سجّل الدخول من جديد',bad_credentials:'الرقم أو رمز الدخول غير صحيح',retake_limit:'استنفدت محاولاتك لهذه اللغة، تواصل مع الإدارة',time_up:'انتهى وقت الاختبار',already_enrolled:'أنت مشترك بالفعل في هذه اللغة',not_ready:'أكمل الاختبار أولا',line_taken:'هذا الفوج لم يعد متاحا لك',payments_closed:'الدفع متوقف مؤقتا',no_pay_account:'لا يوجد حساب دفع متاح حاليا',bad_file:'صورة الوصل غير صالحة (jpeg أو png)',not_allowed:'هذا الإجراء غير متاح الآن',code_exists:'ظهر رمزك من قبل',maintenance:'المنصة في الصيانة، عد لاحقا',network:'تعذر الاتصال، تحقق من الشبكة',timeout:'تأخر الخادم في الرد، أعد المحاولة',bad_response:'ردّ الخادم غير صالح (تحقق من رابط النشر)',order_locked:'طلبك قيد الدفع بالفعل',invalid_link:'الرابط غير صالح أو انتهت صلاحيته'};
 function $(i){return document.getElementById(i)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function da(s){return '<span class="amt">'+esc(String(s).replace(/ /g,' '))+' DA</span>'}
@@ -79,7 +79,7 @@ function call(a,d,q){
   if(!q)busy(true);
   var ac=window.AbortController?new AbortController():null,tm=setTimeout(function(){if(ac)ac.abort()},a==='order_receipt'?60000:30000);
   return fetch(CFG.apiUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:a,token:S.token,data:d||{}}),signal:ac?ac.signal:undefined})
-   .then(function(r){clearTimeout(tm);return r.json()},function(){clearTimeout(tm);throw{code:'timeout'}})
+   .then(function(r){clearTimeout(tm);return r.json().catch(function(){throw{code:'bad_response'}})},function(){clearTimeout(tm);throw{code:'timeout'}})
    .then(function(j){if(!j.ok)throw{code:j.error};return j.result})
    .then(function(x){busy(false);return x},function(e){busy(false);if(e&&e.code==='unauthorized'&&S.token){S.token='';ls('tok',null);welcome()}throw e})
 }
@@ -138,6 +138,11 @@ function profile(){
       route()},fail)};
 }
 
+function errScreen(e){
+  var c=(e&&e.code)||'?';
+  $('scr').innerHTML='<div class="body" style="justify-content:center;text-align:center;min-height:100vh"><img src="assets/brand/logo-white.png" style="display:none"><h1>تعذر تحميل المنصة</h1><p class="mute">'+esc(ERR[c]||'حدث خطأ غير متوقع')+'</p><p class="mute" dir="ltr">'+esc(c)+'</p><button class="btn" id="rt">إعادة المحاولة</button><button class="btn link" id="lo2">تسجيل الخروج</button></div>';
+  $('rt').onclick=function(){route()};$('lo2').onclick=function(){S.token='';ls('tok',null);welcome()};
+}
 // ---------- التوجيه ----------
 function route(){
   call('me').then(function(me){
@@ -154,7 +159,7 @@ function route(){
         groups();
       });
     });
-  },fail);
+  }).catch(function(e){if(e&&e.code==='unauthorized')return;errScreen(e)});
 }
 
 // ---------- الاختبار ----------
