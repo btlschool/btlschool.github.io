@@ -101,15 +101,15 @@ function initG(){
 $('out').onclick=function(){var t=TOK;api('staff_logout',{},true).then(function(){},function(){});TOK='';store('t',null);logout()};
 
 // ---------- الهيكل ----------
-var ICON={inbox:'<path d="M3 13l2-8h14l2 8M3 13v6h18v-6M3 13h5l1 2h6l1-2h5"/>',pay:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/>',contact:'<path d="M21 12a8 8 0 01-11.5 7.2L4 20l1-4.5A8 8 0 1121 12z"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 000 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/>'};
+var ICON={stops:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',inbox:'<path d="M3 13l2-8h14l2 8M3 13v6h18v-6M3 13h5l1 2h6l1-2h5"/>',pay:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/>',contact:'<path d="M21 12a8 8 0 01-11.5 7.2L4 20l1-4.5A8 8 0 1121 12z"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 000 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/>'};
 function renderNav(){
-  var tabs=[['inbox','الوارد'],['pay','المدفوعات'],['contact','التواصل']];
+  var tabs=[['inbox','الوارد'],['pay','المدفوعات'],['contact','التواصل'],['stops','التوقف']];
   if(STAFF&&STAFF.role==='admin')tabs.push(['settings','الإعدادات']);
-  var cnt={pay:INBOX&&INBOX.payments_pending,contact:INBOX&&INBOX.outreach_pending};
+  var cnt={pay:INBOX&&INBOX.payments_pending,contact:INBOX&&INBOX.outreach_pending,stops:INBOX&&INBOX.stops_pending};
   $('nav').innerHTML=tabs.map(function(t){return '<button data-t="'+t[0]+'" class="'+(TAB===t[0]?'on':'')+'"><svg viewBox="0 0 24 24">'+ICON[t[0]]+'</svg>'+t[1]+(cnt[t[0]]?'<span class="badge">'+cnt[t[0]]+'</span>':'')+'</button>'}).join('');
   Array.prototype.forEach.call($('nav').children,function(b){b.onclick=function(){go(b.getAttribute('data-t'))}});
 }
-function go(t){TAB=t;var f={inbox:vInbox,pay:vPay,contact:vContact,settings:vSettings}[t];$('title').textContent={inbox:'الإدارة',pay:'المدفوعات',contact:'بانتظار التواصل',settings:'الإعدادات'}[t];renderNav();f()}
+function go(t){TAB=t;var f={inbox:vInbox,pay:vPay,contact:vContact,stops:vStops,settings:vSettings}[t];$('title').textContent={inbox:'الإدارة',pay:'المدفوعات',contact:'بانتظار التواصل',stops:'طلبات التوقف',settings:'الإعدادات'}[t];renderNav();f()}
 function start(){
   $('login').classList.add('hidden');$('app').classList.remove('hidden');$('who').textContent=(STAFF&&STAFF.name)||'';
   api('staff_inbox').then(function(x){INBOX=x;STAFF=Object.assign({},STAFF,x.staff);$('who').textContent=STAFF.name;go('inbox')},function(e){renderNav();fail(e)});
@@ -123,6 +123,7 @@ function vInbox(){
   $('view').innerHTML='<h2>يحتاج إلى انتباهك</h2><div class="stats">'+
    '<button class="stat'+(i.payments_pending?' alert':'')+'" data-g="pay"><b>'+(i.payments_pending||0)+'</b><span>مدفوعات بانتظار التأكيد</span></button>'+
    '<button class="stat'+(i.outreach_urgent?' alert':'')+'" data-g="contact"><b>'+(i.outreach_pending||0)+'</b><span>بانتظار التواصل'+(i.outreach_urgent?' ('+i.outreach_urgent+' عاجل)':'')+'</span></button>'+
+   '<button class="stat'+(i.stops_final?' alert':'')+'" data-g="stops"><b>'+(i.stops_pending||0)+'</b><span>طلبات توقف'+(i.stops_final?' ('+i.stops_final+' نهائي)':'')+'</span></button>'+
    '<div class="stat"><b>'+(i.orders_unpaid||0)+'</b><span>طلبات لم تُدفع بعد</span></div></div>';
   Array.prototype.forEach.call(document.querySelectorAll('[data-g]'),function(b){b.onclick=function(){go(b.getAttribute('data-g'))}});
 }
@@ -170,6 +171,21 @@ function contactAct(o,a){
     if(a==='tg'&&r.sent){toast('أُرسلت عبر البوت');refreshInbox();return vContact()}
     if(r.fallback==='wa'){toast('تعذر الإرسال عبر البوت، استخدم واتساب',true);return contactAct(o,'wa')}
     if(r.wa_url){window.open(r.wa_url,'_blank','noopener');toast('فُتح واتساب، اضغط «تم» بعد الإرسال');refreshInbox()}
+  },fail)
+}
+
+// ---------- التوقف ----------
+var SR={busy:'انشغال أو ضيق وقت',exams:'الامتحانات أو الدراسة',price:'السعر',style:'الأسلوب أو الأستاذ',learned:'تعلّم ما يكفي',personal:'ظروف شخصية',other:'سبب آخر'},SW={month:'بعد شهر',three_months:'بعد 3 أشهر',after_exams:'بعد الامتحانات',summer:'في الصيف',unknown:'لا يعرف بعد'};
+function vStops(){
+  api('staff_stops_list').then(function(r){
+    var keys=Object.keys(r.counts).sort(function(a,b){return r.counts[b]-r.counts[a]});
+    function card(x,done){return '<div class="card"><div class="row"><b>'+esc(x.person.name)+'</b><span class="tag'+(x.stop_type==='final'&&!done?' urgent':'')+'">'+(x.stop_type==='final'?'نهائي':'مؤقت')+'</span></div><div class="mute"><span class="amt">'+esc(x.person.phone)+'</span> · '+esc(x.group_code)+' · '+esc(ago(x.created_at))+'</div><p style="margin:8px 0 0;font-weight:700">'+x.reasons.map(function(k){return esc(SR[k]||k)}).join(' · ')+'</p>'+(x.resume_when?'<p class="mute" style="margin:4px 0 0">ينوي المواصلة: '+esc(SW[x.resume_when]||x.resume_when)+'</p>':'')+(x.comment?'<p class="mute" style="margin:6px 0 0">«'+esc(x.comment)+'»</p>':'')+
+      (done?'<p class="mute" style="margin:6px 0 0">تمت المتابعة'+(x.handled.note?': '+esc(x.handled.note):'')+'</p>':'<div class="btns"><button class="btn" data-w="'+esc(x.id)+'">تم التواصل</button></div>')+'</div>'}
+    $('view').innerHTML=(keys.length?'<div class="card"><b>ملخص الأسباب</b><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">'+keys.map(function(k){return '<span class="tag">'+esc(SR[k]||k)+' · '+r.counts[k]+'</span>'}).join('')+'</div></div>':'')+
+      (r.open.length?r.open.map(function(x){return card(x,false)}).join(''):'<div class="card mute">لا توجد طلبات توقف بانتظار المتابعة.</div>')+(r.done.length?'<h2>تمت متابعتها</h2>'+r.done.map(function(x){return card(x,true)}).join(''):'');
+    Array.prototype.forEach.call($('view').querySelectorAll('[data-w]'),function(b){b.onclick=function(){
+      ask('<h2 style="margin:0">تسجيل المتابعة</h2><p class="mute">اكتب ما تم مع الطالب (اختياري).</p><textarea id="nt" placeholder="مثال: اتصلت به، سيعود في الصيف"></textarea><div class="btns"><button class="btn" id="ok">حفظ</button><button class="btn sec" id="no">إلغاء</button></div>',function(m){
+        m.querySelector('#no').onclick=closeModal;m.querySelector('#ok').onclick=function(){var nt=m.querySelector('#nt').value;closeModal();api('staff_stop_done',{stop_id:b.getAttribute('data-w'),note:nt}).then(function(){toast('تم');refreshInbox();vStops()},function(e){fail(e);vStops()})}})}});
   },fail)
 }
 

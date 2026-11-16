@@ -50,6 +50,8 @@ var STAFF_ACTIONS = {      // أفعال تحتاج صلاحية إدارية
   staff_payment_review: function (c) { return act_staffPaymentReview_(c); },
   staff_logout: function (c) { return act_staffLogout_(c); },
   staff_inbox: function (c) { return act_staffInbox_(c); },
+  staff_stops_list: function (c) { return act_staffStopsList_(c); },
+  staff_stop_done: function (c) { return act_staffStopDone_(c); },
   staff_settings_get: function (c) { return act_staffSettingsGet_(c); },
   staff_settings_set: function (c) { return act_staffSettingsSet_(c); }
 };
