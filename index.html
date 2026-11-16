@@ -14,7 +14,7 @@
 :root{--ink:#1B1740;--mute:#5B5780;--brand:#4136E6;--brand2:#2A1FB8;--line:#DCDAF5;--soft:#EEEDFF;--bg:#F6F5FF;--gold:#FFE600;--ok:#0E5E37;--okbg:#E3F8EC;--bad:#D93A3A;--warn:#FFF1D6}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%}
 body{font-family:'Cairo','Expo Arabic',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.6}
-button{font:inherit;cursor:pointer}.hidden{display:none!important}
+button{font:inherit;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none}.opt,.btn,.seg button,.ib{touch-action:manipulation}.hidden{display:none!important}
 #scr{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
 .top{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;padding:14px 16px 26px;border-radius:0 0 28px 28px;display:flex;align-items:center;gap:10px}
 .top img{height:34px}.top .grow{flex:1;min-width:0}.top small{display:block;opacity:.85;font-size:12px}.top b{font-size:15px}
@@ -178,17 +178,22 @@ function showQ(){
   shell({title:'السؤال '+(T.idx+1)+' من '+T.t.total,right:'<div class="tm">'+ic('timer').replace('<svg','<svg width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"')+'<span id="tm">'+mmss(T.left)+'</span></div><button class="ib" id="xt">'+ic('x')+'</button>',step:Math.round(T.idx/T.t.total*100)},body,'<button class="btn" id="nx" disabled>التالي</button><button class="btn link" id="sk">لا أعرف الإجابة، تخطَّ السؤال</button>');
   on($('scr'),'.opt',function(b){T.sel=+b.getAttribute('data-i');Array.prototype.forEach.call(document.querySelectorAll('.opt'),function(x){x.classList.toggle('on',x===b)});$('nx').disabled=false});
   if($('pl'))$('pl').onclick=function(){if(T.plays>=2)return toast('استنفدت مرتي الاستماع');T.plays++;speak(q.audio_text||q.stem,T.t.language);if(T.plays>=2)$('pl').disabled=true};
-  $('nx').onclick=function(){var q2=q;call('test_answer',{test_id:T.t.test_id,qid:q2.qid,choice:T.sel},true).then(function(r){
-    if(r.stop)return finishTest(false);if(r.offer_beginner)return beginnerOffer();next()},function(e){if(e.code==='time_up'||e.code==='test_closed')return finishTest(true);fail(e)})};
+  $('nx').onclick=function(){if(T.sel<0||this.getAttribute('data-lock'))return;this.setAttribute('data-lock','1');sendAnswer(T,q,T.sel);next()};
   $('sk').onclick=next;
   $('xt').onclick=function(){ask('<h2>الخروج من الاختبار؟</h2><p>الوقت لا يتوقف. يمكنك العودة وإكمال ما بقي قبل أن ينتهي.</p><button class="btn" id="c">أكمل الاختبار</button><button class="btn bad" id="l">اخرج الآن</button>',function(m){m.querySelector('#c').onclick=closeM;m.querySelector('#l').onclick=function(){closeM();S.T.done=true;stopTest();welcome()}})};
 }
 function speak(text,lang){try{var u=new SpeechSynthesisUtterance(text);u.lang=lang==='FR'?'fr-FR':'en-US';u.rate=.9;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){toast('جهازك لا يدعم تشغيل الصوت',true)}}
+function sendAnswer(T,q,choice){
+  T.q=(T.q||Promise.resolve()).then(function(){
+    function go(n){return call('test_answer',{test_id:T.t.test_id,qid:q.qid,choice:choice},true).catch(function(e){if(e.code==='network'&&n<3)return new Promise(function(r){setTimeout(r,1500)}).then(function(){return go(n+1)});throw e})}
+    return go(0);
+  }).then(function(r){if(T.done)return;if(r.stop)return finishTest(false);if(r.offer_beginner)beginnerOffer()},function(e){if(e.code==='time_up'||e.code==='test_closed'){if(!T.done){finishTest(true)}}else{T.lost=(T.lost||0)+1}});
+}
 function next(){var T=S.T;T.idx++;if(T.idx>=T.t.questions.length){T.done=true;return finishTest(false)}showQ()}
 function beginnerOffer(){ask('<h2>هل الأسئلة صعبة عليك؟</h2><p>إن كانت أغلبها صعبة فيمكنك أن تبدأ من مستوى المبتدئ A1 مباشرة، دون إتمام الاختبار.</p><button class="btn" id="b">ابدأ من المبتدئ</button><button class="btn sec" id="c">سأكمل الاختبار</button>',function(m){
-  m.querySelector('#c').onclick=function(){closeM();next()};
-  m.querySelector('#b').onclick=function(){closeM();S.T.done=true;stopTest();call('test_beginner_stop',{test_id:S.T.t.test_id}).then(function(r){showResult(S.T.t.language,r)},fail)}})}
-function finishTest(timedOut){var T=S.T;T.done=true;stopTest();call('test_finish',{test_id:T.t.test_id}).then(function(r){showResult(T.t.language,r)},fail)}
+  m.querySelector('#c').onclick=closeM;
+  m.querySelector('#b').onclick=function(){closeM();S.T.done=true;S.T.fin=true;stopTest();busy(true);(S.T.q||Promise.resolve()).then(function(){return call('test_beginner_stop',{test_id:S.T.t.test_id})}).then(function(r){showResult(S.T.t.language,r)},fail)}})}
+function finishTest(timedOut){var T=S.T;if(T.fin)return;T.fin=true;T.done=true;stopTest();busy(true);(T.q||Promise.resolve()).then(function(){return call('test_finish',{test_id:T.t.test_id})}).then(function(r){showResult(T.t.language,r)},fail)}
 function showResult(lang,r){
   S.results[lang]=r;clearTimers();S.sug=(S.sug||[]).map(function(x){return x.language===lang?{language:lang,status:'done'}:x});
   var sk=Object.keys(r.skills||{}).map(function(k){var s=r.skills[k];return '<div><div class="row"><span>'+SK[k]+'</span><b>'+s.pct+'%</b></div><div class="bar"><i style="width:'+s.pct+'%"></i></div></div>'}).join('');
@@ -232,7 +237,7 @@ function pay(){
   on($('scr'),'[data-c]',function(b){copy(b.getAttribute('data-c'))});
   $('up').onclick=function(){$('fl').click()};
   $('fl').onchange=function(){var f=this.files&&this.files[0];if(!f)return;shrink(f,function(b64){
-    call('order_receipt',{order_id:o.order_id,image_base64:b64,mime:'image/jpeg'}).then(function(){S.wasPending=true;toast('تم رفع الوصل');route()},fail)},function(){toast(ERR.bad_file,true)})};
+    call('order_receipt',{order_id:o.order_id,image_base64:b64,mime:'image/jpeg'}).then(function(){S.wasPending=true;toast('تم رفع الوصل');route()},function(e){toast('تعذر رفع الوصل ('+((e&&e.code)||'?')+')'+(ERR[e&&e.code]?' · '+ERR[e.code]:''),true)})},function(){toast('تعذرت قراءة الصورة، جرّب صورة أخرى (jpeg أو png)',true)})};
   $('cx').onclick=function(){ask('<h2>إلغاء الطلب؟</h2><p>سيُحرَّر مقعدك ويمكنك الطلب من جديد.</p><button class="btn bad" id="y">نعم، ألغِ الطلب</button><button class="btn sec" id="n">رجوع</button>',function(m){m.querySelector('#n').onclick=closeM;m.querySelector('#y').onclick=function(){closeM();call('order_cancel').then(function(){S.order=null;route()},fail)}})};
 }
 function shrink(file,ok,bad){
