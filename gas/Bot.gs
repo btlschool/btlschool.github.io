@@ -63,6 +63,13 @@ function handleTelegram_(e) {
   return ok;
 }
 
+/** يرسل صورة (ملف Drive) إلى محادثة. */
+function tgSendPhoto_(chatId, driveFileId, caption) {
+  var blob = DriveApp.getFileById(driveFileId).getBlob();
+  var r = UrlFetchApp.fetch('https://api.telegram.org/bot' + tgToken_() + '/sendPhoto', { method: 'post', payload: { chat_id: String(chatId), photo: blob, caption: String(caption || '').slice(0, 1000) }, muteHttpExceptions: true });
+  return JSON.parse(r.getContentText());
+}
+
 function tgAskContact_(chatId) {
   tg_('sendMessage', {
     chat_id: chatId,

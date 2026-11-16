@@ -28,13 +28,23 @@ var USER_ACTIONS = {       // أفعال تحتاج جلسة مشارك
   invite_list: function (c) { return act_inviteList_(c); },
   invite_cancel: function (c) { return act_inviteCancel_(c); },
   group_suggest: function (c) { return act_groupSuggest_(c); },
-  group_options: function (c) { return act_groupOptions_(c); }
+  group_options: function (c) { return act_groupOptions_(c); },
+  order_save: function (c) { return act_orderSave_(c); },
+  order_get: function (c) { return act_orderGet_(c); },
+  order_drop_waiting: function (c) { return act_orderDropWaiting_(c); },
+  order_checkout: function (c) { return act_orderCheckout_(c); },
+  order_cancel: function (c) { return act_orderCancel_(c); },
+  order_receipt: function (c) { return act_orderReceipt_(c); },
+  code_reveal: function (c) { return act_codeReveal_(c); }
 };
-var TEST_SCOPE_ACTIONS = { me: 1, logout: 1, test_start: 1, test_answer: 1, test_beginner_stop: 1, test_finish: 1, test_result: 1, group_suggest: 1, group_options: 1 };  // أفعال تسمح بها جلسة رابط الاختبار (scope=test) إضافة إلى جلسة المشارك
+var TEST_SCOPE_ACTIONS = { me: 1, logout: 1, test_start: 1, test_answer: 1, test_beginner_stop: 1, test_finish: 1, test_result: 1, group_suggest: 1, group_options: 1, order_save: 1, order_get: 1, order_drop_waiting: 1, order_checkout: 1, order_cancel: 1, order_receipt: 1, code_reveal: 1 };  // أفعال تسمح بها جلسة رابط الاختبار (scope=test) إضافة إلى جلسة المشارك
 var STAFF_ACTIONS = {      // أفعال تحتاج صلاحية إدارية
   staff_outreach_list: function (c) { return act_staffOutreachList_(c); },
   staff_outreach_prepare: function (c) { return act_staffOutreachPrepare_(c); },
-  staff_outreach_done: function (c) { return act_staffOutreachDone_(c); }
+  staff_outreach_done: function (c) { return act_staffOutreachDone_(c); },
+  staff_payment_list: function (c) { return act_staffPaymentList_(c); },
+  staff_payment_receipt: function (c) { return act_staffPaymentReceipt_(c); },
+  staff_payment_review: function (c) { return act_staffPaymentReview_(c); }
 };
 
 // ---------- الموجّه ----------

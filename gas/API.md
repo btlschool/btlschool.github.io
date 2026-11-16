@@ -54,3 +54,23 @@ me، logout، logout_all، reg_profile {gender:'M'\|'F', birthYear, languages:['
 
 ## أخطاء
 bad_phone, bad_name, bad_gender, bad_birth_year, bad_languages, registration_closed, rate_limited, unauthorized, forbidden, bad_credentials, too_many_children, bad_items, price_not_set, bad_language, profile_incomplete, retake_limit, bank_empty, bad_choice, bad_question, test_closed, time_up, not_found, not_allowed, not_finished, invalid_link, same_phone, phone_taken, bad_mode, bad_channel, telegram_not_linked, maintenance, auth_not_ready
+
+## الطلبات والدفع (Orders.gs)
+حالات الطلب: `open` (سلة) ← `checkout` (أسعار مجمّدة + مقاعد محجوزة + حساب CCP) ← `paid_pending` (رُفع الوصل) ← `paid` (أكدت الإدارة). الرفض يعيد الطلب إلى `checkout`. المبالغ بالسنتيم. لا تُكشف نتيجة أي شخص.
+
+| الفعل | الصلاحية | المدخل | المخرج |
+|---|---|---|---|
+| `order_save` | مشارك / جلسة اختبار | `{lines:[{person_id?,language}]}` | عرض الطلب (أسطر بحالة `ready`/`waiting_test`، السعر، الخصم، `can_checkout`) |
+| `order_get` | نفسه | — | الطلب النشط أو null (+`account` بعد التجميد) |
+| `order_drop_waiting` | نفسه | — | يحذف أسطر من لم يختبروا بعد |
+| `order_checkout` | نفسه | — | يجمّد الأسعار، ينشئ الفوج الناقص، يحجز المقاعد، يحدد حساب الدفع |
+| `order_cancel` | نفسه | — | إلغاء قبل الوصل ويحرر المقاعد |
+| `order_receipt` | نفسه | `{order_id,image_base64,mime}` (jpeg/png/webp ≤ ~2MB) | `{payment_id,status:'pending'}` |
+| `code_reveal` | نفسه | `{regenerate?}` | `{code,phone,regenerated}` بعد رفع الوصل فقط |
+| `staff_payment_list` | finance | — | الوصولات المعلقة مع أسطرها |
+| `staff_payment_receipt` | finance | `{payment_id}` | `{mime,b64}` |
+| `staff_payment_review` | finance | `{payment_id,decision:'confirm'|'reject',note?}` | confirm: قيد دخل بالدفتر لكل سطر + تأكيد الاشتراكات + إشعار؛ reject: الملاحظة إلزامية |
+
+أخطاء جديدة: `bad_lines`, `duplicate_line`, `already_enrolled`, `order_locked`, `nothing_ready`, `not_ready`, `line_taken`, `payments_closed`, `no_pay_account`, `bad_file`, `not_allowed`, `code_exists`, `note_required`, `bad_decision`.
+المؤقّت `hourlyTick_` (كل ساعة): تذكيرات الدعوات + إنهاء الطلبات غير المدفوعة بعد `order_expire_hours` (72). الطلب `paid_pending` لا ينتهي.
+إعدادات جديدة: `session_hours_adult` 2، `session_hours_kids` 1.5، `receipts_folder_id`.

@@ -223,9 +223,9 @@ function invitesTick_() {
   });
 }
 
-/** شغّلها مرة واحدة: تنشئ المؤقّتات الدورية (كل ساعة: التذكيرات). النسخ الاحتياطي اليومي يُضاف لاحقا هنا. */
+/** شغّلها مرة واحدة: تنشئ المؤقّتات الدورية (كل ساعة: تذكيرات الدعوات وانتهاء الطلبات). النسخ الاحتياطي اليومي يُضاف لاحقا هنا. */
 function installTriggers() {
-  ScriptApp.getProjectTriggers().forEach(function (t) { if (t.getHandlerFunction() === 'invitesTick_') ScriptApp.deleteTrigger(t); });
-  ScriptApp.newTrigger('invitesTick_').timeBased().everyHours(1).create();
+  ScriptApp.getProjectTriggers().forEach(function (t) { var h = t.getHandlerFunction(); if (h === 'invitesTick_' || h === 'hourlyTick_') ScriptApp.deleteTrigger(t); });
+  ScriptApp.newTrigger('hourlyTick_').timeBased().everyHours(1).create();
   Logger.log('تم تثبيت المؤقّتات');
 }
