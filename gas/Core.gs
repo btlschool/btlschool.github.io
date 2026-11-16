@@ -30,6 +30,8 @@ var USER_ACTIONS = {       // أفعال تحتاج جلسة مشارك
   group_suggest: function (c) { return act_groupSuggest_(c); },
   group_options: function (c) { return act_groupOptions_(c); },
   app_state: function (c) { return act_appState_(c); },
+  report: function (c) { return act_report_(c); },
+  stop_send: function (c) { return act_stopSend_(c); },
   order_save: function (c) { return act_orderSave_(c); },
   order_get: function (c) { return act_orderGet_(c); },
   order_drop_waiting: function (c) { return act_orderDropWaiting_(c); },

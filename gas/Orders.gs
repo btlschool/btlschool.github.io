@@ -29,7 +29,7 @@ function enrollmentConflict_(personId, language, exceptOrderId, exceptEnrollId) 
 /** يتحقق أن التسجيل صالح للتجديد المبكر ويعيد {enr, group, level, pct} أو null. */
 function renewalOf_(person, enrollId) {
   var e = findRowFast_('Enrollments', 'enroll_id', String(enrollId));
-  if (!e || String(e.user_id) !== String(person.user_id) || ['confirmed', 'active'].indexOf(String(e.status)) < 0) return null;
+  if (!e || String(e.user_id) !== String(person.user_id) || ['confirmed', 'active'].indexOf(String(e.status)) < 0 || nz_(e.stop_type)) return null;
   var g = findRowFast_('Groups', 'group_id', String(e.group_id));
   if (!g) return null;
   var total = Number(e.sessions_total) || 0, prog = total ? Number(e.sessions_done || 0) * 100 / total : 0;
@@ -348,7 +348,7 @@ function act_home_(ctx) {
     var g = groups[String(e.group_id)] || {}, done = Number(e.sessions_done) || 0, total = Number(e.sessions_total) || 0;
     return { enroll_id: String(e.enroll_id), language: String(g.language || ''), group_code: String(g.code || ''), started: String(g.start_date || '') <= today,
       start_date: String(g.start_date || ''), end_date: String(g.end_date || ''), done: done, total: total, left: Math.max(0, total - done),
-      pct: total ? Math.min(100, Math.round(done * 100 / total)) : 0, next: nextSessionOf_(g, sessions, today), has_group_chat: !!nz_(g.telegram_chat_id), renewal: renewalOffer_(ctx.user, e, enr) };
+      pct: total ? Math.min(100, Math.round(done * 100 / total)) : 0, next: nextSessionOf_(g, sessions, today), has_group_chat: !!nz_(g.telegram_chat_id), report_level: reportLevel_(uid, String(g.language || '')), stopped: nz_(e.stop_type), renewal: renewalOffer_(ctx.user, e, enr) };
   });
   var pays = rows_('Payments').filter(function (p) { return String(p.user_id) === uid && String(p.status) !== 'draft'; })
     .sort(function (a, b) { return String(a.submitted_at) < String(b.submitted_at) ? 1 : -1; }).slice(0, 10).map(function (p) {
@@ -371,4 +371,41 @@ function renewalOffer_(user, e, enr) {
   if (later) return null;
   var r = priceOrder_([{ ref: 'r', type: 'group', language: lang, ageGroup: rn.ageGroup, level: rn.level, groupCode: '', renewPct: rn.pct, amount: itemPrice_({ type: 'group', ageGroup: rn.ageGroup }) }], rows_('Offers'), discountCfg_(), now_()), l = r.lines[0];
   return { enroll_id: String(e.enroll_id), language: lang, next_level: rn.level, pct: l.pct, gross: fmtDA_(l.grossCents), net: fmtDA_(l.netCents), net_cents: l.netCents };
+}
+
+/** report: تقرير المستوى لآخر اختبار منتهٍ للطالب في لغة (يُعرض ويُطبع PDF من الواجهة). */
+function act_report_(ctx) {
+  var u = ctx.user, lang = String(ctx.data.language || '').toUpperCase();
+  if (!LANGS[lang]) fail_('bad_language');
+  var rs = rows_('Tests').filter(function (r) { return String(r.user_id) === String(u.user_id) && String(r.language) === lang && (String(r.status) === 'finished' || String(r.status) === 'stopped'); })
+    .sort(function (a, b) { return String(b.finished_at) < String(a.finished_at) ? -1 : 1; });
+  if (!rs.length) fail_('not_found');
+  var t = rs[0], skills = parseJson_(t.skills_json, {}), out = {};
+  Object.keys(skills).forEach(function (k) { out[k] = { pct: Number(skills[k].pct) || 0 }; });
+  var enr = rows_('Enrollments').filter(function (e) { return String(e.user_id) === String(u.user_id) && ['confirmed', 'active', 'reserved', 'pending'].indexOf(String(e.status)) >= 0; })
+    .map(function (e) { return { e: e, g: findRowFast_('Groups', 'group_id', String(e.group_id)) }; }).filter(function (x) { return x.g && String(x.g.language) === lang; });
+  var g = enr.length ? enr[enr.length - 1].g : null, sch = g ? parseJson_(g.schedule_json, []) : [];
+  return { name: String(u.name_latin), language: lang, date: String(t.finished_at).slice(0, 10), level: String(t.level), skills: out,
+    group_code: g ? String(g.code) : '', start_date: g ? String(g.start_date) : '', first_day: sch.length ? Number(sch[0].d) : null, first_time: sch.length ? String(sch[0].t) : '' };
+}
+
+var STOP_REASONS_ = ['busy', 'exams', 'price', 'style', 'learned', 'personal', 'other'];
+var STOP_WHEN_ = ['month', 'three_months', 'after_exams', 'summer', 'unknown'];
+/** stop_send: سبب التوقف. data {enroll_id, stop_type:'temporary'|'final', reasons:[...], resume_when?, comment?}. لا يغيّر مقعده، بل يُسجَّل لمتابعة الإدارة. */
+function act_stopSend_(ctx) {
+  var u = ctx.user, d = ctx.data, e = findRowFast_('Enrollments', 'enroll_id', String(d.enroll_id || ''));
+  if (!e || String(e.user_id) !== String(u.user_id) || ['confirmed', 'active'].indexOf(String(e.status)) < 0) fail_('not_allowed');
+  var type = String(d.stop_type) === 'final' ? 'final' : 'temporary';
+  var reasons = (Array.isArray(d.reasons) ? d.reasons : []).map(String).filter(function (r) { return STOP_REASONS_.indexOf(r) >= 0; });
+  if (!reasons.length) fail_('bad_reasons');
+  var when = type === 'temporary' && STOP_WHEN_.indexOf(String(d.resume_when)) >= 0 ? String(d.resume_when) : '';
+  appendRow_('StopReasons', { stop_id: uid_('st'), user_id: String(u.user_id), enroll_id: String(e.enroll_id), stop_type: type, reasons_json: JSON.stringify(reasons), resume_when: when, comment: String(d.comment || '').slice(0, 500), created_at: now_() });
+  updateRow_('Enrollments', e._row, { stopped_at: now_(), stop_type: type });
+  audit_(String(u.user_id), 'stop_reason', String(e.enroll_id), type + ':' + reasons.join(','));
+  return { ok: true };
+}
+
+function reportLevel_(uid, lang) {
+  var r = rows_('Tests').filter(function (t) { return String(t.user_id) === uid && String(t.language) === lang && (String(t.status) === 'finished' || String(t.status) === 'stopped'); }).sort(function (a, b) { return String(b.finished_at) < String(a.finished_at) ? -1 : 1; })[0];
+  return r ? String(r.level) : '';
 }
