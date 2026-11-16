@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#4136E6">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icons/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<title>BTL Languages School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1B1740;--mute:#5B5780;--brand:#4136E6;--brand2:#2A1FB8;--line:#DCDAF5;--soft:#EEEDFF;--bg:#F6F5FF;--gold:#FFE600;--ok:#0E5E37;--okbg:#E3F8EC;--bad:#D93A3A;--warn:#FFF1D6}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%}
+body{font-family:'Cairo','Expo Arabic',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.6}
+button{font:inherit;cursor:pointer}.hidden{display:none!important}
+#scr{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+.top{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;padding:14px 16px 26px;border-radius:0 0 28px 28px;display:flex;align-items:center;gap:10px}
+.top img{height:34px}.top .grow{flex:1;min-width:0}.top small{display:block;opacity:.85;font-size:12px}.top b{font-size:15px}
+.ib{background:#fff;color:var(--brand2);border:0;border-radius:12px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;flex:none}
+.ib svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.prog{height:7px;background:rgba(255,255,255,.3);border-radius:9px;overflow:hidden;margin-top:6px}.prog i{display:block;height:100%;background:var(--gold);border-radius:9px;transition:width .3s}
+.body{padding:18px 16px;flex:1;display:flex;flex-direction:column;gap:12px}
+h1{font-size:22px;margin:0;line-height:1.4}h2{font-size:17px;margin:0}p{margin:0}.mute{color:var(--mute);font-size:13px}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:14px}
+.btn{border:0;border-radius:16px;padding:15px 18px;background:var(--brand);color:#fff;font-weight:700;font-size:16px;width:100%;box-shadow:0 6px 0 var(--brand2)}
+.btn:active{transform:translateY(3px);box-shadow:0 3px 0 var(--brand2)}.btn[disabled]{opacity:.45;box-shadow:none}
+.btn.sec{background:#fff;color:var(--brand2);border:1.5px solid var(--line);box-shadow:none}.btn.link{background:none;color:var(--mute);box-shadow:none;padding:8px;font-weight:600;font-size:14px}
+.btn.bad{background:#fff;color:var(--bad);border:1.5px solid var(--bad);box-shadow:none}
+.foot{padding:12px 16px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px;position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 25%)}
+label{font-weight:700;font-size:14px;margin-bottom:6px;display:block}
+input,select{font:inherit;width:100%;padding:13px 14px;border:2px solid var(--line);border-radius:14px;background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:0;border-color:var(--brand)}.ltr{direction:ltr;text-align:left}
+.phone{display:flex;direction:ltr;gap:0}.phone select{width:118px;border-radius:14px 0 0 14px;border-right:0;flex:none}.phone input{border-radius:0 14px 14px 0}
+.note{background:var(--warn);border-radius:14px;padding:10px 12px;font-size:13px;color:#6b4300}.err{color:var(--bad);font-size:13px;margin-top:4px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}.seg button{flex:1;min-width:90px;padding:12px;border-radius:14px;border:2px solid var(--line);background:#fff;font-weight:700;color:var(--ink)}
+.seg button.on{border-color:var(--brand);background:var(--soft);color:var(--brand2)}
+.opt{display:flex;align-items:center;gap:10px;width:100%;text-align:start;background:#fff;border:2px solid var(--line);border-radius:16px;padding:14px;font-weight:600;color:var(--ink);direction:ltr}
+.opt.on{border-color:var(--brand);background:var(--soft)}.opt i{width:20px;height:20px;border:2px solid var(--line);border-radius:50%;flex:none}.opt.on i{border:6px solid var(--brand)}
+.q{font-size:19px;font-weight:700;direction:ltr;text-align:left;white-space:pre-wrap;line-height:1.55}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{padding:5px 12px;border-radius:999px;background:#fff;border:1.5px solid var(--line);font-size:12px;color:var(--mute)}.chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.tm{background:#fff;color:var(--ink);border-radius:12px;padding:6px 10px;font-weight:800;direction:ltr;display:flex;gap:6px;align-items:center}
+.amt{direction:ltr;unicode-bidi:isolate;display:inline-block;font-weight:800}.big{font-size:32px;color:var(--brand2)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}.tag{display:inline-block;background:var(--soft);color:var(--brand2);border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700}.tag.ok{background:var(--okbg);color:var(--ok)}
+.bar{height:9px;background:var(--soft);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--brand);border-radius:9px}
+.lv{font-size:64px;font-weight:800;color:var(--brand2);text-align:center;line-height:1.1}
+.code{font-size:26px;font-weight:800;letter-spacing:2px;direction:ltr;text-align:center;background:var(--soft);border-radius:14px;padding:14px;color:var(--brand2);word-break:break-all}
+.hero{background:linear-gradient(160deg,#4136E6,#2A1FB8 60%,#3B30D8);color:#fff;flex:1;display:flex;flex-direction:column;padding:18px 20px calc(22px + env(safe-area-inset-bottom));position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(rgba(255,230,0,.28),transparent 70%);top:25%;right:-80px}
+.hero>*{position:relative}.hero h1{font-size:28px;margin-top:auto}.hero .gold{color:var(--gold)}
+.hero .btn{background:var(--gold);color:var(--ink);box-shadow:0 6px 0 #b8a500}.ghost{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:999px;padding:8px 16px;font-weight:700}
+#ov{position:fixed;inset:0;background:rgba(246,245,255,.78);display:flex;align-items:center;justify-content:center;z-index:50}.sp{width:40px;height:40px;border:4px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:s 1s linear infinite}@keyframes s{to{transform:rotate(360deg)}}
+#toast{position:fixed;bottom:90px;inset-inline:16px;margin:auto;max-width:420px;background:var(--ink);color:#fff;padding:12px 14px;border-radius:14px;z-index:60;text-align:center}#toast.bad{background:var(--bad)}
+.modal{position:fixed;inset:0;background:rgba(27,23,64,.55);display:flex;align-items:flex-end;justify-content:center;z-index:55}.modal>div{background:#fff;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));width:100%;max-width:480px;display:flex;flex-direction:column;gap:10px}
+</style>
+</head>
+<body>
+<div id="ov" class="hidden"><div class="sp"></div></div><div id="toast" class="hidden"></div><div id="modal" class="modal hidden"><div id="mb"></div></div>
+<div id="scr"></div>
+<script src="config.js"></script>
+<script>
+(function(){
+'use strict';
+var testIv=0,CFG=window.BTL_CONFIG||{},S={token:'',me:null,results:{},order:null,rev:false,T:null,sel:{}},timers=[];
+var LANG={EN:'الإنجليزية',FR:'الفرنسية'},DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],SK={grammar:'القواعد',vocab:'المفردات',reading:'القراءة',listening:'الاستماع'};
+var ERR={bad_phone:'رقم الهاتف غير صالح',bad_name:'اكتب الاسم واللقب بالحروف اللاتينية',bad_gender:'اختر الجنس',bad_birth_year:'سنة الميلاد غير مقبولة',bad_languages:'اختر لغة واحدة على الأقل',registration_closed:'التسجيل مغلق مؤقتا',rate_limited:'محاولات كثيرة، انتظر قليلا ثم أعد',unauthorized:'انتهت الجلسة، سجّل الدخول من جديد',bad_credentials:'الرقم أو رمز الدخول غير صحيح',retake_limit:'استنفدت محاولاتك لهذه اللغة، تواصل مع الإدارة',time_up:'انتهى وقت الاختبار',already_enrolled:'أنت مشترك بالفعل في هذه اللغة',not_ready:'أكمل الاختبار أولا',line_taken:'هذا الفوج لم يعد متاحا لك',payments_closed:'الدفع متوقف مؤقتا',no_pay_account:'لا يوجد حساب دفع متاح حاليا',bad_file:'صورة الوصل غير صالحة (jpeg أو png)',not_allowed:'هذا الإجراء غير متاح الآن',code_exists:'ظهر رمزك من قبل',maintenance:'المنصة في الصيانة، عد لاحقا',network:'تعذر الاتصال، تحقق من الشبكة',order_locked:'طلبك قيد الدفع بالفعل',invalid_link:'الرابط غير صالح أو انتهت صلاحيته'};
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function da(s){return '<span class="amt">'+esc(String(s).replace(/ /g,' '))+' DA</span>'}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}}
+function toast(m,bad){var t=$('toast');t.textContent=m;t.className=bad?'bad':'';clearTimeout(toast.h);toast.h=setTimeout(function(){t.className='hidden'},3400)}
+function busy(on){$('ov').classList.toggle('hidden',!on)}
+function clearTimers(){timers.forEach(clearInterval);timers=[]}
+function stopTest(){clearInterval(testIv);testIv=0}
+function ic(n){var p={back:'<path d="M9 6l6 6-6 6"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/>',timer:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>',speaker:'<path d="M4 9v6h4l5 4V5L8 9zM16 9a4 4 0 010 6"/>'}[n];return '<svg viewBox="0 0 24 24">'+p+'</svg>'}
+function call(a,d,q){
+  if(!CFG.apiUrl)return Promise.reject({code:'network'});
+  if(!q)busy(true);
+  return fetch(CFG.apiUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:a,token:S.token,data:d||{}})})
+   .then(function(r){return r.json()},function(){throw{code:'network'}})
+   .then(function(j){if(!j.ok)throw{code:j.error};return j.result})
+   .then(function(x){busy(false);return x},function(e){busy(false);if(e&&e.code==='unauthorized'&&S.token){S.token='';ls('tok',null);welcome()}throw e})
+}
+function fail(e){toast(ERR[e&&e.code]||'حدث خطأ، حاول مجددا'+(e&&e.code?' ('+e.code+')':''),true)}
+function ask(html,cb){$('mb').innerHTML=html;$('modal').classList.remove('hidden');if(cb)cb($('mb'))}
+function closeM(){$('modal').classList.add('hidden');$('mb').innerHTML=''}
+$('modal').addEventListener('click',function(e){if(e.target===this)closeM()});
+function on(root,sel,fn){Array.prototype.forEach.call(root.querySelectorAll(sel),function(el){el.onclick=function(ev){fn(el,ev)}})}
+function copy(t){try{navigator.clipboard.writeText(t).then(function(){toast('تم النسخ')},function(){toast('تعذر النسخ',true)})}catch(e){toast('تعذر النسخ',true)}}
+
+// ---------- الهيكل ----------
+function shell(o,body,foot){
+  clearTimers();
+  $('scr').innerHTML='<div class="top">'+(o.back?'<button class="ib" id="bk">'+ic('back')+'</button>':'<img src="assets/brand/logo-white.png" alt="BTL">')+'<div class="grow"><b>'+esc(o.title||'')+'</b>'+(o.sub?'<small>'+esc(o.sub)+'</small>':'')+(o.step?'<div class="prog"><i style="width:'+o.step+'%"></i></div>':'')+'</div>'+(o.right||'')+'</div><div class="body">'+body+'</div>'+(foot?'<div class="foot">'+foot+'</div>':'');
+  if(o.back&&$('bk'))$('bk').onclick=o.back;window.scrollTo(0,0);
+}
+
+// ---------- الترحيب والدخول ----------
+function welcome(){
+  clearTimers();
+  $('scr').innerHTML='<div class="hero"><div class="row"><img src="assets/brand/logo-white.png" height="38" alt="BTL"><button class="ghost" id="lg">دخول</button></div><h1>أتقن اللغة الفرنسية والإنجليزية <span class="gold">أونلاين معنا</span></h1><p style="margin:10px 0 20px;opacity:.9">اختبر مستواك مجانا، ثم انضم إلى فوجك المناسب بحصص مباشرة وشهادة بعد المستوى.</p><button class="btn" id="go">ابدأ الآن</button></div>';
+  $('go').onclick=contact;$('lg').onclick=login;
+}
+var CC=[['DZ','+213','🇩🇿'],['FR','+33','🇫🇷'],['MA','+212','🇲🇦'],['TN','+216','🇹🇳'],['SA','+966','🇸🇦'],['AE','+971','🇦🇪'],['QA','+974','🇶🇦'],['EG','+20','🇪🇬'],['BE','+32','🇧🇪'],['CA','+1','🇨🇦'],['DE','+49','🇩🇪'],['TR','+90','🇹🇷']];
+function phoneField(id,cid){return '<div class="phone"><select id="'+cid+'">'+CC.map(function(c){return '<option value="'+c[0]+'">'+c[2]+' '+c[1]+'</option>'}).join('')+'</select><input id="'+id+'" class="ltr" inputmode="tel" autocomplete="tel-national" placeholder="0X XX XX XX XX"></div>'}
+function login(){
+  shell({title:'الدخول',back:welcome},'<h1>أهلا بعودتك</h1><div><label>رقم الواتساب</label>'+phoneField('ph','cc')+'</div><div><label>رمز الدخول</label><input id="cd" class="ltr" autocomplete="one-time-code" placeholder="BTL-XXXX"></div><p class="mute">فقدت الرمز؟ إن كان تلغرام مربوطا بحسابك فاطلب رمزا يصلك عبر البوت.</p><button class="btn link" id="rq">أرسل لي رمزا عبر تلغرام</button>','<button class="btn" id="ok">دخول</button>');
+  $('ok').onclick=function(){call('login',{phone:$('ph').value,country:$('cc').value,code:$('cd').value,device:navigator.userAgent.slice(0,80)}).then(function(r){S.token=r.token;ls('tok',r.token);route()},fail)};
+  $('rq').onclick=function(){call('login_request_code',{phone:$('ph').value,country:$('cc').value}).then(function(){toast('إن كان الرقم مربوطا بتلغرام فقد أُرسل الرمز')},fail)};
+}
+
+// ---------- التسجيل ----------
+function contact(){
+  shell({title:'التسجيل',sub:'الخطوة 1 من 3',step:33,back:welcome},'<h1>كيف نتواصل معك؟</h1><div><label>الاسم واللقب بالحروف اللاتينية</label><input id="nm" class="ltr" autocomplete="name" placeholder="Amine Benali"><p class="mute" style="margin-top:6px">كما في الهوية، فهو الذي سيُكتب على شهادتك.</p></div><div><label>رقم الواتساب</label>'+phoneField('ph','cc')+'</div><div class="note">هذا الرقم وسيلة التواصل الوحيدة معك، يصلك عليه الرمز والنتيجة. اكتبه بعناية وتأكد منه.</div>','<button class="btn" id="nx">التالي</button>');
+  $('nx').onclick=function(){
+    var nm=$('nm').value.trim(),ph=$('ph').value.trim(),cc=$('cc').value;
+    if(nm.length<3)return toast(ERR.bad_name,true);if(ph.replace(/\D/g,'').length<6)return toast(ERR.bad_phone,true);
+    var full=(CC.filter(function(c){return c[0]===cc})[0]||[])[1]+' '+ph;
+    ask('<h2>هل هذا الرقم صحيح؟</h2><div class="card" style="text-align:center"><div class="amt big">'+esc(full)+'</div></div><p class="mute">سيصلك عليه رمز دخولك. تأكد أنه رقم واتساب يعمل معك.</p><button class="btn" id="y">نعم، الرقم صحيح</button><button class="btn sec" id="n">تعديل</button>',function(m){
+      m.querySelector('#n').onclick=closeM;m.querySelector('#y').onclick=function(){closeM();
+        call('reg_contact',{name:nm,phone:ph,country:cc,device:navigator.userAgent.slice(0,80)}).then(function(r){
+          if(r.existing){toast('هذا الرقم مسجل من قبل، سجّل الدخول',true);return login()}
+          S.token=r.token;ls('tok',r.token);profile()},fail)}})};
+}
+function profile(){
+  var y=new Date().getFullYear(),yrs='<option value="">اختر</option>';for(var i=y-8;i>=y-80;i--)yrs+='<option>'+i+'</option>';
+  var P={g:'',l:{}};
+  shell({title:'التسجيل',sub:'الخطوة 2 من 3',step:66,back:contact},'<h1>أخبرنا عنك</h1><div><label>أي لغة تريد؟</label><div class="seg" id="lg"><button data-l="EN">الإنجليزية</button><button data-l="FR">الفرنسية</button></div><p class="mute" style="margin-top:6px">يمكنك اختيار لغتين، ولكل لغة اختبار خاص.</p></div><div><label>الجنس</label><div class="seg" id="gd"><button data-g="M">ذكر</button><button data-g="F">أنثى</button></div></div><div><label>سنة الميلاد</label><select id="by">'+yrs+'</select></div>','<button class="btn" id="nx">التالي</button>');
+  on($('lg'),'button',function(b){var l=b.getAttribute('data-l');P.l[l]=!P.l[l];b.classList.toggle('on',P.l[l])});
+  on($('gd'),'button',function(b){P.g=b.getAttribute('data-g');Array.prototype.forEach.call($('gd').children,function(x){x.classList.toggle('on',x===b)})});
+  $('nx').onclick=function(){
+    var langs=Object.keys(P.l).filter(function(k){return P.l[k]});
+    if(!langs.length)return toast(ERR.bad_languages,true);if(!P.g)return toast(ERR.bad_gender,true);if(!$('by').value)return toast(ERR.bad_birth_year,true);
+    call('reg_profile',{gender:P.g,birthYear:Number($('by').value),languages:langs}).then(function(r){
+      if(r.ageGroup==='kids'){return ask('<h2>التسجيل للصغار</h2><p>تسجيل الأطفال (8 إلى 14 سنة) يتم من حساب ولي الأمر. سجّل ببياناتك أنت، ثم أضف ابنك من حسابك.</p><button class="btn" id="o">حسنا</button>',function(m){m.querySelector('#o').onclick=closeM})}
+      route()},fail)};
+}
+
+// ---------- التوجيه ----------
+function route(){
+  call('me').then(function(me){
+    S.me=me;
+    if(!me.languages.length)return profile();
+    return call('order_get',{},true).then(function(o){
+      S.order=o;
+      if(o&&o.status==='paid_pending')return status();
+      if(o&&o.status==='checkout')return pay();
+      return call('group_suggest',{},true).then(function(g){
+        S.sug=g;var need=g.filter(function(x){return x.status==='test_required'})[0];
+        if(need)return testReady(need.language);
+        if(me.status==='subscribed'||me.status==='pending_payment')return home();
+        groups();
+      });
+    });
+  },fail);
+}
+
+// ---------- الاختبار ----------
+function testReady(lang){
+  shell({title:'اختبار '+LANG[lang],sub:'الخطوة 3 من 3',step:100},'<h1>قبل أن تبدأ</h1><div class="card"><p>• مدة الاختبار <b>15 دقيقة</b>، ويبدأ العدّ التنازلي حين تضغط «ابدأ».</p><p>• اختر أقرب إجابة، ولا تخمّن إن لم تعرف: يمكنك تخطي السؤال.</p><p>• اجلس في مكان هادئ، وإن كان فيه سؤال استماع فشغّل صوت الجهاز.</p><p>• الوقت لا يتوقف إن خرجت من الصفحة.</p></div><div class="note">نتيجتك تحدد فوجك المناسب، فأجب بصدق ليكون مستواك مناسبا لك.</div>','<button class="btn" id="st">ابدأ اختبار '+LANG[lang]+'</button>');
+  $('st').onclick=function(){call('test_start',{language:lang}).then(runTest,fail)};
+}
+function runTest(t){
+  var T=S.T={t:t,idx:0,sel:-1,plays:0,left:t.remaining_sec,done:false};
+  for(var i=0;i<t.questions.length;i++){if(t.answers&&t.answers[t.questions[i].qid]===undefined){T.idx=i;break}if(i===t.questions.length-1)T.idx=t.questions.length}
+  if(T.idx>=t.questions.length)return finishTest(false);
+  showQ();
+  stopTest();testIv=setInterval(function(){T.left--;var e=$('tm');if(e)e.textContent=mmss(T.left);if(T.left<=0&&!T.done){T.done=true;finishTest(true)}},1000);
+}
+function mmss(s){s=Math.max(0,s);return ('0'+Math.floor(s/60)).slice(-2)+':'+('0'+(s%60)).slice(-2)}
+function showQ(){
+  var T=S.T,q=T.t.questions[T.idx];T.sel=-1;T.plays=0;
+  var skills=['grammar','vocab','reading','listening'];
+  var body='<div class="chips">'+skills.map(function(k){return '<span class="chip'+(k===q.skill?' on':'')+'">'+SK[k]+'</span>'}).join('')+'</div>'+
+   '<div class="card">'+(q.skill==='listening'||q.audio_text?'<button class="btn sec" id="pl" style="margin-bottom:10px;box-shadow:none"><span style="display:inline-block;width:18px;vertical-align:middle">'+ic('speaker')+'</span> استمع (مرتان فقط)</button>':'')+'<div class="q">'+esc(q.stem)+'</div></div>'+
+   q.options.map(function(o,i){return '<button class="opt" data-i="'+i+'"><i></i><span>'+esc(o)+'</span></button>'}).join('');
+  shell({title:'السؤال '+(T.idx+1)+' من '+T.t.total,right:'<div class="tm">'+ic('timer').replace('<svg','<svg width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"')+'<span id="tm">'+mmss(T.left)+'</span></div><button class="ib" id="xt">'+ic('x')+'</button>',step:Math.round(T.idx/T.t.total*100)},body,'<button class="btn" id="nx" disabled>التالي</button><button class="btn link" id="sk">لا أعرف الإجابة، تخطَّ السؤال</button>');
+  on($('scr'),'.opt',function(b){T.sel=+b.getAttribute('data-i');Array.prototype.forEach.call(document.querySelectorAll('.opt'),function(x){x.classList.toggle('on',x===b)});$('nx').disabled=false});
+  if($('pl'))$('pl').onclick=function(){if(T.plays>=2)return toast('استنفدت مرتي الاستماع');T.plays++;speak(q.audio_text||q.stem,T.t.language);if(T.plays>=2)$('pl').disabled=true};
+  $('nx').onclick=function(){var q2=q;call('test_answer',{test_id:T.t.test_id,qid:q2.qid,choice:T.sel},true).then(function(r){
+    if(r.stop)return finishTest(false);if(r.offer_beginner)return beginnerOffer();next()},function(e){if(e.code==='time_up'||e.code==='test_closed')return finishTest(true);fail(e)})};
+  $('sk').onclick=next;
+  $('xt').onclick=function(){ask('<h2>الخروج من الاختبار؟</h2><p>الوقت لا يتوقف. يمكنك العودة وإكمال ما بقي قبل أن ينتهي.</p><button class="btn" id="c">أكمل الاختبار</button><button class="btn bad" id="l">اخرج الآن</button>',function(m){m.querySelector('#c').onclick=closeM;m.querySelector('#l').onclick=function(){closeM();S.T.done=true;stopTest();welcome()}})};
+}
+function speak(text,lang){try{var u=new SpeechSynthesisUtterance(text);u.lang=lang==='FR'?'fr-FR':'en-US';u.rate=.9;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){toast('جهازك لا يدعم تشغيل الصوت',true)}}
+function next(){var T=S.T;T.idx++;if(T.idx>=T.t.questions.length){T.done=true;return finishTest(false)}showQ()}
+function beginnerOffer(){ask('<h2>هل الأسئلة صعبة عليك؟</h2><p>إن كانت أغلبها صعبة فيمكنك أن تبدأ من مستوى المبتدئ A1 مباشرة، دون إتمام الاختبار.</p><button class="btn" id="b">ابدأ من المبتدئ</button><button class="btn sec" id="c">سأكمل الاختبار</button>',function(m){
+  m.querySelector('#c').onclick=function(){closeM();next()};
+  m.querySelector('#b').onclick=function(){closeM();S.T.done=true;stopTest();call('test_beginner_stop',{test_id:S.T.t.test_id}).then(function(r){showResult(S.T.t.language,r)},fail)}})}
+function finishTest(timedOut){var T=S.T;T.done=true;stopTest();call('test_finish',{test_id:T.t.test_id}).then(function(r){showResult(T.t.language,r)},fail)}
+function showResult(lang,r){
+  S.results[lang]=r;clearTimers();S.sug=(S.sug||[]).map(function(x){return x.language===lang?{language:lang,status:'done'}:x});
+  var sk=Object.keys(r.skills||{}).map(function(k){var s=r.skills[k];return '<div><div class="row"><span>'+SK[k]+'</span><b>'+s.pct+'%</b></div><div class="bar"><i style="width:'+s.pct+'%"></i></div></div>'}).join('');
+  var more=(S.sug||[]).filter(function(x){return x.status==='test_required'&&x.language!==lang})[0];
+  shell({title:'نتيجتك في '+LANG[lang]},'<div class="card"><p class="mute" style="text-align:center">مستواك</p><div class="lv">'+esc(r.level)+'</div>'+(r.beginner?'<p class="mute" style="text-align:center">ستبدأ من الصفر وهذا أفضل بداية</p>':'')+(r.timed_out?'<p class="mute" style="text-align:center">انتهى الوقت وحُسبت الأسئلة التي أجبتها</p>':'')+'</div>'+(sk?'<div class="card" style="display:flex;flex-direction:column;gap:10px"><h2>مهاراتك</h2>'+sk+'</div>':''),
+   more?'<button class="btn" id="mr">اختبار '+LANG[more.language]+'</button>':'<button class="btn" id="gp">فوجك المناسب</button>');
+  if(more)$('mr').onclick=function(){S.sug=S.sug.map(function(x){return x});testReady(more.language)};else $('gp').onclick=function(){call('group_suggest',{},true).then(function(g){S.sug=g;groups()},fail)};
+}
+
+// ---------- الفوج والطلب ----------
+function whenTxt(g){return g.schedule.map(function(s){return DAYS[s.d]+' '+s.t}).join(' و ')}
+function dateTxt(d){try{return new Date(d+'T12:00:00').toLocaleDateString('ar-DZ-u-nu-latn',{day:'numeric',month:'long'})}catch(e){return d}}
+function groups(){
+  var list=(S.sug||[]).filter(function(x){return x.status==='ok'});
+  if(!list.length){return call('group_suggest',{},true).then(function(g){S.sug=g;if(g.some(function(x){return x.status==='ok'}))groups();else testReady((g[0]||{}).language||'EN')},fail)}
+  list.forEach(function(x){if(S.sel[x.language]===undefined)S.sel[x.language]=true});
+  var cards=list.map(function(x){var g=x.group;return '<div class="card" style="border-color:'+(S.sel[x.language]?'var(--brand)':'var(--line)')+'"><div class="row"><b>'+LANG[x.language]+' · '+esc(x.level_code)+'</b><span class="tag'+(g.seats==='few'?'':' ok')+'">'+(g.seats==='few'?'آخر المقاعد':'مقاعد متاحة')+'</span></div><p class="mute" style="margin:6px 0">'+esc(g.code)+'</p>'+
+   '<div class="row" style="margin:8px 0"><div style="text-align:center"><b>'+esc(g.months)+'</b><div class="mute">أشهر</div></div><div style="text-align:center"><b>'+esc(g.hours)+'</b><div class="mute">حصة مباشرة (ساعة)</div></div><div style="text-align:center"><b>'+esc(g.per_week)+'</b><div class="mute">في الأسبوع</div></div></div>'+
+   '<div style="text-align:center;margin:8px 0"><div class="mute">سعر المستوى كاملا</div><div class="amt big">'+esc(String(g.price).replace(/ /g,' '))+' DA</div></div><p class="mute">'+esc(whenTxt(g))+' · يبدأ '+esc(dateTxt(g.start_date))+'</p>'+
+   (list.length>1?'<button class="btn '+(S.sel[x.language]?'':'sec')+'" data-t="'+x.language+'" style="margin-top:10px;box-shadow:none">'+(S.sel[x.language]?'✓ مضاف إلى طلبي':'أضف إلى طلبي')+'</button>':'')+'</div>'}).join('');
+  shell({title:'فوجك المناسب'},'<h1>فوجك جاهز</h1>'+cards+'<p class="mute" style="text-align:center">يبدأ فوجك خلال 15 يوما، وإلا استرجعت مبلغك.</p>'+(list.length>1?'<div class="note">عند الدفع لفوجين معا تحصل على خصم يظهر في الخطوة التالية.</div>':''),'<button class="btn" id="jn">انضم إلى فوجك الآن</button><button class="btn link" id="lo">تسجيل الخروج</button>');
+  on($('scr'),'[data-t]',function(b){var l=b.getAttribute('data-t');S.sel[l]=!S.sel[l];groups()});
+  $('lo').onclick=logout;
+  $('jn').onclick=function(){
+    var lines=list.filter(function(x){return S.sel[x.language]}).map(function(x){return{language:x.language}});
+    if(!lines.length)return toast('اختر فوجا واحدا على الأقل',true);
+    call('order_save',{lines:lines}).then(function(){return call('order_checkout')}).then(function(o){S.order=o;pay()},fail)};
+}
+function logout(){call('logout',{},true).then(function(){},function(){});S.token='';ls('tok',null);S.me=null;welcome()}
+
+// ---------- الدفع ----------
+function pay(){
+  var o=S.order;if(!o||o.status!=='checkout')return route();
+  var a=o.account||{};
+  var lines=o.lines.map(function(l){return '<div class="row"><span>'+esc(l.name)+' · '+esc(LANG[l.language])+'<div class="mute">'+esc(l.group_code)+'</div></span><span>'+da(l.net)+'</span></div>'}).join('<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">');
+  shell({title:'الدفع'},'<h1>ادفع لتحجز مقعدك</h1><div class="card">'+lines+(o.discount?'<div class="row mute" style="margin-top:8px"><span>خصم '+o.tier_pct+'%</span>'+da(o.discount)+'</div>':'')+'<div class="row" style="margin-top:10px;border-top:2px solid var(--line);padding-top:10px"><b>المجموع</b><span class="big">'+da(o.net)+'</span></div></div>'+
+   '<div class="card" style="display:flex;flex-direction:column;gap:8px"><h2>حوّل المبلغ إلى هذا الحساب (CCP)</h2>'+
+   [['الاسم',a.holder_name],['رقم CCP',a.ccp_number],['RIP',a.rip]].map(function(r){return '<div class="row"><span class="mute">'+r[0]+'</span><span class="row" style="gap:6px"><b class="ltr" style="direction:ltr">'+esc(r[1])+'</b><button class="ib" data-c="'+esc(r[1])+'" style="width:34px;height:34px;background:var(--soft)">'+ic('copy')+'</button></span></div>'}).join('')+'</div>'+
+   '<div class="note">احتفظ بالوصل بعد التحويل وارفع صورته في الخطوة التالية. مقعدك محجوز '+'لمدة محدودة فقط.</div>',
+   '<input type="file" id="fl" accept="image/*" class="hidden"><button class="btn" id="up">رفعت الوصل؟ ارفع صورته</button><button class="btn link" id="cx">إلغاء الطلب</button>');
+  on($('scr'),'[data-c]',function(b){copy(b.getAttribute('data-c'))});
+  $('up').onclick=function(){$('fl').click()};
+  $('fl').onchange=function(){var f=this.files&&this.files[0];if(!f)return;shrink(f,function(b64){
+    call('order_receipt',{order_id:o.order_id,image_base64:b64,mime:'image/jpeg'}).then(function(){S.wasPending=true;toast('تم رفع الوصل');route()},fail)},function(){toast(ERR.bad_file,true)})};
+  $('cx').onclick=function(){ask('<h2>إلغاء الطلب؟</h2><p>سيُحرَّر مقعدك ويمكنك الطلب من جديد.</p><button class="btn bad" id="y">نعم، ألغِ الطلب</button><button class="btn sec" id="n">رجوع</button>',function(m){m.querySelector('#n').onclick=closeM;m.querySelector('#y').onclick=function(){closeM();call('order_cancel').then(function(){S.order=null;route()},fail)}})};
+}
+function shrink(file,ok,bad){
+  var img=new Image(),url=URL.createObjectURL(file);
+  img.onload=function(){var m=1600,r=Math.min(1,m/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*r);c.height=Math.round(img.height*r);c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);ok(c.toDataURL('image/jpeg',.82).split(',')[1])};
+  img.onerror=function(){URL.revokeObjectURL(url);bad()};img.src=url;
+}
+
+// ---------- بعد الدفع ----------
+function codeBox(){
+  return '<div class="card" id="cb" style="display:flex;flex-direction:column;gap:10px"><h2>رمز دخولك</h2><p class="mute">هذا الرمز لك وحدك، تدخل به المنصة من أي هاتف. يظهر مرة واحدة فاحفظه الآن.</p><button class="btn" id="rv">اعرض رمزي</button></div>';
+}
+function wireCode(){
+  var b=$('rv');if(!b)return;
+  b.onclick=function(){call('code_reveal',{}).then(showCode,function(e){if(e.code==='code_exists'){ask('<h2>ظهر رمزك من قبل</h2><p>إن فقدته يمكنك إنشاء رمز جديد، وسيبطل الرمز القديم.</p><button class="btn" id="g">أنشئ رمزا جديدا</button><button class="btn sec" id="n">رجوع</button>',function(m){m.querySelector('#n').onclick=closeM;m.querySelector('#g').onclick=function(){closeM();call('code_reveal',{regenerate:true}).then(showCode,fail)}})}else fail(e)})};
+}
+function showCode(r){var c=$('cb');if(!c)return;c.innerHTML='<h2>رمز دخولك</h2><div class="code">'+esc(r.code)+'</div><button class="btn sec" id="cp" style="box-shadow:none">نسخ الرمز</button><p class="mute">رقمك للدخول: <span class="amt">'+esc(r.phone)+'</span>. لا تشاركه مع أحد.</p>';$('cp').onclick=function(){copy(r.code)}}
+function status(){
+  shell({title:'قيد التحقق'},'<div class="card" style="text-align:center"><div class="lv" style="font-size:40px">⏳</div><h2>استلمنا وصلك</h2><p class="mute">تتحقق الإدارة من الحوالة وتؤكد مقعدك خلال ساعات قليلة، وتصلك رسالة عند التأكيد.</p></div>'+codeBox()+'<div class="note">ما زال مقعدك محجوزا. لا حاجة لرفع الوصل مرة أخرى إلا إن طلبنا ذلك.</div>','<button class="btn link" id="lo">تسجيل الخروج</button>');
+  wireCode();$('lo').onclick=logout;
+  timers.push(setInterval(function(){call('order_get',{},true).then(function(o){if(!o||o.status!=='paid_pending'){S.order=o;route()}},function(){})},20000));
+}
+function home(){
+  var tg=CFG.telegramBot||'BTLSchoolBot';
+  shell({title:'مرحبا '+((S.me&&S.me.name)||'')},'<div class="card" style="text-align:center"><h2>'+(S.me&&S.me.status==='subscribed'?'تم تأكيد اشتراكك 🎉':'اشتراكك قيد التحقق')+'</h2><p class="mute">ستجد موعد الحصة الأولى ورابط مجموعة فوجك في تلغرام.</p></div><a class="btn" style="text-align:center;text-decoration:none;display:block" href="https://t.me/'+esc(tg)+'" target="_blank" rel="noopener">افتح بوت تلغرام</a>'+codeBox(),'<button class="btn link" id="lo">تسجيل الخروج</button>');
+  wireCode();$('lo').onclick=logout;
+}
+
+// ---------- الإقلاع ----------
+(function(){
+  var t=ls('tok');
+  if(t){S.token=t;route()}else welcome();
+  if('serviceWorker' in navigator){}
+})();
+})();
+</script>
+</body>
+</html>
