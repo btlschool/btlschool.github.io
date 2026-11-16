@@ -11,5 +11,7 @@ window.BTL_CONFIG = {
   vapidKey: "BHXmfjZ5NStRt-y69bWkaLp7068SCO2w2v-aRjs_DfZddLdtSZiEA6piLRQXx40jqwXplqIkUWK5bZT8-TsKV1o",
   telegramBot: "BTLSchoolBot",
   // يُملأ بعد نشر سكربت Google (GAS)
-  apiUrl: ""
+  apiUrl: "",
+  // معرّف عميل Google (OAuth Web) لدخول الإداريين فقط؛ ليس سرا
+  googleClientId: ""
 };

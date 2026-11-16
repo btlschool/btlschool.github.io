@@ -45,6 +45,8 @@ var STAFF_ACTIONS = {      // أفعال تحتاج صلاحية إدارية
   staff_payment_list: function (c) { return act_staffPaymentList_(c); },
   staff_payment_receipt: function (c) { return act_staffPaymentReceipt_(c); },
   staff_payment_review: function (c) { return act_staffPaymentReview_(c); },
+  staff_logout: function (c) { return act_staffLogout_(c); },
+  staff_inbox: function (c) { return act_staffInbox_(c); },
   staff_settings_get: function (c) { return act_staffSettingsGet_(c); },
   staff_settings_set: function (c) { return act_staffSettingsSet_(c); }
 };
@@ -66,7 +68,7 @@ function doPost(e) {
     if (String(getSetting_('maintenance', '0')) === '1' && req.action !== 'ping') {
       return json_({ ok: false, error: 'maintenance' });
     }
-    var fn = null, ctx = { data: req.data || {}, user: null, staff: null };
+    var fn = null, ctx = { data: req.data || {}, user: null, staff: null, token: req.token };
     if (req.action === 'ping') { return json_({ ok: true, version: API_VERSION, time: new Date().toISOString() }); }
     if (PUBLIC_ACTIONS[req.action]) { fn = PUBLIC_ACTIONS[req.action]; }
     else if (USER_ACTIONS[req.action]) { ctx.user = requireUser_(req.token, !!TEST_SCOPE_ACTIONS[req.action]); fn = USER_ACTIONS[req.action]; }

@@ -67,3 +67,20 @@ function backupTick_() {
     audit_('system', 'backup_done', today, '');
   } catch (e) { log_('backup_error', today, String(e)); audit_('system', 'backup_failed', today, String(e).slice(0, 200)); }
 }
+
+/** staff_inbox: أرقام «يحتاج إلى انتباهك» للوحة الإدارة (أي إداري فعّال). */
+function act_staffInbox_(ctx) {
+  var pay = rows_('Payments').filter(function (p) { return String(p.status) === 'pending'; }).length;
+  var oc = rows_('Outreach').filter(function (r) { return OUTREACH_OPEN_[String(r.status)]; });
+  var wait = Number(getSetting_('outreach_tg_wait_hours', 24)), now = now_();
+  var urgent = oc.filter(function (r) { return String(r.channel_tried) === 'tg' && nz_(r.last_attempt_at) && secBetween_(String(r.last_attempt_at), now) >= wait * 3600; }).length;
+  var open = rows_('Orders').filter(function (o) { return String(o.status) === 'open' || String(o.status) === 'checkout'; }).length;
+  return { payments_pending: pay, outreach_pending: oc.length, outreach_urgent: urgent, orders_unpaid: open, staff: { name: String(ctx.staff.name || ''), role: String(ctx.staff.role) } };
+}
+
+/** staff_logout: يُبطل جلسة الإداري الحالية. */
+function act_staffLogout_(ctx) {
+  var h = hmacHex_('sess|' + ctx.token), r = findRowFast_('AuthSessions', 'token_hash', h);
+  if (r) { updateRow_('AuthSessions', r._row, { revoked: '1' }); try { revokeSessionCache_(h); } catch (e) {} }
+  return { ok: true };
+}
