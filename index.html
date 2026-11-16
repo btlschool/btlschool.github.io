@@ -35,6 +35,15 @@ button,a{font:inherit;cursor:pointer;touch-action:manipulation;user-select:none;
 .hd .g.tt{color:var(--ink);font-size:15px;font-weight:800}.hd .lg{height:38px;width:auto;flex:none;animation:flt 3.6s ease-in-out infinite}
 .prog{height:8px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden}.prog i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#FFE600,#fff,#FFE600);background-size:200% 100%;animation:shim 2.4s linear infinite;transition:width .3s}
 .tm{background:#fff;color:var(--ink);border-radius:14px;padding:0 12px;height:44px;font-weight:900;direction:ltr;display:flex;gap:6px;align-items:center;flex:none;font-size:16px}
+.tm.lo{background:#FFE3E8;color:#B3123B}.tm.lo svg{stroke:#B3123B}
+.bl{display:inline-block;width:64px;border-bottom:3px solid var(--brand);margin:0 4px;vertical-align:baseline}
+.stk{display:flex;align-items:center;gap:10px;background:#FFF4CC;border:1.5px solid #F4D35E;border-radius:16px;padding:8px 12px;font-weight:800;font-size:13.5px;color:#7a4b00;animation:up .3s ease both}.stk b{background:var(--ink);color:#fff;border-radius:99px;padding:3px 10px;font-size:12.5px;direction:ltr}.stk svg{width:24px;height:24px;fill:#FF8A00;stroke:none;margin-inline-start:auto}
+.qs{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--mute);margin-bottom:8px}.qs svg{width:16px;height:16px;stroke:var(--brand);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.qq{font-size:20px;font-weight:800;direction:ltr;text-align:left;line-height:1.5;margin:14px 2px 2px}
+.nv{display:flex;gap:10px}.nv #nx{flex:1}.nv .pv{flex:0 0 108px;min-height:58px;font-size:15px}
+.ic2{width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:10px auto 0}.ic2 svg{width:64px;height:64px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.autob{height:4px;border-radius:9px;background:var(--line);overflow:hidden;margin:0 6px}.autob i{display:block;height:100%;background:var(--brand);width:0;border-radius:9px}
+.vipc{display:flex;align-items:center;gap:10px;border:2px solid #E8C5F0;background:#FBF0FD;border-radius:18px;padding:10px 12px;width:100%;text-align:start;color:#7A0E8C}.vipc b{display:block;font-size:15px;font-weight:900}.vipc span{font-size:12.5px;font-weight:700;color:#8b5a95}.vipc .fg{display:flex;flex:none}.vipc .fg i{width:34px;height:34px;border-radius:50%;border:2px solid #fff;margin-inline-start:-10px;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:900;font-size:12px;color:#fff}
 .tm svg{width:17px;height:17px;stroke:var(--brand);fill:none;stroke-width:2.2;stroke-linecap:round}
 h1{margin:34px 0 4px;font-size:26px;line-height:1.3;font-weight:900}.sub{margin:0 0 14px;font-size:14px;color:var(--mute);line-height:1.6}
 .ct{display:flex;flex-direction:column;gap:12px;flex:1;animation:up .5s ease .1s both}.mute{color:var(--mute);font-size:13px}.sm{font-size:12.5px;color:var(--mute);line-height:1.6}
@@ -211,14 +220,14 @@ function login(){
 
 // ---------- التسجيل ----------
 function contact(){
-  page({step:'الخطوة 1 من 3',pct:33,back:welcome},'<h1>كيف نتواصل معك؟</h1><div><label class="l">'+svg('user')+'الاسم واللقب بالحروف اللاتينية <em>*</em></label><input id="nm" class="ltr" autocomplete="name" placeholder="Amine Benali"><p class="sm" style="margin-top:6px">الاسم ثم اللقب، كما في الهوية، فهو الذي سيُكتب على شهادتك. للصغار: اسم الابن الذي سيدرس وليس اسم الولي.</p></div><div><label class="l">'+svg('ph')+'رقم الواتساب <em>*</em></label>'+phoneField('ph','cc')+'</div><div class="note">'+svg('info',18)+'<span>هذا الرقم وسيلة التواصل الوحيدة معك، يصلك عليه الرمز والنتيجة وكل جديد. اكتبه بعناية وتأكد منه. للصغار: رقم وليّ الأمر. تدرس من خارج الجزائر؟ اختر بلدك من القائمة قبل الرقم.</span></div>','<button class="btn" id="nx"><span>التالي</span>'+svg('next')+'</button>');
+  page({step:'الخطوة 1 من 3',pct:33,back:welcome},'<h1>كيف نتواصل معك؟</h1><div><label class="l">'+svg('user')+'الاسم واللقب بالحروف اللاتينية <em>*</em></label><input id="nm" class="ltr" autocomplete="name" placeholder="Amine Benali"><p class="sm" style="margin-top:6px">الاسم ثم اللقب، كما في الهوية، فهو الذي سيُكتب على شهادتك. للصغار: اسم الابن الذي سيدرس وليس اسم الولي.</p></div><div><label class="l">'+svg('ph')+'رقم الواتساب <em>*</em></label>'+phoneField('ph','cc')+'</div><div class="note">'+svg('info',18)+'<span>هذا الرقم وسيلة التواصل الوحيدة معك، يصلك عليه الرمز والنتيجة وكل جديد. اكتبه بعناية وتأكد منه. للصغار: رقم وليّ الأمر. تدرس من خارج الجزائر؟ اختر بلدك من القائمة قبل الرقم.</span></div><div><label class="l">'+svg('ph')+'رقم احتياطي <span style="font-weight:600;color:var(--mute);font-size:13px">(اختياري)</span></label>'+phoneField('ph2','cc2')+'</div>','<button class="btn" id="nx"><span>التالي</span>'+svg('next')+'</button>');
   $('nx').onclick=function(){
     var nm=$('nm').value.trim(),ph=$('ph').value.trim(),cc=$('cc').value;
-    if(nm.length<3)return toast(ERR.bad_name,true);if(ph.replace(/\D/g,'').length<6)return toast(ERR.bad_phone,true);
+    if(nm.length<3)return toast(ERR.bad_name,true);if(ph.replace(/\D/g,'').length<6)return toast(ERR.bad_phone,true);var ph2=$('ph2').value.trim();if(ph2&&ph2.replace(/\D/g,'').length<6)return toast(ERR.bad_phone,true);
     var dial=(CC.filter(function(c){return c[0]===cc})[0]||[])[1],full=dial+' '+ph.replace(/^0/,'');
     ask('<h2 style="margin:0;font-size:20px">هل رقم الواتساب هذا صحيح؟</h2><div class="cd" style="text-align:center"><span class="amt" style="font-size:26px;color:#2A1FB8">'+esc(nb(full))+'</span></div><p class="sm">سيصلك عليه رمز الدخول ونتيجة اختبارك. إن أخطأت فلن نستطيع الوصول إليك.</p><button class="btn" id="y" style="animation:none">نعم، الرقم صحيح</button><button class="btn sec" id="n">تعديل الرقم</button>',function(m){
       m.querySelector('#n').onclick=closeM;m.querySelector('#y').onclick=function(){closeM();
-        S.reg=call('reg_contact',{name:nm,phone:ph,country:cc,device:navigator.userAgent.slice(0,80)},true).then(function(r){
+        S.reg=call('reg_contact',{name:nm,phone:ph,country:cc,phone2:ph2,country2:$('cc2')?$('cc2').value:cc,device:navigator.userAgent.slice(0,80)},true).then(function(r){
           if(r.existing){S.reg=null;toast('هذا الرقم مسجل من قبل، سجّل الدخول',true);login();return Promise.reject({code:'handled'})}
           S.token=r.token;ls('tok',r.token)},function(e){S.reg=null;fail(e);contact();throw {code:'handled'}});
         S.reg.catch(function(){});profile()}})};
@@ -226,17 +235,20 @@ function contact(){
 function profile(){
   var y=new Date().getFullYear(),yrs='<option value="">اختر</option>';for(var i=y-5;i>=y-80;i--)yrs+='<option>'+i+'</option>';
   var P={g:'',l:{}};
-  page({step:'الخطوة 2 من 3',pct:66,back:contact},'<h1 style="margin-bottom:0">ماذا تريد أن تتعلّم؟</h1><p class="sub">يمكنك اختيار لغة واحدة أو اللغتين معا.</p><div class="cards2" id="lg"><button class="lang" data-l="EN"><i class="ck"></i>'+FLAG.EN+'الإنجليزية</button><button class="lang" data-l="FR"><i class="ck"></i>'+FLAG.FR+'الفرنسية</button></div><div class="sm">عند اختيار اللغتين، نختبر مستواك في كل لغة على حدة.</div>'+
+  page({step:'الخطوة 2 من 3',pct:66,back:contact},'<h1 style="margin-bottom:0">ماذا تريد أن تتعلّم؟</h1><p class="sub">يمكنك اختيار لغة واحدة أو اللغتين معا.</p><div class="cards2" id="lg"><button class="lang" data-l="EN"><i class="ck"></i>'+FLAG.EN+'الإنجليزية</button><button class="lang" data-l="FR"><i class="ck"></i>'+FLAG.FR+'الفرنسية</button></div><div class="sm">عند اختيار اللغتين، نختبر مستواك في كل لغة على حدة.</div><button class="vipc" id="vp"><span class="fg"><i style="background:#222">DE</i><i style="background:#E0A800">ES</i><i style="background:#0B8A4B">ع</i></span><span style="flex:1"><b>العربية، الإسبانية، الألمانية</b><span>دروس فردية VIP بأستاذ لك وحدك</span></span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>'+
    '<div><label class="l" style="font-weight:700">سنة الميلاد</label><select id="by">'+yrs+'</select><div id="cat" style="margin-top:8px"></div></div>'+
    '<div><label class="l">'+svg('user')+'الجنس <em>*</em></label><div class="cards2" id="gd"><button class="gd" data-g="M"><svg viewBox="0 0 24 24" stroke="#4136E6"><circle cx="10" cy="14" r="5"/><path d="M14 10l6-6M15 4h5v5"/></svg>ذكر</button><button class="gd" data-g="F"><svg viewBox="0 0 24 24" stroke="#C4087A"><circle cx="12" cy="9" r="5"/><path d="M12 14v7M9 18h6"/></svg>أنثى</button></div></div>','<button class="btn" id="nx"><span>التالي</span>'+svg('next')+'</button>');
   on($('lg'),'.lang',function(b){var l=b.getAttribute('data-l');P.l[l]=!P.l[l];b.classList.toggle('on',P.l[l])});
   on($('gd'),'.gd',function(b){P.g=b.getAttribute('data-g');Array.prototype.forEach.call($('gd').children,function(x){x.classList.toggle('on',x===b)})});
-  $('by').onchange=function(){var a=y-Number(this.value);$('cat').innerHTML=this.value?'<span class="chip">'+svg('chk',18).replace('<svg','<svg style="stroke:#11804A;fill:none;stroke-width:2.6"')+'فئتك: '+(a>=15?'الكبار':'الصغار')+'</span> <span class="sm">الصغار من 8 إلى 14 سنة، والكبار من 15 سنة وأكثر</span>':''};
+  $('by').onchange=function(){var a=y-Number(this.value);$('cat').innerHTML=this.value?'<span class="chip">'+svg('chk',18).replace('<svg','<svg style="stroke:#11804A;fill:none;stroke-width:2.6"')+'فئتك: '+(a>=15?'الكبار':'الصغار')+'</span> <span class="sm">الصغار من 8 إلى 14 سنة، والكبار من 15 سنة وأكثر</span><p class="sm" style="margin:8px 0 0">أقل من 8 سنوات؟ مرحّب بك، ويحتاج الطفل إلى مرافقة وليّه أثناء الحصة.</p>':''};
+  $('vp').onclick=function(){toast('الدروس الفردية VIP قريبا إن شاء الله')};
   $('nx').onclick=function(){
     var langs=Object.keys(P.l).filter(function(k){return P.l[k]});
     if(!langs.length)return toast(ERR.bad_languages,true);if(!P.g)return toast(ERR.bad_gender,true);if(!$('by').value)return toast(ERR.bad_birth_year,true);
-    var d={gender:P.g,birthYear:Number($('by').value),languages:langs};prep();
-    Promise.resolve(S.reg).then(function(){S.reg=null;return call('reg_profile',d,true)}).then(function(){route()},function(e){if(e&&e.code==='handled')return;fail(e);profile()})};
+    var d={gender:P.g,birthYear:Number($('by').value),languages:langs};
+    var chain=Promise.resolve(S.reg).then(function(){S.reg=null;return call('reg_profile',d,true)}).then(function(){return call('app_state',{},true).catch(function(e){if(e&&e.code==='unknown_action')return legacyState();throw e})}).then(function(st){S.P=null;S.me=st.me;S.order=st.order;S.sug=st.groups;S.home=st.home||null;return st});
+    chain.catch(function(e){if(e&&e.code==='handled')return;if(S.tipsOn)S.tipsOn=0;fail(e);profile()});
+    testReady(langs.slice().sort()[0]==='EN'?'EN':langs[0],chain)};
 }
 function prep(){page({nologo:1,cls:'dark'},'<div style="margin:auto;text-align:center;display:flex;flex-direction:column;align-items:center;gap:18px"><img src="assets/brand/logo-white.png" alt="" style="width:150px;animation:flt 2.4s ease-in-out infinite"><h1 style="margin:0;font-size:24px">نجهّز اختبارك…</h1><div class="bar2" style="width:140px;height:5px;border-radius:99px;background:rgba(255,255,255,.25);overflow:hidden"><i style="display:block;height:100%;width:100%;background:#FFE600;border-radius:99px;animation:loadbar 1.4s ease-in-out infinite"></i></div></div>')}
 
@@ -262,40 +274,74 @@ function errScreen(e){
 }
 
 // ---------- الاختبار ----------
-function testReady(lang){
-  var kd=pKids(),other=!!P0().id;
-  page({title:'قبل أن تبدأ',back:other?function(){cart()}:function(){ask('<h2 style="margin:0">العودة للصفحة الرئيسية؟</h2><p class="sm">يمكنك المتابعة لاحقا بدخولك من جديد.</p><button class="btn sec" id="y">نعم</button><button class="btn" id="n" style="animation:none">البقاء هنا</button>',function(m){m.querySelector('#n').onclick=closeM;m.querySelector('#y').onclick=function(){closeM();logout()}})}},
+function testReady(lang,chain){
+  var kd=pKids(),other=!!P0().id,done=false,tmr=0,gone=false;
+  function leave(){gone=true;clearTimeout(tmr);S.tipsOn=0}
+  var back=other?function(){leave();cart()}:function(){ask('<h2 style="margin:0">العودة للصفحة الرئيسية؟</h2><p class="sm">يمكنك المتابعة لاحقا بدخولك من جديد.</p><button class="btn sec" id="y">نعم</button><button class="btn" id="n" style="animation:none">البقاء هنا</button>',function(m){m.querySelector('#n').onclick=closeM;m.querySelector('#y').onclick=function(){closeM();leave();logout()}})};
+  S.tipsOn=1;
+  page({title:'قبل أن تبدأ',back:back},
    '<h1 style="margin-top:28px">'+(other?'اختبار '+esc(pName().split(' ')[0]):'نصائح هامة قبل بدء الاختبار')+'</h1><div class="tips">'+
-   '<div class="tip"><div class="ti" style="background:#EEEDFF"><svg viewBox="0 0 24 24" stroke="#4136E6">'+IC.timer+'</svg></div><b>15 دقيقة</b><span>'+(kd?'24 سؤالا ممتعا، ويبدأ العدّ عند الضغط على «ابدأ»':'يبدأ العد فور الضغط على «ابدأ»')+'</span></div>'+
+   '<div class="tip"><div class="ti" style="background:#EEEDFF"><svg viewBox="0 0 24 24" stroke="#4136E6">'+IC.timer+'</svg></div><b>15 دقيقة</b><span>'+(kd?'24 سؤالا ممتعا، ويبدأ العدّ عند دخولك الاختبار':'يبدأ العد فور دخولك الاختبار')+'</span></div>'+
    '<div class="tip"><div class="ti" style="background:#E3F8EC"><svg viewBox="0 0 24 24" stroke="#11804A">'+IC.head+'</svg></div><b>سماعات وهدوء</b><span>مكان هادئ وإنترنت مستقر</span></div>'+
    '<div class="tip"><div class="ti" style="background:#FFF1D6"><svg viewBox="0 0 24 24" stroke="#E08600">'+IC.user+'</svg></div><b>'+(kd?'أجب بنفسك يا بطل':'أجب بنفسك وبصدق')+'</b><span>'+(kd?'لا نجاح ولا رسوب، نريد فقط أن نضعك مع أصدقاء في مستواك':'لا نجاح ولا رسوب، فأجب بمصداقية كي تنضم للفوج الذي يناسبك')+'</span></div>'+
-   '<div class="tip"><div class="ti" style="background:#FFE8F4"><svg viewBox="0 0 24 24" stroke="#C4087A">'+IC.back+'</svg></div><b>تخطَّ بثقة</b><span>'+(kd?'لا بأس، انتقل إلى السؤال التالي':'لا تتوقف عند سؤال صعب')+'</span></div></div>',
-   '<button class="btn" id="st"><span>ابدأ اختبار '+LANG[lang]+'</span>'+svg('next')+'</button>');
-  $('st').onclick=function(){var d={language:lang};if(P0().id)d.person_id=P0().id;call('test_start',d).then(runTest,fail)};
+   '<div class="tip"><div class="ti" style="background:#FFE8F4"><svg viewBox="0 0 24 24" stroke="#C4087A">'+IC.back+'</svg></div><b>تخطَّ بثقة</b><span>'+(kd?'لا بأس، انتقل إلى السؤال التالي':'لا تتوقف عند سؤال صعب')+'</span></div></div>'+
+   '<p class="sm" style="text-align:center;margin-top:14px">'+LANG[lang]+' · سيبدأ اختبارك بعد لحظات</p><div class="autob"><i id="ab"></i></div>',
+   '<button class="btn" id="st" disabled><span>جارٍ التحضير…</span></button><button class="lnk" id="lt">ليس الآن، ذكّرني لاحقا</button>');
+  $('lt').onclick=back;
+  var t0=Date.now();setTimeout(function(){var e=$('ab');if(e){e.style.transition='width 6s linear';e.style.width='100%'}},30);
+  function go(){
+    if(gone||done)return;done=true;leave();
+    var d={language:lang};if(P0().id)d.person_id=P0().id;
+    call('test_start',d,true).then(runTest,function(e){if(!gone)fail(e);if(e&&e.code==='retake_limit'||e&&e.code==='bank_empty'){route()}else{done=false;S.tipsOn=1;if($('st')){$('st').disabled=false;$('st').innerHTML='<span>ابدأ الاختبار</span>'+svg('next')}}})
+  }
+  $('st').onclick=go;
+  Promise.resolve(chain).then(function(st){
+    if(gone)return;
+    if(st){var need=(st.groups||[]).filter(function(x){return x.status==='test_required'})[0];if(!need){leave();return route()}lang=need.language}
+    if($('st')){$('st').disabled=false;$('st').innerHTML='<span>ابدأ الاختبار</span>'+svg('next')}
+    tmr=setTimeout(go,Math.max(300,6000-(Date.now()-t0)))
+  },function(){});
 }
 function runTest(t){
   var T=S.T={t:t,idx:0,sel:-1,plays:0,left:t.remaining_sec,done:false};
   for(var i=0;i<t.questions.length;i++){if(t.answers&&t.answers[t.questions[i].qid]===undefined){T.idx=i;break}if(i===t.questions.length-1)T.idx=t.questions.length}
   if(T.idx>=t.questions.length)return finishTest(false);
   showQ();
-  stopTest();testIv=setInterval(function(){T.left--;var e=$('tm');if(e)e.textContent=mmss(T.left);if(T.left<=0&&!T.done){T.done=true;finishTest(true)}},1000);
+  stopTest();testIv=setInterval(function(){T.left--;var e=$('tm');if(e){e.textContent=mmss(T.left);e.parentNode.classList.toggle('lo',T.left<=120)}if(T.left<=0&&!T.done){T.done=true;finishTest(true)}},1000);
 }
 function mmss(s){s=Math.max(0,s);return ('0'+Math.floor(s/60)).slice(-2)+':'+('0'+(s%60)).slice(-2)}
+var BOOK='<svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M5 17a3 3 0 013-3h11"/></svg>',FLAME='<svg viewBox="0 0 24 24"><path d="M12 2c1 4 5 6 5 11a5 5 0 01-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-4-1-6 1-10z"/></svg>';
 function showQ(){
-  var T=S.T,q=T.t.questions[T.idx];T.sel=-1;T.plays=0;
+  var T=S.T,q=T.t.questions[T.idx],last=T.idx===T.t.questions.length-1;T.sel=-1;T.plays=0;T.ans=T.ans||{};T.streak=T.streak||0;
   var skills=['grammar','vocab','reading','listening'];
+  var stem=String(q.stem),card='',qq='';
+  function bl(t){return esc(t).replace(/_{2,}/g,'<span class="bl"></span>')}
+  if(q.skill==='reading'){
+    var m=/^["“]([\s\S]+?)["”]\s*([\s\S]*)$/.exec(stem);
+    card=m?'<div class="cd"><div class="qs">'+BOOK+'اقرأ النص ثم أجب</div><div class="q" style="font-size:18px">'+esc(m[1])+'</div></div>':'<div class="cd"><div class="qs">'+BOOK+'اقرأ النص ثم أجب</div><div class="q">'+esc(stem)+'</div></div>';
+    qq=m?'<div class="qq">'+esc(m[2])+'</div>':'';
+  }else if(q.skill==='listening'||q.audio_text){
+    card='<div class="cd"><div class="qs">'+svg('speaker')+'استمع جيدا ثم أجب</div><button class="btn sec" id="pl" style="margin-bottom:12px;min-height:48px;font-size:15px">'+svg('speaker')+' استمع (مرتان فقط)</button>'+(q.audio_text?'':'')+'<div class="q">'+esc(stem)+'</div></div>';
+  }else{
+    card='<div class="cd"><div class="qs">'+(/_{2,}/.test(stem)?'أكمل الجملة':'اختر الإجابة الصحيحة')+'</div><div class="q">'+bl(stem)+'</div></div>';
+  }
   var body='<div class="sk">'+skills.map(function(k){return '<span class="'+(k===q.skill?'on':'')+'">'+skl(k)+'</span>'}).join('')+'</div>'+
-   '<div class="cd" style="margin-top:2px">'+(q.skill==='listening'||q.audio_text?'<button class="btn sec" id="pl" style="margin-bottom:12px;min-height:48px;font-size:15px">'+svg('speaker')+' استمع (مرتان فقط)</button>':'')+'<div class="q">'+esc(q.stem)+'</div></div>'+
+   (T.streak>=3?'<div class="stk"><b>x'+T.streak+'</b><span>'+(T.streak===3?'ثلاثة':T.streak)+' أسئلة دون توقف! استمر بنفس التركيز</span>'+FLAME+'</div>':'')+card+qq+
    q.options.map(function(o,i){return '<button class="opt" data-i="'+i+'"><i></i><span>'+esc(o)+'</span></button>'}).join('');
   page({step:'السؤال '+(T.idx+1)+' من '+T.t.total,pct:Math.round(T.idx/T.t.total*100),nologo:true,
-   right:'<div class="tm"><svg viewBox="0 0 24 24">'+IC.timer+'</svg><span id="tm">'+mmss(T.left)+'</span></div>',back:function(){exitAsk()}},body,'<button class="btn" id="nx" disabled><span>التالي</span>'+svg('next')+'</button><button class="lnk" id="sk">لا أعرف الإجابة، تخطَّ السؤال</button>');
-  $('scr').querySelector('.hd').insertBefore($('scr').querySelector('.hd .tm'),$('scr').querySelector('.hd .ib'));
-  on($('scr'),'.opt',function(b){T.sel=+b.getAttribute('data-i');Array.prototype.forEach.call(document.querySelectorAll('.opt'),function(x){x.classList.toggle('on',x===b)});$('nx').disabled=false});
+   right:'<div class="tm'+(T.left<=120?' lo':'')+'"><svg viewBox="0 0 24 24">'+IC.timer+'</svg><span id="tm">'+mmss(T.left)+'</span></div>',back:function(){exitAsk()}},body,
+   '<div class="nv">'+(T.idx>0?'<button class="btn sec pv" id="pv">السابق '+svg('back')+'</button>':'')+'<button class="btn" id="nx" disabled><span>'+(last?'إنهاء وإرسال الإجابات':'التالي')+'</span>'+svg(last?'chk':'next')+'</button></div><button class="lnk" id="sk">لا أعرف الإجابة، تخطَّ السؤال</button>');
+  $('bk').innerHTML=svg('x');
+  function pick(i){T.sel=i;Array.prototype.forEach.call(document.querySelectorAll('.opt'),function(x){x.classList.toggle('on',+x.getAttribute('data-i')===i)});$('nx').disabled=false}
+  on($('scr'),'.opt',function(b){pick(+b.getAttribute('data-i'))});
+  if(T.ans[q.qid]!==undefined)pick(T.ans[q.qid]);
   if($('pl'))$('pl').onclick=function(){if(T.plays>=2)return toast('استنفدت مرتي الاستماع');T.plays++;speak(q.audio_text||q.stem,T.t.language);if(T.plays>=2)$('pl').disabled=true};
-  $('nx').onclick=function(){if(T.sel<0||this.getAttribute('data-lock'))return;this.setAttribute('data-lock','1');sendAnswer(T,q,T.sel);next()};
-  $('sk').onclick=next;
+  $('nx').onclick=function(){if(T.sel<0||this.getAttribute('data-lock'))return;this.setAttribute('data-lock','1');T.ans[q.qid]=T.sel;T.streak++;sendAnswer(T,q,T.sel);next()};
+  if($('pv'))$('pv').onclick=function(){T.idx--;showQ()};
+  $('sk').onclick=function(){T.streak=0;next()};
 }
-function exitAsk(){ask('<h2 style="margin:0">الخروج من الاختبار؟</h2><p class="sm">الوقت لا يتوقف. يمكنك العودة وإكمال ما بقي قبل أن ينتهي.</p><button class="btn" id="c" style="animation:none">أكمل الاختبار</button><button class="btn bad" id="l">اخرج الآن</button>',function(m){m.querySelector('#c').onclick=closeM;m.querySelector('#l').onclick=function(){closeM();S.T.done=true;stopTest();if(P0().id)cart();else welcome()}})}
+function exitAsk(){ask('<h2 style="margin:0">هل تريد الخروج؟</h2><p class="sm">إجاباتك محفوظة، وتكمل من حيث توقفت متى شئت.</p><div class="note" style="margin:0">'+svg('timer',18)+'<span>الوقت لا يتوقف أثناء الاختبار</span></div><button class="btn" id="c" style="animation:none">أكمل الاختبار</button><button class="btn bad" id="l">اخرج</button>',function(m){m.querySelector('#c').onclick=closeM;m.querySelector('#l').onclick=function(){closeM();S.T.done=true;stopTest();if(P0().id)cart();else welcome()}})}
+function halfWay(T){ask('<div class="ic2" style="background:#EEEDFF;width:86px;height:86px;margin:0 auto"><svg viewBox="0 0 24 24" style="width:46px;height:46px;fill:#FFC800;stroke:#1B1740;stroke-width:1.6;stroke-linejoin:round"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 16.9 6.6 19.8l1.1-6.1L3.2 9.4l6.1-.8z"/></svg></div><h2 style="margin:0;text-align:center;font-size:26px">نصف الطريق تمّ!</h2><p class="sm" style="text-align:center;margin:0">أنجزت '+Math.floor(T.t.total/2)+' من '+T.t.total+' سؤالا، واصل بنفس الحماس.</p><button class="btn" id="c" style="animation:none">واصل</button>',function(m){m.querySelector('#c').onclick=closeM})}
 function speak(text,lang){try{var u=new SpeechSynthesisUtterance(text);u.lang=lang==='FR'?'fr-FR':'en-US';u.rate=.9;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){toast('جهازك لا يدعم تشغيل الصوت',true)}}
 function sendAnswer(T,q,choice){
   T.q=(T.q||Promise.resolve()).then(function(){
@@ -303,11 +349,13 @@ function sendAnswer(T,q,choice){
     return go(0);
   }).then(function(r){if(T.done)return;if(r.stop)return finishTest(false);if(r.offer_beginner)beginnerOffer()},function(e){if(e.code==='time_up'||e.code==='test_closed'){if(!T.done){finishTest(true)}}else{T.lost=(T.lost||0)+1}});
 }
-function next(){var T=S.T;T.idx++;if(T.idx>=T.t.questions.length){T.done=true;return finishTest(false)}showQ()}
-function beginnerOffer(){ask('<h2 style="margin:0">هل الأسئلة صعبة عليك؟</h2><p>إن كانت أغلبها صعبة فيمكنك أن تبدأ من مستوى المبتدئ A1 مباشرة، دون إتمام الاختبار.</p><button class="btn" id="b" style="animation:none">ابدأ من المبتدئ</button><button class="btn sec" id="c">سأكمل الاختبار</button>',function(m){
+function next(){var T=S.T;T.idx++;if(T.idx>=T.t.questions.length){T.done=true;return finishTest(false)}showQ();if(!T.half&&T.idx===Math.floor(T.t.total/2)){T.half=1;halfWay(T)}}
+function beginnerOffer(){ask('<h2 style="margin:0">هل تريد البدء مباشرة من المستوى المبتدئ؟</h2><p class="sm">إن كانت أغلب الأسئلة صعبة عليك، فيمكنك البدء من المستوى A1 دون إتمام الاختبار.</p><button class="btn" id="b" style="animation:none">نعم، أبدأ من المستوى المبتدئ</button><button class="btn sec" id="c">لا، أواصل الاختبار</button>',function(m){
   m.querySelector('#c').onclick=closeM;
-  m.querySelector('#b').onclick=function(){closeM();S.T.done=true;S.T.fin=true;stopTest();busy(true);(S.T.q||Promise.resolve()).then(function(){return call('test_beginner_stop',{test_id:S.T.t.test_id})}).then(function(r){showResult(S.T.t.language,r)},fail)}})}
-function finishTest(timedOut){var T=S.T;if(T.fin)return;T.fin=true;T.done=true;stopTest();busy(true);(T.q||Promise.resolve()).then(function(){return call('test_finish',{test_id:T.t.test_id})}).then(function(r){showResult(T.t.language,r)},fail)}
+  m.querySelector('#b').onclick=function(){closeM();S.T.done=true;S.T.fin=true;stopTest();busy(true);(S.T.q||Promise.resolve()).then(function(){return call('test_beginner_stop',{test_id:S.T.t.test_id})}).then(function(r){afterTest(S.T.t.language,r)},fail)}})}
+function finishTest(timedOut){var T=S.T;if(T.fin)return;T.fin=true;T.done=true;stopTest();busy(true);(T.q||Promise.resolve()).then(function(){return call('test_finish',{test_id:T.t.test_id})}).then(function(r){if(timedOut)timeUp(T.t.language,r);else afterTest(T.t.language,r)},fail)}
+function afterTest(lang,r){pRes()[lang]=r;setPSug((pSug()||[]).map(function(x){return x.language===lang&&x.status==='test_required'?{language:lang,status:'done'}:x}));var more=(pSug()||[]).filter(function(x){return x.status==='test_required'})[0];if(more)return testReady(more.language);showResult(lang,r)}
+function timeUp(lang,r){var more=(pSug()||[]).filter(function(x){return x.language!==lang&&x.status==='test_required'})[0],pc=r.total?Math.round(r.answered/r.total*100):0;page({title:'اختبار المستوى'},'<div class="ic2" style="background:linear-gradient(150deg,#FF6A6A,#E23B3B);box-shadow:0 14px 30px rgba(226,59,59,.35)"><svg viewBox="0 0 24 24">'+IC.timer+'</svg></div><h1 style="text-align:center;margin:18px 0 0">انتهى الوقت</h1><p class="sub" style="text-align:center">حفظنا كل إجاباتك وحسبنا مستواك من الأسئلة التي أجبت عنها.</p><div class="cd"><div class="row"><b>الأسئلة المُجاب عنها</b><b dir="ltr">'+r.answered+' من '+r.total+'</b></div><div class="bar" style="margin-top:10px;flex:none;width:100%"><i style="width:'+pc+'%"></i></div></div>','<button class="btn" id="ok"><span>'+(more?'متابعة':'اعرض نتيجتي')+'</span>'+svg('next')+'</button>');$('ok').onclick=function(){afterTest(lang,r)}}
 
 // ---------- النتيجة ----------
 function ring(r){var kd=pKids();var pct=r.total?Math.min(1,r.score/r.total):0,C=2*Math.PI*54;return '<div class="ring"><svg viewBox="0 0 132 132"><circle cx="66" cy="66" r="54" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="12"/><circle cx="66" cy="66" r="54" fill="none" stroke="#FFE600" stroke-width="12" stroke-linecap="round" stroke-dasharray="'+(C*pct).toFixed(1)+' '+C.toFixed(1)+'"/></svg><div class="in"><b>'+esc(r.level)+'</b><span>'+(kd?'من 6':esc(LVL[r.level]||''))+'</span></div></div>'}

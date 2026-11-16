@@ -202,6 +202,9 @@ function act_regContact_(ctx) {
   var name = cleanName_(d.name);
   if (!phone) fail_('bad_phone');
   if (!name) fail_('bad_name');
+  var phone2 = nz_(d.phone2) ? normPhone_(d.phone2, d.country2 || d.country) : '';
+  if (nz_(d.phone2) && !phone2) fail_('bad_phone');
+  if (phone2 === phone) phone2 = '';
   rateLimit_('regphone_' + phone, 5, 3600);
   rateLimit_('regglobal', 600, 3600);
   var u = findPrimaryByPhone_(phone), id;
@@ -209,10 +212,10 @@ function act_regContact_(ctx) {
   if (u) {
     id = String(u.user_id);
     rows_('AuthSessions').filter(function (r) { return String(r.user_id) === id && String(r.revoked) !== '1'; }).forEach(function (r) { updateRow_('AuthSessions', r._row, { revoked: '1' }); revokeSessionCache_(String(r.token_hash)); });
-    updateRow_('Users', u._row, { name_latin: name, country: String(d.country || 'DZ').slice(0, 2).toUpperCase(), status: 'new', gender: '', birth_year: '', age_group: '', languages: '', last_seen: now_() });
+    updateRow_('Users', u._row, { name_latin: name, phone2: phone2, country: String(d.country || 'DZ').slice(0, 2).toUpperCase(), status: 'new', gender: '', birth_year: '', age_group: '', languages: '', last_seen: now_() });
   } else {
     id = uid_('u');
-    appendRow_('Users', { user_id: id, phone: phone, name_latin: name, role: 'student', status: 'new', source: 'web', country: String(d.country || 'DZ').slice(0, 2).toUpperCase(), created_at: now_(), last_seen: now_(), failed_logins: '0' });
+    appendRow_('Users', { user_id: id, phone: phone, phone2: phone2, name_latin: name, role: 'student', status: 'new', source: 'web', country: String(d.country || 'DZ').slice(0, 2).toUpperCase(), created_at: now_(), last_seen: now_(), failed_logins: '0' });
   }
   var token = createSession_(id, 'user', d.device, Number(getSetting_('session_days', 365)));
   return { existing: false, token: token, name: name, phone: phoneDisplay_(phone) };
