@@ -115,8 +115,17 @@ textarea{font:inherit;width:100%;min-height:92px;border-radius:16px;border:2px s
 var CFG=window.BTL_CONFIG||{},testIv=0,S={token:'',me:null,results:{},order:null,T:null,sel:{},sug:null},timers=[],T0=Date.now();
 var LANG={EN:'الإنجليزية',FR:'الفرنسية'},DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],SK={grammar:'القواعد',vocab:'المفردات',reading:'القراءة',listening:'الاستماع'};
 var LVL={A1:'مبتدئ',A2:'أساسي',B1:'متوسط',B2:'فوق المتوسط'};
-var ERR={bad_phone:'رقم الهاتف غير صالح',bad_name:'اكتب الاسم واللقب بالحروف اللاتينية',bad_gender:'اختر الجنس',bad_birth_year:'سنة الميلاد غير مقبولة',bad_languages:'اختر لغة واحدة على الأقل',registration_closed:'التسجيل مغلق مؤقتا',rate_limited:'محاولات كثيرة، انتظر قليلا ثم أعد',unauthorized:'انتهت الجلسة، سجّل الدخول من جديد',bad_credentials:'الرقم أو رمز الدخول غير صحيح',retake_limit:'استنفدت محاولاتك لهذه اللغة، تواصل مع الإدارة',time_up:'انتهى وقت الاختبار',already_enrolled:'أنت مشترك بالفعل في هذه اللغة',not_ready:'أكمل الاختبار أولا',line_taken:'هذا الفوج لم يعد متاحا لك',payments_closed:'الدفع متوقف مؤقتا',no_pay_account:'لا يوجد حساب دفع متاح حاليا',bad_file:'صورة الوصل غير صالحة (jpeg أو png)',not_allowed:'هذا الإجراء غير متاح الآن',code_exists:'ظهر رمزك من قبل',maintenance:'المنصة في الصيانة، عد لاحقا',network:'تعذر الاتصال، تحقق من الشبكة',timeout:'تأخر الخادم في الرد، أعد المحاولة',bad_response:'ردّ الخادم غير صالح (تحقق من رابط النشر)',order_locked:'طلبك قيد الدفع بالفعل',renewal_unavailable:'انتهى عرض التجديد المبكر',bad_reasons:'اختر سببا واحدا على الأقل',not_found:'لا يوجد تقرير بعد',invalid_link:'الرابط غير صالح أو انتهت صلاحيته'};
+var ERR={bad_phone:'رقم الهاتف غير صالح',bad_name:'اكتب الاسم واللقب بالحروف اللاتينية',bad_gender:'اختر الجنس',bad_birth_year:'سنة الميلاد غير مقبولة',bad_languages:'اختر لغة واحدة على الأقل',registration_closed:'التسجيل مغلق مؤقتا',rate_limited:'محاولات كثيرة، انتظر قليلا ثم أعد',unauthorized:'انتهت الجلسة، سجّل الدخول من جديد',bad_credentials:'الرقم أو رمز الدخول غير صحيح',retake_limit:'استنفدت محاولاتك لهذه اللغة، تواصل مع الإدارة',time_up:'انتهى وقت الاختبار',already_enrolled:'أنت مشترك بالفعل في هذه اللغة',not_ready:'أكمل الاختبار أولا',line_taken:'هذا الفوج لم يعد متاحا لك',payments_closed:'الدفع متوقف مؤقتا',no_pay_account:'لا يوجد حساب دفع متاح حاليا',bad_file:'صورة الوصل غير صالحة (jpeg أو png)',not_allowed:'هذا الإجراء غير متاح الآن',code_exists:'ظهر رمزك من قبل',maintenance:'المنصة في الصيانة، عد لاحقا',network:'تعذر الاتصال، تحقق من الشبكة',timeout:'تأخر الخادم في الرد، أعد المحاولة',bad_response:'ردّ الخادم غير صالح (تحقق من رابط النشر)',order_locked:'طلبك قيد الدفع بالفعل',renewal_unavailable:'انتهى عرض التجديد المبكر',phone_taken:'هذا الرقم مسجل من قبل',same_phone:'اكتب رقم الشخص الآخر لا رقمك',too_many_children:'بلغت الحد الأقصى من الأبناء',forbidden:'غير مسموح',nothing_ready:'لا أحد جاهز للدفع بعد',bad_reasons:'اختر سببا واحدا على الأقل',not_found:'لا يوجد تقرير بعد',invalid_link:'الرابط غير صالح أو انتهت صلاحيته'};
 function $(i){return document.getElementById(i)}
+function P0(){return S.P||(S.P={id:null})}
+function pName(){return P0().id?P0().name:((S.me&&S.me.name)||'')}
+function pKids(){return P0().id?!!P0().kids:!!(S.me&&S.me.ageGroup==='kids')}
+function pRes(){return P0().id?(P0().results=P0().results||{}):S.results}
+function pSug(){return P0().id?P0().sug:S.sug}
+function setPSug(g){if(P0().id)P0().sug=g;else S.sug=g}
+var SKK={grammar:'الجمل',vocab:'الكلمات',reading:'القراءة',listening:'الاستماع'};
+function skl(k){return pKids()?SKK[k]:SK[k]}
+function lvlTxt(c){var m=/^K(\d)$/.exec(String(c));return m?'المستوى '+m[1]:String(c)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function nb(s){return String(s).replace(/ /g,' ')}
 function da(s,cls){return '<span class="amt"'+(cls?' style="'+cls+'"':'')+'>'+esc(nb(s))+' DA</span>'}
@@ -204,14 +213,13 @@ function profile(){
     var langs=Object.keys(P.l).filter(function(k){return P.l[k]});
     if(!langs.length)return toast(ERR.bad_languages,true);if(!P.g)return toast(ERR.bad_gender,true);if(!$('by').value)return toast(ERR.bad_birth_year,true);
     call('reg_profile',{gender:P.g,birthYear:Number($('by').value),languages:langs}).then(function(r){
-      if(r.ageGroup==='kids'){return ask('<h2 style="margin:0">التسجيل للصغار</h2><p>تسجيل الأطفال (8 إلى 14 سنة) يتم من حساب ولي الأمر. سجّل ببياناتك أنت، ثم أضف ابنك من حسابك.</p><button class="btn" id="o" style="animation:none">حسنا</button>',function(m){m.querySelector('#o').onclick=closeM})}
       route()},fail)};
 }
 
 // ---------- التوجيه (طلب واحد عند الفتح) ----------
 function route(){
   call('app_state',{},true).catch(function(e){if(e&&e.code==='unknown_action')return legacyState();throw e}).then(function(st){
-    S.me=st.me;S.order=st.order;S.sug=st.groups;S.home=st.home||null;
+    S.P=null;S.me=st.me;S.order=st.order;S.sug=st.groups;S.home=st.home||null;
     if(!S.me.languages.length)return profile();
     var o=st.order;
     if(o&&o.status==='paid_pending')return status();
@@ -231,14 +239,15 @@ function errScreen(e){
 
 // ---------- الاختبار ----------
 function testReady(lang){
-  page({title:'قبل أن تبدأ',back:function(){ask('<h2 style="margin:0">العودة للصفحة الرئيسية؟</h2><p class="sm">يمكنك المتابعة لاحقا بدخولك من جديد.</p><button class="btn sec" id="y">نعم</button><button class="btn" id="n" style="animation:none">البقاء هنا</button>',function(m){m.querySelector('#n').onclick=closeM;m.querySelector('#y').onclick=function(){closeM();logout()}})}},
-   '<h1 style="margin-top:28px">نصائح هامة قبل بدء الاختبار</h1><div class="tips">'+
-   '<div class="tip"><div class="ti" style="background:#EEEDFF"><svg viewBox="0 0 24 24" stroke="#4136E6">'+IC.timer+'</svg></div><b>15 دقيقة</b><span>يبدأ العد فور الضغط على «ابدأ»</span></div>'+
+  var kd=pKids(),other=!!P0().id;
+  page({title:'قبل أن تبدأ',back:other?function(){cart()}:function(){ask('<h2 style="margin:0">العودة للصفحة الرئيسية؟</h2><p class="sm">يمكنك المتابعة لاحقا بدخولك من جديد.</p><button class="btn sec" id="y">نعم</button><button class="btn" id="n" style="animation:none">البقاء هنا</button>',function(m){m.querySelector('#n').onclick=closeM;m.querySelector('#y').onclick=function(){closeM();logout()}})}},
+   '<h1 style="margin-top:28px">'+(other?'اختبار '+esc(pName().split(' ')[0]):'نصائح هامة قبل بدء الاختبار')+'</h1><div class="tips">'+
+   '<div class="tip"><div class="ti" style="background:#EEEDFF"><svg viewBox="0 0 24 24" stroke="#4136E6">'+IC.timer+'</svg></div><b>15 دقيقة</b><span>'+(kd?'24 سؤالا ممتعا، ويبدأ العدّ عند الضغط على «ابدأ»':'يبدأ العد فور الضغط على «ابدأ»')+'</span></div>'+
    '<div class="tip"><div class="ti" style="background:#E3F8EC"><svg viewBox="0 0 24 24" stroke="#11804A">'+IC.head+'</svg></div><b>سماعات وهدوء</b><span>مكان هادئ وإنترنت مستقر</span></div>'+
-   '<div class="tip"><div class="ti" style="background:#FFF1D6"><svg viewBox="0 0 24 24" stroke="#E08600">'+IC.user+'</svg></div><b>أجب بنفسك وبصدق</b><span>لا نجاح ولا رسوب، فأجب بمصداقية كي تنضم للفوج الذي يناسبك</span></div>'+
-   '<div class="tip"><div class="ti" style="background:#FFE8F4"><svg viewBox="0 0 24 24" stroke="#C4087A">'+IC.back+'</svg></div><b>تخطَّ بثقة</b><span>لا تتوقف عند سؤال صعب</span></div></div>',
+   '<div class="tip"><div class="ti" style="background:#FFF1D6"><svg viewBox="0 0 24 24" stroke="#E08600">'+IC.user+'</svg></div><b>'+(kd?'أجب بنفسك يا بطل':'أجب بنفسك وبصدق')+'</b><span>'+(kd?'لا نجاح ولا رسوب، نريد فقط أن نضعك مع أصدقاء في مستواك':'لا نجاح ولا رسوب، فأجب بمصداقية كي تنضم للفوج الذي يناسبك')+'</span></div>'+
+   '<div class="tip"><div class="ti" style="background:#FFE8F4"><svg viewBox="0 0 24 24" stroke="#C4087A">'+IC.back+'</svg></div><b>تخطَّ بثقة</b><span>'+(kd?'لا بأس، انتقل إلى السؤال التالي':'لا تتوقف عند سؤال صعب')+'</span></div></div>',
    '<button class="btn" id="st"><span>ابدأ اختبار '+LANG[lang]+'</span>'+svg('next')+'</button>');
-  $('st').onclick=function(){call('test_start',{language:lang}).then(runTest,fail)};
+  $('st').onclick=function(){var d={language:lang};if(P0().id)d.person_id=P0().id;call('test_start',d).then(runTest,fail)};
 }
 function runTest(t){
   var T=S.T={t:t,idx:0,sel:-1,plays:0,left:t.remaining_sec,done:false};
@@ -251,7 +260,7 @@ function mmss(s){s=Math.max(0,s);return ('0'+Math.floor(s/60)).slice(-2)+':'+('0
 function showQ(){
   var T=S.T,q=T.t.questions[T.idx];T.sel=-1;T.plays=0;
   var skills=['grammar','vocab','reading','listening'];
-  var body='<div class="sk">'+skills.map(function(k){return '<span class="'+(k===q.skill?'on':'')+'">'+SK[k]+'</span>'}).join('')+'</div>'+
+  var body='<div class="sk">'+skills.map(function(k){return '<span class="'+(k===q.skill?'on':'')+'">'+skl(k)+'</span>'}).join('')+'</div>'+
    '<div class="cd" style="margin-top:2px">'+(q.skill==='listening'||q.audio_text?'<button class="btn sec" id="pl" style="margin-bottom:12px;min-height:48px;font-size:15px">'+svg('speaker')+' استمع (مرتان فقط)</button>':'')+'<div class="q">'+esc(q.stem)+'</div></div>'+
    q.options.map(function(o,i){return '<button class="opt" data-i="'+i+'"><i></i><span>'+esc(o)+'</span></button>'}).join('');
   page({step:'السؤال '+(T.idx+1)+' من '+T.t.total,pct:Math.round(T.idx/T.t.total*100),nologo:true,
@@ -262,7 +271,7 @@ function showQ(){
   $('nx').onclick=function(){if(T.sel<0||this.getAttribute('data-lock'))return;this.setAttribute('data-lock','1');sendAnswer(T,q,T.sel);next()};
   $('sk').onclick=next;
 }
-function exitAsk(){ask('<h2 style="margin:0">الخروج من الاختبار؟</h2><p class="sm">الوقت لا يتوقف. يمكنك العودة وإكمال ما بقي قبل أن ينتهي.</p><button class="btn" id="c" style="animation:none">أكمل الاختبار</button><button class="btn bad" id="l">اخرج الآن</button>',function(m){m.querySelector('#c').onclick=closeM;m.querySelector('#l').onclick=function(){closeM();S.T.done=true;stopTest();welcome()}})}
+function exitAsk(){ask('<h2 style="margin:0">الخروج من الاختبار؟</h2><p class="sm">الوقت لا يتوقف. يمكنك العودة وإكمال ما بقي قبل أن ينتهي.</p><button class="btn" id="c" style="animation:none">أكمل الاختبار</button><button class="btn bad" id="l">اخرج الآن</button>',function(m){m.querySelector('#c').onclick=closeM;m.querySelector('#l').onclick=function(){closeM();S.T.done=true;stopTest();if(P0().id)cart();else welcome()}})}
 function speak(text,lang){try{var u=new SpeechSynthesisUtterance(text);u.lang=lang==='FR'?'fr-FR':'en-US';u.rate=.9;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){toast('جهازك لا يدعم تشغيل الصوت',true)}}
 function sendAnswer(T,q,choice){
   T.q=(T.q||Promise.resolve()).then(function(){
@@ -277,21 +286,21 @@ function beginnerOffer(){ask('<h2 style="margin:0">هل الأسئلة صعبة 
 function finishTest(timedOut){var T=S.T;if(T.fin)return;T.fin=true;T.done=true;stopTest();busy(true);(T.q||Promise.resolve()).then(function(){return call('test_finish',{test_id:T.t.test_id})}).then(function(r){showResult(T.t.language,r)},fail)}
 
 // ---------- النتيجة ----------
-function ring(r){var pct=r.total?Math.min(1,r.score/r.total):0,C=2*Math.PI*54;return '<div class="ring"><svg viewBox="0 0 132 132"><circle cx="66" cy="66" r="54" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="12"/><circle cx="66" cy="66" r="54" fill="none" stroke="#FFE600" stroke-width="12" stroke-linecap="round" stroke-dasharray="'+(C*pct).toFixed(1)+' '+C.toFixed(1)+'"/></svg><div class="in"><b>'+esc(r.level)+'</b><span>'+esc(LVL[r.level]||'')+'</span></div></div>'}
+function ring(r){var kd=pKids();var pct=r.total?Math.min(1,r.score/r.total):0,C=2*Math.PI*54;return '<div class="ring"><svg viewBox="0 0 132 132"><circle cx="66" cy="66" r="54" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="12"/><circle cx="66" cy="66" r="54" fill="none" stroke="#FFE600" stroke-width="12" stroke-linecap="round" stroke-dasharray="'+(C*pct).toFixed(1)+' '+C.toFixed(1)+'"/></svg><div class="in"><b>'+esc(r.level)+'</b><span>'+(kd?'من 6':esc(LVL[r.level]||''))+'</span></div></div>'}
 function showResult(lang,r,pick){
-  S.results[lang]=r;clearTimers();S.sug=(S.sug||[]).map(function(x){return x.language===lang&&x.status==='test_required'?{language:lang,status:'done'}:x});
-  var cur=pick||lang,cr=S.results[cur],langs=Object.keys(S.results);
-  var more=(S.sug||[]).filter(function(x){return x.status==='test_required'})[0];
+  pRes()[lang]=r;clearTimers();setPSug((pSug()||[]).map(function(x){return x.language===lang&&x.status==='test_required'?{language:lang,status:'done'}:x}));
+  var cur=pick||lang,cr=pRes()[cur],langs=Object.keys(pRes());
+  var more=(pSug()||[]).filter(function(x){return x.status==='test_required'})[0];
   var sk=Object.keys(cr.skills||{}),min=sk.reduce(function(a,k){return a===null||cr.skills[k].pct<cr.skills[a].pct?k:a},null);
-  var bars=sk.map(function(k){var s=cr.skills[k];return '<div class="row" style="gap:10px;margin:8px 0"><span style="width:62px;font-weight:700;font-size:13px">'+SK[k]+'</span><div class="bar"><i class="'+(k===min&&sk.length>1?'lo':'')+'" style="width:'+s.pct+'%"></i></div><b style="width:42px;text-align:left;direction:ltr">'+s.pct+'%</b></div>'}).join('');
+  var bars=sk.map(function(k){var s=cr.skills[k];return '<div class="row" style="gap:10px;margin:8px 0"><span style="width:62px;font-weight:700;font-size:13px">'+skl(k)+'</span><div class="bar"><i class="'+(k===min&&sk.length>1?'lo':'')+'" style="width:'+s.pct+'%"></i></div><b style="width:42px;text-align:left;direction:ltr">'+s.pct+'%</b></div>'}).join('');
   var conf='';for(var i=0;i<16;i++)conf+='<i class="conf" style="left:'+(i*6.4)+'%;background:'+['#FFE600','#FF6A7A','#7CF0C0','#9391FC','#FFA43A'][i%5]+';animation-delay:'+(i%8*.35)+'s"></i>';
-  page({title:'نتيجتك',cls:'dark',nologo:false},conf+'<div style="text-align:center;margin-top:18px;animation:up .5s ease both"><div style="font-weight:700;color:#E4E2FF">أحسنت، أنهيت الاختبار</div><div style="font-size:30px;font-weight:900;margin:4px 0">مبروك يا <span style="color:#FFE600">'+esc(((S.me&&S.me.name)||'').split(' ')[0])+'</span></div><div style="color:#E4E2FF;font-size:14px">هذا مستواك في كل لغة، ومنه تنطلق رحلتك</div></div>'+
-   '<div class="cards2" style="margin-top:6px">'+langs.map(function(l){var x=S.results[l];return '<button class="rc'+(l===cur?' on':'')+'" data-r="'+l+'"><div style="margin-bottom:8px">'+LANG[l]+'</div>'+ring(x)+'<div style="margin-top:8px"><span class="tag" style="background:#FFE600;color:#1B1740">مستواك '+esc(x.level)+'</span></div></button>'}).join('')+'</div>'+
+  page({title:'نتيجتك',cls:'dark',nologo:false},conf+'<div style="text-align:center;margin-top:18px;animation:up .5s ease both"><div style="font-weight:700;color:#E4E2FF">أحسنت، أنهيت الاختبار</div><div style="font-size:30px;font-weight:900;margin:4px 0">مبروك يا <span style="color:#FFE600">'+esc(pName().split(' ')[0])+'</span></div><div style="color:#E4E2FF;font-size:14px">هذا مستواك في كل لغة، ومنه تنطلق رحلتك</div></div>'+
+   '<div class="cards2" style="margin-top:6px">'+langs.map(function(l){var x=pRes()[l];return '<button class="rc'+(l===cur?' on':'')+'" data-r="'+l+'"><div style="margin-bottom:8px">'+LANG[l]+'</div>'+ring(x)+'<div style="margin-top:8px"><span class="tag" style="background:#FFE600;color:#1B1740">'+(pKids()?'ابدأ من المستوى '+esc(x.level):'مستواك '+esc(x.level))+'</span></div></button>'}).join('')+'</div>'+
    (langs.length>1?'<div class="sm" style="text-align:center;color:#E4E2FF">اضغط على اللغة لترى مهاراتك فيها</div>':'')+
-   '<div class="cd" style="color:var(--ink)"><div class="row"><b>مهاراتك في '+LANG[cur]+'</b>'+(min&&sk.length>1?'<span class="tag wr">'+SK[min]+' فرصة للتطور</span>':'')+'</div>'+bars+(min&&sk.length>1?'<div class="sm" style="text-align:center;margin-top:6px">لا تقلق، سيركّز أستاذك على تقوية '+SK[min]+' معك.</div>':'')+'</div>',
-   more?'<button class="btn gold" id="mr"><span>اختبر مستواك في '+LANG[more.language]+'</span>'+svg('next')+'</button>':'<button class="btn gold" id="gp"><span>اعرض فوجي المناسب</span>'+svg('next')+'</button>');
+   '<div class="cd" style="color:var(--ink)"><div class="row"><b>'+(pKids()?'نجومك في ':'مهاراتك في ')+LANG[cur]+'</b>'+(min&&sk.length>1?'<span class="tag wr">'+skl(min)+' فرصة للتطور</span>':'')+'</div>'+bars+(min&&sk.length>1?'<div class="sm" style="text-align:center;margin-top:6px">لا تقلق، سيركّز أستاذك على تقوية '+SK[min]+' معك.</div>':'')+'</div>',
+   more?'<button class="btn gold" id="mr"><span>اختبر مستواك في '+LANG[more.language]+'</span>'+svg('next')+'</button>':(P0().id?'<button class="btn gold" id="gp"><span>العودة إلى السلة</span>'+svg('next')+'</button>':'<button class="btn gold" id="gp"><span>اعرض فوجي المناسب</span>'+svg('next')+'</button>'));
   on($('scr'),'.rc',function(b){showResult(lang,r,b.getAttribute('data-r'))});
-  if(more)$('mr').onclick=function(){testReady(more.language)};else $('gp').onclick=function(){call('group_suggest',{},true).then(function(g){S.sug=g;groups()},fail)};
+  if(more)$('mr').onclick=function(){testReady(more.language)};else $('gp').onclick=function(){if(P0().id)return cart();call('group_suggest',{},true).then(function(g){S.sug=g;groups()},fail)};
 }
 
 // ---------- الفوج والطلب ----------
@@ -305,12 +314,13 @@ function groups(){
    '<div style="text-align:center;margin-top:12px"><div class="sm">سعر المستوى كاملا</div><div class="amt" style="font-size:36px;color:#4136E6">'+esc(nb(g.price))+' DA</div><div class="sm">'+esc(words(cents))+'</div>'+(mo?'<div style="margin-top:6px"><span class="tag" style="background:#FFF1D6;color:#8a5200">بمعدل '+esc(nb(fmtC(mo)))+' DA شهريا</span></div>':'')+'</div>'+
    '<div style="margin-top:12px;text-align:center;background:#F0EFFF;border-radius:14px;padding:10px;font-weight:700;font-size:13px;color:#4136E6">حصص مباشرة · تسجيلات مدى الحياة · شهادة بعد المستوى</div><div class="sm" style="text-align:center;margin-top:8px">'+esc(whenTxt(g))+' · يبدأ '+esc(dateTxt(g.start_date))+'</div>'+
    (list.length>1?'<button class="btn '+(S.sel[x.language]?'':'sec')+'" data-t="'+x.language+'" style="margin-top:10px;min-height:48px;font-size:15px;animation:none">'+(S.sel[x.language]?'✓ مضاف إلى طلبي':'أضف إلى طلبي')+'</button>':'')+'</div></div>'}).join('');
-  page({title:'فوجك المناسب'},'<h1 style="font-size:22px;margin-top:26px">فوجك جاهز، بقيت لك خطوة أخيرة لتبدأ رحلة تعلمك معنا</h1>'+(list.length>1?'<div class="cards2" style="gap:8px">'+list.map(function(x){return '<div class="tag pu" style="justify-content:center;padding:6px">'+LANG[x.language]+' · '+esc(x.level_code)+'</div>'}).join('')+'</div>':'<div><span class="tag pu">'+LANG[list[0].language]+' · '+esc(list[0].level_code)+'</span></div>')+cards+'<div class="sm" style="text-align:center">'+svg('chk',16).replace('<svg','<svg style="vertical-align:middle;stroke:#11804A;fill:none;stroke-width:2.4"')+' يبدأ فوجك خلال 15 يوما، وإلا استرجعت مبلغك.</div>'+(list.length>1?'<div class="note">عند الدفع لفوجين معا تحصل على خصم يظهر في الخطوة التالية.</div>':''),'<button class="btn" id="jn"><span>انضم إلى فوجك الآن</span>'+svg('next')+'</button><button class="lnk" id="lo">تسجيل الخروج</button>');
+  page({title:'فوجك المناسب'},'<h1 style="font-size:22px;margin-top:26px">فوجك جاهز، بقيت لك خطوة أخيرة لتبدأ رحلة تعلمك معنا</h1>'+(list.length>1?'<div class="cards2" style="gap:8px">'+list.map(function(x){return '<div class="tag pu" style="justify-content:center;padding:6px">'+LANG[x.language]+' · '+esc(lvlTxt(x.level_code))+'</div>'}).join('')+'</div>':'<div><span class="tag pu">'+LANG[list[0].language]+' · '+esc(lvlTxt(list[0].level_code))+'</span></div>')+cards+'<div class="sm" style="text-align:center">'+svg('chk',16).replace('<svg','<svg style="vertical-align:middle;stroke:#11804A;fill:none;stroke-width:2.4"')+' يبدأ فوجك خلال 15 يوما، وإلا استرجعت مبلغك.</div>'+(list.length>1?'<div class="note">عند الدفع لفوجين معا تحصل على خصم يظهر في الخطوة التالية.</div>':''),'<button class="btn" id="jn"><span>انضم إلى فوجك الآن</span>'+svg('next')+'</button><button class="btn sec" id="ap">تسجيل ابن ثان أو شخص آخر</button><button class="lnk" id="lo">تسجيل الخروج</button>');
   on($('scr'),'[data-t]',function(b){var l=b.getAttribute('data-t');S.sel[l]=!S.sel[l];groups()});
-  $('lo').onclick=logout;
+  $('lo').onclick=logout;$('ap').onclick=addPerson;
   $('jn').onclick=function(){
     var lines=list.filter(function(x){return S.sel[x.language]}).map(function(x){return{language:x.language}});
     if(!lines.length)return toast('اختر فوجا واحدا على الأقل',true);
+    if((S.me.children&&S.me.children.length)||S.hasInvites)return cart();
     call('order_save',{lines:lines}).then(function(){return call('order_checkout')}).then(function(o){S.order=o;pay()},fail)};
 }
 function fmtC(c){var d=Math.floor(c/100),f=('0'+(c%100)).slice(-2);return String(d).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+'.'+f}
@@ -461,6 +471,75 @@ function enablePush(){
       return call('device_register',{fcm_token:tok,platform:IOS?'ios':/android/i.test(UA)?'android':'desktop',installed:STANDALONE},true)
     }).then(function(r){busy(false);ls('push_ok','1');toast(r.configured?'تم تفعيل الإشعارات، وصلك إشعار تجريبي':'تم تفعيل الإشعارات');home()})
   }).catch(function(e){busy(false);toast('تعذر تفعيل الإشعارات'+(e&&e.code?' ('+e.code+')':''),true)});
+}
+
+// ---------- إضافة ابن أو شخص آخر والسلة ----------
+function addPerson(){
+  ask('<h2 style="margin:0">من تريد تسجيله أيضا؟</h2><p class="sm">يجري كل شخص اختباره بنفسه، ويكبر الخصم بعدد الأفواج في الدفعة الواحدة.</p><button class="cd row" id="pc" style="text-align:start;width:100%"><div><b>ابن أو ابنة</b><div class="sm">بيانات التواصل مشتركة معك، يبقى اسمه وسنه فقط</div></div>'+svg('next',22)+'</button><button class="cd row" id="pa" style="text-align:start;width:100%"><div><b>شخص بالغ آخر</b><div class="sm">يحتاج اسمه ورقم واتساب الخاص به</div></div>'+svg('next',22)+'</button><div class="sm">يشمل الخصم من يدفع معك في دفعة واحدة من حسابك. ومن يدفع وحده من حسابه لا يشمله الخصم.</div><button class="lnk" id="cl">رجوع</button>',function(m){
+    m.querySelector('#cl').onclick=closeM;m.querySelector('#pc').onclick=function(){closeM();personForm('kid')};m.querySelector('#pa').onclick=function(){closeM();personForm('adult')}});
+}
+function personForm(kind){
+  var y=new Date().getFullYear(),lo=kind==='kid'?y-14:y-80,hi=kind==='kid'?y-8:y-15,yrs='<option value="">اختر</option>';for(var i=hi;i>=lo;i--)yrs+='<option>'+i+'</option>';
+  var F={g:'',l:{}};
+  page({title:kind==='kid'?'تسجيل ابن أو ابنة':'تسجيل شخص بالغ',back:function(){S.order||S.sug?(S.me.children&&S.me.children.length||S.hasInvites?cart():groups()):route()}},
+   '<h1 style="font-size:22px;margin:26px 0 0">'+(kind==='kid'?'بيانات ابنك':'بيانات الشخص الآخر')+'</h1>'+
+   '<div><label class="l">'+svg('user')+'الاسم واللقب بالحروف اللاتينية <em>*</em></label><input id="pn2" class="ltr" placeholder="Yacine Benali"></div>'+
+   (kind==='adult'?'<div><label class="l">'+svg('ph')+'رقم واتساب الشخص <em>*</em></label>'+phoneField('ph2','cc2')+'<p class="sm" style="margin-top:6px">رقمه الخاص، يختلف عن رقمك، وبه يدخل حسابه ويرى نتيجته.</p></div>':'')+
+   '<div class="cards2" id="lg2"><button class="lang" data-l="EN"><i class="ck"></i>'+FLAG.EN+'الإنجليزية</button><button class="lang" data-l="FR"><i class="ck"></i>'+FLAG.FR+'الفرنسية</button></div>'+
+   '<div><label class="l" style="font-weight:700">سنة الميلاد</label><select id="by2">'+yrs+'</select></div>'+
+   '<div><label class="l">'+svg('user')+'الجنس <em>*</em></label><div class="cards2" id="gd2"><button class="gd" data-g="M"><svg viewBox="0 0 24 24" stroke="#4136E6"><circle cx="10" cy="14" r="5"/><path d="M14 10l6-6M15 4h5v5"/></svg>ذكر</button><button class="gd" data-g="F"><svg viewBox="0 0 24 24" stroke="#C4087A"><circle cx="12" cy="9" r="5"/><path d="M12 14v7M9 18h6"/></svg>أنثى</button></div></div>',
+   '<button class="btn" id="sv"><span>'+(kind==='kid'?'التالي: اختبار المستوى':'التالي')+'</span>'+svg('next')+'</button>');
+  on($('lg2'),'.lang',function(b){var l=b.getAttribute('data-l');F.l[l]=!F.l[l];b.classList.toggle('on',F.l[l])});
+  on($('gd2'),'.gd',function(b){F.g=b.getAttribute('data-g');Array.prototype.forEach.call($('gd2').children,function(x){x.classList.toggle('on',x===b)})});
+  $('sv').onclick=function(){
+    var nm=$('pn2').value.trim(),langs=Object.keys(F.l).filter(function(k){return F.l[k]});
+    if(nm.length<3)return toast(ERR.bad_name,true);if(!langs.length)return toast(ERR.bad_languages,true);if(!$('by2').value)return toast(ERR.bad_birth_year,true);if(!F.g)return toast(ERR.bad_gender,true);
+    var base={name:nm,gender:F.g,birthYear:Number($('by2').value),languages:langs};
+    if(kind==='kid'){return call('reg_add_child',base).then(function(r){S.P={id:r.childId,name:nm,kids:true,results:{}};startPersonTests()},fail)}
+    var ph=$('ph2').value.trim();if(ph.replace(/\D/g,'').length<6)return toast(ERR.bad_phone,true);
+    base.phone=ph;base.country=$('cc2').value;
+    ask('<h2 style="margin:0">كيف سيجري اختباره؟</h2><p class="sm">اختبار المستوى يجريه كل شخص بنفسه، ويرى كل شخص رمزه ونتيجته في حسابه على هاتفه.</p><button class="cd row" id="m1" style="text-align:start;width:100%"><div><b>على هذا الجهاز الآن</b><div class="sm">يجري الاختبار مباشرة بعدك على هاتفك، ثم تعود إلى السلة</div></div>'+svg('next',22)+'</button><button class="cd row" id="m2" style="text-align:start;width:100%"><div><b>الإدارة تتواصل معه</b><div class="sm">نبعث له رابط الاختبار على تلغرام أو واتساب فيجريه على هاتفه</div></div>'+svg('next',22)+'</button><button class="lnk" id="cl">رجوع</button>',function(m){
+      m.querySelector('#cl').onclick=closeM;
+      function go(mode){closeM();base.mode=mode;call('invite_create',base).then(function(r){S.hasInvites=true;if(mode==='device'){S.P={id:r.person_id,name:nm,kids:false,results:{}};startPersonTests()}else{toast('ستتواصل الإدارة معه لإجراء الاختبار');cart()}},fail)}
+      m.querySelector('#m1').onclick=function(){go('device')};m.querySelector('#m2').onclick=function(){go('admin')}})};
+}
+function startPersonTests(){
+  call('group_suggest',{person_id:P0().id},true).then(function(g){
+    setPSug(g);var need=g.filter(function(x){return x.status==='test_required'})[0];
+    if(need)testReady(need.language);else cart()},fail);
+}
+function cart(){
+  busy(true);
+  Promise.all([call('app_state',{},true),call('invite_list',{},true).catch(function(){return[]})]).then(function(a){
+    busy(false);var st=a[0],inv=a[1]||[];S.me=st.me;S.P=null;
+    var kids={};(S.me.children||[]).forEach(function(c){kids[c.id]=c});var invs={};inv.forEach(function(i){invs[i.person_id]=i});S.hasInvites=inv.length>0;
+    var lines=[];
+    var selfLangs=(S.sug||[]).filter(function(x){return x.status==='ok'&&S.sel[x.language]!==false}).map(function(x){return x.language});
+    if(!selfLangs.length&&S.me.languages)selfLangs=S.me.languages.slice();
+    selfLangs.forEach(function(l){lines.push({language:l})});
+    (S.me.children||[]).forEach(function(c){if(c.status==='subscribed')return;(c.languages||[]).forEach(function(l){lines.push({person_id:c.id,language:l})})});
+    inv.forEach(function(i){if(i.status==='expired'||i.status==='tested'&&false)return;(i.languages||[]).forEach(function(l){lines.push({person_id:i.person_id,language:l})})});
+    return call('order_save',{lines:lines}).then(function(o){drawCart(o,kids,invs)});
+  }).catch(function(e){busy(false);if(e&&e.code==='order_locked')return route();fail(e)});
+}
+function drawCart(o,kids,invs){
+  var by={},order=[];o.lines.forEach(function(l){var k=l.person_id||'me';if(!by[k]){by[k]=[];order.push(k)}by[k].push(l)});
+  var ready=o.lines.filter(function(l){return l.state==='ready'}).length;
+  var people=order.map(function(k){
+    var ls_=by[k],first=ls_[0],kid=kids[k]||(k==='me'&&S.me.ageGroup==='kids'),inv=invs[k];
+    var rows=ls_.map(function(l){return '<div class="row" style="padding:8px 0;border-top:1px dashed var(--line)"><div><b style="font-size:13.5px">'+LANG[l.language]+'</b><div class="sm" dir="ltr" style="text-align:right">'+(l.state==='ready'?esc(l.group_code):'—')+'</div></div>'+(l.state==='ready'?'<span class="amt" style="font-size:14px">'+esc(nb(l.price))+' DA</span>':'<span class="tag wr">لم يُجرِ الاختبار</span>')+'</div>'}).join('');
+    var waiting=ls_.some(function(l){return l.state==='waiting_test'}),act='';
+    if(waiting&&k!=='me'){act=(inv&&inv.mode==='admin')?'<div class="sm" style="margin-top:6px">الإدارة تتواصل معه لإجراء الاختبار.</div>':'<button class="btn sec" data-tp="'+esc(k)+'" style="margin-top:8px;min-height:46px;font-size:15px;animation:none">ابدأ اختباره الآن</button>'}
+    return '<div class="cd"><div class="row" style="justify-content:flex-start;gap:10px;margin-bottom:6px"><span class="num" style="width:34px;height:34px;font-size:16px;background:'+(kid?'#FFF1D6':'#EEEDFF')+'">'+esc((first.name||'?').charAt(0).toUpperCase())+'</span><b style="font-size:16px" dir="ltr">'+esc(first.name)+'</b><span class="tag '+(kid?'wr':'pu')+'">'+(kid?'طفل':'بالغ')+'</span></div>'+rows+act+'</div>'}).join('');
+  var tot='<div class="sum" style="margin-top:4px"><div class="row" style="font-size:13px;color:#DAD8FF;font-weight:700"><span>'+ready+' '+(ready===1?'فوج':'أفواج')+'</span><span class="amt">'+esc(nb(o.gross))+' DA</span></div>'+(o.discount?'<div class="row y" style="font-size:13px;margin-top:4px"><span>خصم '+ready+' أفواج '+o.tier_pct+'%</span><span class="amt">'+esc(nb(o.discount))+' DA</span></div>':'')+'<div class="row" style="margin-top:8px"><b>المجموع للدفع</b><span class="amt" style="font-size:24px">'+esc(nb(o.net))+' DA</span></div><div style="font-size:12.5px;font-weight:700;color:#DAD8FF;text-align:left">'+esc(words(netCents(o)))+'</div></div>';
+  page({title:'سلة التسجيل',back:function(){S.sug&&S.sug.some(function(x){return x.status==='ok'})?groups():route()}},'<h1 style="font-size:22px;margin:26px 0 0">كل تسجيلاتك في دفعة واحدة</h1>'+people+'<button class="btn sec" id="ad">+ إضافة شخص آخر</button>'+(ready?tot:''),
+   '<button class="btn" id="go2"'+(ready?'':' disabled')+'><span>تابع إلى الدفع</span>'+svg('next')+'</button>');
+  $('ad').onclick=addPerson;
+  on($('scr'),'[data-tp]',function(b){var id=b.getAttribute('data-tp'),c=kids[id],iv=invs[id];S.P={id:id,name:(c&&c.name)||(by[id][0].name),kids:!!c,results:{}};startPersonTests()});
+  $('go2').onclick=function(){
+    function checkout(){call('order_checkout').then(function(x){S.order=x;pay()},fail)}
+    if(o.waiting>0){return ask('<h2 style="margin:0">بعضهم لم ينهِ اختباره</h2><p class="sm">يمكنك الدفع الآن عن الجاهزين، ويدفع الباقون لاحقا من طلب آخر بعد إنهاء اختبارهم (دون خصم الدفعة الواحدة).</p><button class="btn" id="y" style="animation:none">ادفع عن الجاهزين الآن</button><button class="btn sec" id="n">رجوع لإكمال الاختبارات</button>',function(m){m.querySelector('#n').onclick=closeM;m.querySelector('#y').onclick=function(){closeM();call('order_drop_waiting').then(checkout,fail)}})}
+    checkout()};
 }
 
 // ---------- الإقلاع ----------
