@@ -293,3 +293,12 @@ function ordersTick_() {
   });
 }
 function hourlyTick_() { invitesTick_(); ordersTick_(); backupTick_(); }
+
+/** app_state: لقطة واحدة لإقلاع الواجهة (بدل 3 طلبات): المستخدم + الطلب النشط + اقتراحات الأفواج. */
+function act_appState_(ctx) {
+  var me = act_me_(ctx), out = { me: me, order: null, groups: null };
+  if (!me.languages.length) return out;
+  out.order = act_orderGet_(ctx);
+  if (!out.order || String(out.order.status) === 'open') { var c2 = { user: ctx.user, data: {} }; out.groups = act_groupSuggest_(c2); }
+  return out;
+}
