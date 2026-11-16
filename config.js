@@ -13,5 +13,5 @@ window.BTL_CONFIG = {
   // يُملأ بعد نشر سكربت Google (GAS)
   apiUrl: "https://script.google.com/macros/s/AKfycbwHCUJHQ7498sfH-1bcWAExYmnwOkHKaR1iZfneXqvxdNyLoupKIy-mAjUhLmhrtQUP/exec",
   // معرّف عميل Google (OAuth Web) لدخول الإداريين فقط؛ ليس سرا
-  googleClientId: ""
+  googleClientId: "85293783824-iilnbsc2joqppvlcasihvl6ibjnne1ke.apps.googleusercontent.com"
 };
