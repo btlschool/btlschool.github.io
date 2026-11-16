@@ -17,6 +17,7 @@ function notifyUser_(userId, type, title, body, url) {
     var u = findRowFast_('Users', 'user_id', String(userId));
     if (u && nz_(u.telegram_id)) tg_('sendMessage', { chat_id: String(u.telegram_id), text: title + '\n' + body });
   } catch (e) { log_('notify_tg_error', String(userId), String(e)); }
+  try { pushToUser_(userId, title, body, url); } catch (e) { log_('notify_push_error', String(userId), String(e)); }
 }
 
 // ---------- طابور التواصل ----------
