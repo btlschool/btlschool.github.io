@@ -201,7 +201,7 @@ function profile(){
 // ---------- التوجيه (طلب واحد عند الفتح) ----------
 function route(){
   call('app_state',{},true).catch(function(e){if(e&&e.code==='unknown_action')return legacyState();throw e}).then(function(st){
-    S.me=st.me;S.order=st.order;S.sug=st.groups;
+    S.me=st.me;S.order=st.order;S.sug=st.groups;S.home=st.home||null;
     if(!S.me.languages.length)return profile();
     var o=st.order;
     if(o&&o.status==='paid_pending')return status();
@@ -354,9 +354,21 @@ function status(){
   timers.push(setInterval(function(){call('order_get',{},true).then(function(x){if(!x||x.status!=='paid_pending'){S.order=x;route()}},function(){})},20000));
 }
 function home(){
+  var H=S.home,tg=CFG.telegramBot||'BTLSchoolBot',nm=((S.me&&S.me.name)||'').split(' ')[0];
+  if(!H||!H.subs||!H.subs.length)return pendingHome();
+  var subs=H.subs.map(function(x){
+    var nx=x.next?'<div class="cd row" style="padding:10px 14px"><div class="row" style="gap:10px;justify-content:flex-start"><span class="ti" style="background:#EEEDFF;width:40px;height:40px"><svg viewBox="0 0 24 24" stroke="#4136E6">'+IC.cal+'</svg></span><div><div class="sm">'+(x.started?'الحصة القادمة':'أول حصة')+'</div><b style="font-size:15px">'+DAYS[x.next.d]+' '+esc(x.next.t)+(x.started?'':' · '+esc(dateTxt(x.next.date)))+'</b></div></div><a class="cp" style="background:#229ED9;color:#fff;padding:10px 14px;border-radius:12px" href="https://t.me/'+esc(tg)+'" target="_blank" rel="noopener">مجموعة الفوج</a></div>':'';
+    return '<div style="display:flex;flex-direction:column;gap:12px"><div style="border-radius:24px;padding:16px;color:#fff;background:linear-gradient(120deg,#2A1FB8,#4136E6);box-shadow:0 10px 24px rgba(65,54,230,.22)"><div class="row"><b dir="ltr" style="color:#FFE600;font-size:19px">'+esc(x.group_code)+'</b><span class="tag" style="background:rgba(255,255,255,.2);color:#fff">'+(x.started?'يدرس':'ينتظر البداية')+'</span></div>'+
+     (x.started?'<div class="row" style="margin-top:12px"><span style="font-weight:700;color:#DAD8FF">تقدّمك في المستوى</span><span><b style="font-size:26px">'+x.done+'</b> من '+x.total+' حصة</span></div><div class="prog" style="margin-top:8px"><i style="width:'+x.pct+'%"></i></div><div class="sm" style="color:#DAD8FF;margin-top:8px">بقي '+x.left+' حصص'+(x.end_date?'، وينتهي المستوى في '+esc(dateTxt(x.end_date)):'')+'</div>':'<div style="margin-top:10px;font-weight:700">يبدأ فوجك يوم '+esc(dateTxt(x.start_date))+'، وإلا استرجعت مبلغك.</div>')+'</div>'+nx+'</div>';
+  }).join('');
+  var pays=(H.payments||[]).map(function(p){return '<div class="cd row" style="padding:10px 14px"><div>'+da(p.amount)+(p.status==='confirmed'?'<div><span class="tag ok">مؤكَّد</span></div>':'<div><span class="tag wr">'+(p.status==='rejected'?'مرفوض':'قيد التحقق')+'</span></div>')+'</div><div style="text-align:left"><b dir="ltr" style="font-size:14px">'+esc(p.code)+'</b><div class="sm">'+esc(dateTxt(p.date))+'</div></div></div>'}).join('');
+  page({title:'منصة BTL'},'<h1 style="margin:22px 0 2px;font-size:24px">أهلا '+esc(nm)+'</h1>'+subs+(pays?'<div style="font-weight:800;margin-top:8px">مدفوعاتك السابقة</div>'+pays:''),'<button class="lnk" id="lo">تسجيل الخروج</button>');
+  $('lo').onclick=logout;
+}
+function pendingHome(){
   var tg=CFG.telegramBot||'BTLSchoolBot',confirmed=S.me&&S.me.status==='subscribed',nm=((S.me&&S.me.name)||'').split(' ')[0];
-  page({title:confirmed?'تم تأكيد اشتراكك':'حالة اشتراكك',cls:''},stepper(confirmed?4:3)+'<h1 style="margin-top:18px;font-size:26px">'+(confirmed?'مرحبا بك في فوجك يا '+esc(nm):'اشتراكك قيد التحقق')+'</h1><p class="sub">'+(confirmed?'أكّدت الإدارة اشتراكك. انضم الآن إلى مجموعة فوجك على تلغرام لتصلك الحصص والتسجيلات.':'تتحقق الإدارة من وصلك وتصلك رسالة عند التأكيد.')+'</p>'+
-   (confirmed?'<div class="cd"><b style="font-size:17px">كيف تنضم؟ ثلاث نقرات</b>'+['اضغط الزر أسفل الشاشة لفتح بوت BTL','اضغط Start وشارك رقمك بنقرة واحدة','يصلك رابطك الخاص وتنضم إلى فوجك'].map(function(x,i){return '<div class="row" style="justify-content:flex-start;gap:10px;margin-top:10px"><span class="num">'+(i+1)+'</span><span style="font-weight:700;font-size:14px">'+x+'</span></div>'}).join('')+'</div><div class="sm">'+svg('lock',14).replace('<svg','<svg style="vertical-align:middle;stroke:#5B5780;fill:none;stroke-width:2"')+' الرابط خاص بك ويعمل مرة واحدة، فلا تشاركه.</div>':'')+codeCard(),
+  page({title:confirmed?'تم تأكيد اشتراكك':'حالة اشتراكك'},stepper(confirmed?4:3)+'<h1 style="margin-top:18px;font-size:26px">'+(confirmed?'مرحبا بك في فوجك يا '+esc(nm):'اشتراكك قيد التحقق')+'</h1><p class="sub">'+(confirmed?'أكّدت الإدارة اشتراكك. انضم الآن إلى مجموعة فوجك على تلغرام لتصلك الحصص والتسجيلات.':'تتحقق الإدارة من وصلك وتصلك رسالة عند التأكيد.')+'</p>'+
+   (confirmed?'<div class="cd"><b style="font-size:17px">كيف تنضم؟ ثلاث نقرات</b>'+['اضغط الزر أسفل الشاشة لفتح بوت BTL','اضغط Start وشارك رقمك بنقرة واحدة','يصلك رابطك الخاص وتنضم إلى فوجك'].map(function(x,i){return '<div class="row" style="justify-content:flex-start;gap:10px;margin-top:10px"><span class="num">'+(i+1)+'</span><span style="font-weight:700;font-size:14px">'+x+'</span></div>'}).join('')+'</div>':'')+codeCard(),
    (confirmed?'<a class="btn tg" href="https://t.me/'+esc(tg)+'" target="_blank" rel="noopener"><span>انضم إلى مجموعة الفوج</span>'+svg('tg')+'</a>':'')+'<button class="lnk" id="lo">تسجيل الخروج</button>');
   wireCode();$('lo').onclick=logout;
 }

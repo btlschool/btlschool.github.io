@@ -299,6 +299,40 @@ function act_appState_(ctx) {
   var me = act_me_(ctx), out = { me: me, order: null, groups: null };
   if (!me.languages.length) return out;
   out.order = act_orderGet_(ctx);
+  if (String(me.status) === 'subscribed') out.home = act_home_(ctx);
   if (!out.order || String(out.order.status) === 'open') { var c2 = { user: ctx.user, data: {} }; out.groups = act_groupSuggest_(c2); }
   return out;
+}
+
+
+// الصفحة الرئيسية للطالب المشترك: الاشتراكات، التقدم، الحصة القادمة، المدفوعات السابقة
+function nextSessionOf_(g, sessions, today) {
+  var up = sessions.filter(function (x) { return String(x.group_id) === String(g.group_id) && String(x.date) >= today && String(x.status) !== 'cancelled'; })
+    .sort(function (a, b) { return String(a.date + a.start) < String(b.date + b.start) ? -1 : 1; })[0];
+  if (up) return { date: String(up.date), d: dow_(String(up.date)), t: String(up.start) };
+  var sch = []; try { sch = JSON.parse(g.schedule_json || '[]'); } catch (e) {}
+  if (!sch.length) return null;
+  var start = String(g.start_date) > today ? String(g.start_date) : today;
+  for (var i = 0; i < 8; i++) {
+    var day = addDays_(start, i), dw = dow_(day);
+    for (var k = 0; k < sch.length; k++) if (Number(sch[k].d) === dw) return { date: day, d: dw, t: String(sch[k].t) };
+  }
+  return null;
+}
+function act_home_(ctx) {
+  var uid = String(ctx.user.user_id), today = todayYmd_();
+  var groups = {}; rows_('Groups').forEach(function (g) { groups[String(g.group_id)] = g; });
+  var sessions = rows_('Sessions'), enr = rows_('Enrollments').filter(function (e) { return String(e.user_id) === uid; });
+  var subs = enr.filter(function (e) { return ['confirmed', 'active', 'studying'].indexOf(String(e.status)) >= 0; }).map(function (e) {
+    var g = groups[String(e.group_id)] || {}, done = Number(e.sessions_done) || 0, total = Number(e.sessions_total) || 0;
+    return { enroll_id: String(e.enroll_id), language: String(g.language || ''), group_code: String(g.code || ''), started: String(g.start_date || '') <= today,
+      start_date: String(g.start_date || ''), end_date: String(g.end_date || ''), done: done, total: total, left: Math.max(0, total - done),
+      pct: total ? Math.min(100, Math.round(done * 100 / total)) : 0, next: nextSessionOf_(g, sessions, today), has_group_chat: !!nz_(g.telegram_chat_id) };
+  });
+  var pays = rows_('Payments').filter(function (p) { return String(p.user_id) === uid && String(p.status) !== 'draft'; })
+    .sort(function (a, b) { return String(a.submitted_at) < String(b.submitted_at) ? 1 : -1; }).slice(0, 10).map(function (p) {
+      var e = enr.filter(function (x) { return String(x.enroll_id) === String(p.enroll_id); })[0], g = e ? groups[String(e.group_id)] : null;
+      return { code: g ? String(g.code) : '', date: String(p.submitted_at).slice(0, 10), amount: fmtDA_(Number(p.amount) || 0), status: String(p.status) };
+    });
+  return { subs: subs, payments: pays };
 }
