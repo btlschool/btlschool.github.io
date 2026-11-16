@@ -80,7 +80,7 @@ function api(action,data,silent){
    .then(function(j){if(!j.ok)throw {code:j.error};return j.result})
    .then(function(x){busy(false);return x},function(e){busy(false);if(e&&e.code==='unauthorized')logout(true);throw e})
 }
-function fail(e){toast(ERR[e&&e.code]||'حدث خطأ، حاول مجددا',true)}
+function fail(e){var c=e&&e.code;toast(ERR[c]||('حدث خطأ، حاول مجددا'+(c?' ('+c+')':'')),true);var v=$('view');if(v&&!v.innerHTML.trim())v.innerHTML='<div class="card"><b>تعذر تحميل البيانات</b><p class="mute">'+esc(ERR[c]||('رمز الخطأ: '+(c||'؟')))+'</p><button class="btn" id="retry">إعادة المحاولة</button></div>',$('retry').onclick=function(){start()}}
 function ask(html,cb){$('mbody').innerHTML=html;$('modal').classList.remove('hidden');cb&&cb($('mbody'))}
 function closeModal(){$('modal').classList.add('hidden');$('mbody').innerHTML=''}
 $('modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
@@ -112,7 +112,7 @@ function renderNav(){
 function go(t){TAB=t;var f={inbox:vInbox,pay:vPay,contact:vContact,settings:vSettings}[t];$('title').textContent={inbox:'الإدارة',pay:'المدفوعات',contact:'بانتظار التواصل',settings:'الإعدادات'}[t];renderNav();f()}
 function start(){
   $('login').classList.add('hidden');$('app').classList.remove('hidden');$('who').textContent=(STAFF&&STAFF.name)||'';
-  api('staff_inbox').then(function(x){INBOX=x;STAFF=Object.assign({},STAFF,x.staff);$('who').textContent=STAFF.name;go('inbox')},fail);
+  api('staff_inbox').then(function(x){INBOX=x;STAFF=Object.assign({},STAFF,x.staff);$('who').textContent=STAFF.name;go('inbox')},function(e){renderNav();fail(e)});
 }
 function refreshInbox(){return api('staff_inbox',{},true).then(function(x){INBOX=x;renderNav()},function(){})}
 function ago(iso){var h=Math.max(0,Math.round((Date.now()-new Date(iso+'+01:00').getTime())/36e5));if(h<1)return 'قبل قليل';if(h<24)return 'منذ '+h+' ساعة';return 'منذ '+Math.round(h/24)+' يوم'}
