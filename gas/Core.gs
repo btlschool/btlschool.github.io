@@ -17,9 +17,14 @@ var USER_ACTIONS = {       // أفعال تحتاج جلسة مشارك
   logout: function (c) { return act_logout_(c); },
   logout_all: function (c) { return act_logoutAll_(c); },
   reg_profile: function (c) { return act_regProfile_(c); },
-  reg_add_child: function (c) { return act_regAddChild_(c); }
+  reg_add_child: function (c) { return act_regAddChild_(c); },
+  test_start: function (c) { return act_testStart_(c); },
+  test_answer: function (c) { return act_testAnswer_(c); },
+  test_beginner_stop: function (c) { return act_testBeginnerStop_(c); },
+  test_finish: function (c) { return act_testFinish_(c); },
+  test_result: function (c) { return act_testResult_(c); }
 };
-var TEST_SCOPE_ACTIONS = {};  // أفعال يسمح بها لجلسة رابط الاختبار (scope=test) فقط، وتُملأ مع وحدة الاختبار
+var TEST_SCOPE_ACTIONS = { me: 1, logout: 1, test_start: 1, test_answer: 1, test_beginner_stop: 1, test_finish: 1, test_result: 1 };  // أفعال تسمح بها جلسة رابط الاختبار (scope=test) إضافة إلى جلسة المشارك
 var STAFF_ACTIONS = {};    // أفعال تحتاج صلاحية إدارية
 
 // ---------- الموجّه ----------
