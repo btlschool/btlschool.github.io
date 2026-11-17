@@ -155,7 +155,7 @@ textarea{font:inherit;width:100%;min-height:92px;border-radius:16px;border:2px s
 var CFG=window.BTL_CONFIG||{},testIv=0,S={token:'',me:null,results:{},order:null,T:null,sel:{},sug:null},timers=[],T0=Date.now();
 var LANG={EN:'الإنجليزية',FR:'الفرنسية'},DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],SK={grammar:'القواعد',vocab:'المفردات',reading:'القراءة',listening:'الاستماع'};
 var LVL={A1:'مبتدئ',A2:'أساسي',B1:'متوسط',B2:'فوق المتوسط'};
-var ERR={bad_phone:'رقم الهاتف غير صالح',bad_name:'اكتب الاسم واللقب بالحروف اللاتينية',bad_gender:'اختر الجنس',bad_birth_year:'سنة الميلاد غير مقبولة',bad_languages:'اختر لغة واحدة على الأقل',registration_closed:'التسجيل مغلق مؤقتا',rate_limited:'محاولات كثيرة، انتظر قليلا ثم أعد',unauthorized:'انتهت الجلسة، سجّل الدخول من جديد',bad_credentials:'الرقم أو رمز الدخول غير صحيح',retake_limit:'استنفدت محاولاتك لهذه اللغة، تواصل مع الإدارة',time_up:'انتهى وقت الاختبار',already_enrolled:'أنت مشترك بالفعل في هذه اللغة',not_ready:'أكمل الاختبار أولا',line_taken:'هذا الفوج لم يعد متاحا لك',payments_closed:'الدفع متوقف مؤقتا',no_pay_account:'لا يوجد حساب دفع متاح حاليا',bad_file:'صورة الوصل غير صالحة (jpeg أو png)',not_allowed:'هذا الإجراء غير متاح الآن',code_exists:'ظهر رمزك من قبل',maintenance:'المنصة في الصيانة، عد لاحقا',network:'تعذر الاتصال، تحقق من الشبكة',timeout:'تأخر الخادم في الرد، أعد المحاولة',bad_response:'ردّ الخادم غير صالح (تحقق من رابط النشر)',order_locked:'طلبك قيد الدفع بالفعل',renewal_unavailable:'انتهى عرض التجديد المبكر',phone_taken:'هذا الرقم مسجل من قبل',same_phone:'اكتب رقم الشخص الآخر لا رقمك',too_many_children:'بلغت الحد الأقصى من الأبناء',forbidden:'غير مسموح',nothing_ready:'لا أحد جاهز للدفع بعد',bad_reasons:'اختر سببا واحدا على الأقل',not_found:'لا يوجد تقرير بعد',invalid_link:'الرابط غير صالح أو انتهت صلاحيته'};
+var ERR={phone_taken:'هذا الرقم مسجل بحساب آخر',bad_phone:'رقم الهاتف غير صالح',bad_name:'اكتب الاسم واللقب بالحروف اللاتينية',bad_gender:'اختر الجنس',bad_birth_year:'سنة الميلاد غير مقبولة',bad_languages:'اختر لغة واحدة على الأقل',registration_closed:'التسجيل مغلق مؤقتا',rate_limited:'محاولات كثيرة، انتظر قليلا ثم أعد',unauthorized:'انتهت الجلسة، سجّل الدخول من جديد',bad_credentials:'الرقم أو رمز الدخول غير صحيح',retake_limit:'استنفدت محاولاتك لهذه اللغة، تواصل مع الإدارة',time_up:'انتهى وقت الاختبار',already_enrolled:'أنت مشترك بالفعل في هذه اللغة',not_ready:'أكمل الاختبار أولا',line_taken:'هذا الفوج لم يعد متاحا لك',payments_closed:'الدفع متوقف مؤقتا',no_pay_account:'لا يوجد حساب دفع متاح حاليا',bad_file:'صورة الوصل غير صالحة (jpeg أو png)',not_allowed:'هذا الإجراء غير متاح الآن',code_exists:'ظهر رمزك من قبل',maintenance:'المنصة في الصيانة، عد لاحقا',network:'تعذر الاتصال، تحقق من الشبكة',timeout:'تأخر الخادم في الرد، أعد المحاولة',bad_response:'ردّ الخادم غير صالح (تحقق من رابط النشر)',order_locked:'طلبك قيد الدفع بالفعل',renewal_unavailable:'انتهى عرض التجديد المبكر',phone_taken:'هذا الرقم مسجل من قبل',same_phone:'اكتب رقم الشخص الآخر لا رقمك',too_many_children:'بلغت الحد الأقصى من الأبناء',forbidden:'غير مسموح',nothing_ready:'لا أحد جاهز للدفع بعد',bad_reasons:'اختر سببا واحدا على الأقل',not_found:'لا يوجد تقرير بعد',invalid_link:'الرابط غير صالح أو انتهت صلاحيته'};
 function $(i){return document.getElementById(i)}
 function P0(){return S.P||(S.P={id:null})}
 function pName(){return P0().id?P0().name:((S.me&&S.me.name)||'')}
@@ -234,12 +234,22 @@ function login(){
 }
 
 // ---------- التسجيل ----------
+function splitPhone(e164,def){e164=String(e164||'');if(e164&&e164[0]!=='+')e164='+'+e164;var best=null;CC.forEach(function(c){if(e164&&e164.indexOf(c[1])===0&&(!best||c[1].length>best[1].length))best=c});if(!best)return{cc:def||'DZ',ph:e164||''};var rest=e164.slice(best[1].length);return{cc:best[0],ph:(best[0]==='DZ'?'0':'')+rest}}
+function knownContact(){var m=S.me;if(!m||!m.reg||!m.reg.phone)return null;var a=splitPhone(m.reg.phone,m.reg.country),b=m.reg.phone2?splitPhone(m.reg.phone2,a.cc):{cc:a.cc,ph:''};return{nm:m.name||'',ph:a.ph,cc:a.cc,ph2:b.ph,cc2:b.cc}}
 function contact(){
   page({step:'الخطوة 1 من 3',pct:33,back:welcome},'<h1>كيف نتواصل معك؟</h1><div><label class="l">'+svg('user')+'الاسم واللقب بالحروف اللاتينية <em>*</em></label><input id="nm" class="ltr" autocomplete="name" placeholder="Amine Benali"><p class="sm" style="margin-top:6px">الاسم ثم اللقب، كما في الهوية، فهو الذي سيُكتب على شهادتك. للصغار: اسم الابن الذي سيدرس وليس اسم الولي.</p></div><div><label class="l">'+svg('ph')+'رقم الواتساب <em>*</em></label>'+phoneField('ph','cc')+'</div><div class="note">'+svg('info',18)+'<span>هذا الرقم وسيلة التواصل الوحيدة معك، يصلك عليه الرمز والنتيجة وكل جديد. اكتبه بعناية وتأكد منه. للصغار: رقم وليّ الأمر. تدرس من خارج الجزائر؟ اختر بلدك من القائمة قبل الرقم.</span></div><div><label class="l">'+svg('ph')+'رقم احتياطي <span style="font-weight:600;color:var(--mute);font-size:13px">(اختياري)</span></label>'+phoneField('ph2','cc2')+'</div>','<button class="btn" id="nx"><span>التالي</span>'+svg('next')+'</button>');
+  var pre=S.dr||knownContact(),kn=S.token?knownContact():null;
+  if(pre){$('nm').value=pre.nm;$('cc').value=pre.cc;$('ph').value=pre.ph;if($('cc2'))$('cc2').value=pre.cc2||pre.cc;if($('ph2'))$('ph2').value=pre.ph2||''}
   $('nx').onclick=function(){
     var nm=$('nm').value.trim(),ph=$('ph').value.trim(),cc=$('cc').value;
     if(nm.length<3)return toast(ERR.bad_name,true);if(ph.replace(/\D/g,'').length<6)return toast(ERR.bad_phone,true);var ph2=$('ph2').value.trim();if(ph2&&ph2.replace(/\D/g,'').length<6)return toast(ERR.bad_phone,true);
     var dial=(CC.filter(function(c){return c[0]===cc})[0]||[])[1],full=dial+' '+ph.replace(/^0/,'');
+    var cur={nm:nm,ph:ph,cc:cc,ph2:ph2,cc2:$('cc2')?$('cc2').value:cc};S.dr=cur;
+    if(kn&&kn.nm===nm&&kn.ph===ph&&kn.cc===cc&&kn.ph2===ph2)return profile();
+    if(kn){return ask('<h2 style="margin:0;font-size:20px">حفظ التعديل؟</h2><div class="cd" style="text-align:center"><span class="amt" style="font-size:26px;color:#2A1FB8">'+esc(nb(full))+'</span></div><p class="sm">سنحفظ بياناتك الجديدة ثم نكمل.</p><button class="btn" id="y" style="animation:none">نعم، احفظ وتابع</button><button class="btn sec" id="n">رجوع</button>',function(m){
+      m.querySelector('#n').onclick=closeM;m.querySelector('#y').onclick=function(){closeM();
+        S.reg=call('contact_update',{name:nm,phone:ph,country:cc,phone2:ph2,country2:cur.cc2},true).then(function(){S.me.name=nm;S.me.reg=Object.assign({},S.me.reg,{phone:dial+ph.replace(/^0/,'')})},function(e){S.reg=null;fail(e);contact();throw{code:'handled'}});
+        S.reg.catch(function(){});profile()}})}
     ask('<h2 style="margin:0;font-size:20px">هل رقم الواتساب هذا صحيح؟</h2><div class="cd" style="text-align:center"><span class="amt" style="font-size:26px;color:#2A1FB8">'+esc(nb(full))+'</span></div><p class="sm">سيصلك عليه رمز الدخول ونتيجة اختبارك. إن أخطأت فلن نستطيع الوصول إليك.</p><button class="btn" id="y" style="animation:none">نعم، الرقم صحيح</button><button class="btn sec" id="n">تعديل الرقم</button>',function(m){
       m.querySelector('#n').onclick=closeM;m.querySelector('#y').onclick=function(){closeM();
         S.reg=call('reg_contact',{name:nm,phone:ph,country:cc,phone2:ph2,country2:$('cc2')?$('cc2').value:cc,device:navigator.userAgent.slice(0,80)},true).then(function(r){
@@ -254,13 +264,16 @@ function profile(){
    '<div><label class="l" style="font-weight:700">سنة الميلاد</label><select id="by">'+yrs+'</select><div id="cat" style="margin-top:8px"></div></div>'+
    '<div><label class="l">'+svg('user')+'الجنس <em>*</em></label><div class="cards2" id="gd"><button class="gd" data-g="M"><svg viewBox="0 0 24 24" stroke="#4136E6"><circle cx="10" cy="14" r="5"/><path d="M14 10l6-6M15 4h5v5"/></svg>ذكر</button><button class="gd" data-g="F"><svg viewBox="0 0 24 24" stroke="#C4087A"><circle cx="12" cy="9" r="5"/><path d="M12 14v7M9 18h6"/></svg>أنثى</button></div></div>','<button class="btn" id="nx"><span>التالي</span>'+svg('next')+'</button>');
   on($('lg'),'.lang',function(b){var l=b.getAttribute('data-l');P.l[l]=!P.l[l];b.classList.toggle('on',P.l[l])});
+  var rg=S.me&&S.me.reg,pf=S.pf||(S.me&&S.me.languages&&S.me.languages.length?{l:S.me.languages.reduce(function(o,k){o[k]=1;return o},{}),g:rg&&rg.gender,y:rg&&rg.birthYear}:null);
+  if(pf){Object.keys(pf.l||{}).forEach(function(k){if(pf.l[k]){P.l[k]=true;var bb=$('lg').querySelector('[data-l="'+k+'"]');if(bb)bb.classList.add('on')}});if(pf.g){P.g=pf.g;var gb=$('gd').querySelector('[data-g="'+pf.g+'"]');if(gb)gb.classList.add('on')}if(pf.y)$('by').value=String(pf.y)}
   on($('gd'),'.gd',function(b){P.g=b.getAttribute('data-g');Array.prototype.forEach.call($('gd').children,function(x){x.classList.toggle('on',x===b)})});
   $('by').onchange=function(){var a=y-Number(this.value);$('cat').innerHTML=this.value?'<span class="chip">'+svg('chk',18).replace('<svg','<svg style="stroke:#11804A;fill:none;stroke-width:2.6"')+'فئتك: '+(a>=15?'الكبار':'الصغار')+'</span> <span class="sm">الصغار من 8 إلى 14 سنة، والكبار من 15 سنة وأكثر</span><p class="sm" style="margin:8px 0 0">أقل من 8 سنوات؟ مرحّب بك، ويحتاج الطفل إلى مرافقة وليّه أثناء الحصة.</p>':''};
   $('vp').onclick=vipRequest;
+  if($('by').value)$('by').onchange.call($('by'));
   $('nx').onclick=function(){
     var langs=Object.keys(P.l).filter(function(k){return P.l[k]});
     if(!langs.length)return toast(ERR.bad_languages,true);if(!P.g)return toast(ERR.bad_gender,true);if(!$('by').value)return toast(ERR.bad_birth_year,true);
-    var d={gender:P.g,birthYear:Number($('by').value),languages:langs};
+    var d={gender:P.g,birthYear:Number($('by').value),languages:langs};S.pf={l:P.l,g:P.g,y:$('by').value};
     var chain=Promise.resolve(S.reg).then(function(){S.reg=null;return call('reg_profile',d,true)}).then(function(){return call('app_state',{},true).catch(function(e){if(e&&e.code==='unknown_action')return legacyState();throw e})}).then(function(st){S.P=null;S.me=st.me;S.order=st.order;S.sug=st.groups;S.home=st.home||null;return st});
     chain.catch(function(e){if(e&&e.code==='handled')return;if(S.tipsOn)S.tipsOn=0;fail(e);profile()});
     testReady(langs.slice().sort()[0]==='EN'?'EN':langs[0],chain,true)};
@@ -271,12 +284,12 @@ function prep(){page({nologo:1,cls:'dark'},'<div style="margin:auto;text-align:c
 function route(){
   call('app_state',{},true).catch(function(e){if(e&&e.code==='unknown_action')return legacyState();throw e}).then(function(st){
     S.P=null;S.me=st.me;S.order=st.order;S.sug=st.groups;S.home=st.home||null;
-    if(!S.me.languages.length)return profile();
+    if(!S.me.languages.length)return contact();
     var o=st.order;
     if(o&&o.status==='paid_pending')return status();
     if(o&&o.status==='checkout')return pay();
     var need=(st.groups||[]).filter(function(x){return x.status==='test_required'})[0];
-    if(need)return testReady(need.language);
+    if(need){if((st.groups||[]).every(function(x){return x.status==='test_required'}))return contact();return testReady(need.language)}
     if(S.me.status==='subscribed'||S.me.status==='pending_payment')return home();
     groups();
   }).catch(function(e){if(e&&e.code==='unauthorized')return;hideSplash();errScreen(e)});

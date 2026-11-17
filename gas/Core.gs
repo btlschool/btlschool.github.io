@@ -19,6 +19,7 @@ var USER_ACTIONS = {       // أفعال تحتاج جلسة مشارك
   logout: function (c) { return act_logout_(c); },
   logout_all: function (c) { return act_logoutAll_(c); },
   reg_profile: function (c) { return act_regProfile_(c); },
+  contact_update: function (c) { return act_contactUpdate_(c); },
   reg_add_child: function (c) { return act_regAddChild_(c); },
   test_start: function (c) { return act_testStart_(c); },
   test_answer: function (c) { return act_testAnswer_(c); },

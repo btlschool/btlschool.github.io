@@ -221,6 +221,32 @@ function act_regContact_(ctx) {
   return { existing: false, token: token, name: name, phone: phoneDisplay_(phone) };
 }
 
+/**
+ * contact_update (مشارك): تعديل الاسم والأرقام عند عودة العميل لصفحة التسجيل الأولى.
+ * تغيير الرقم الأساسي مسموح فقط قبل أي دفع (status = new) وبشرط ألا يكون لحساب آخر.
+ */
+function act_contactUpdate_(ctx) {
+  var d = ctx.data, u = ctx.user;
+  var name = cleanName_(d.name);
+  if (!name) fail_('bad_name');
+  var phone = normPhone_(d.phone, d.country);
+  if (!phone) fail_('bad_phone');
+  var phone2 = nz_(d.phone2) ? normPhone_(d.phone2, d.country2 || d.country) : '';
+  if (nz_(d.phone2) && !phone2) fail_('bad_phone');
+  if (phone2 === phone) phone2 = '';
+  var patch = { name_latin: name, phone2: phone2, last_seen: now_() };
+  if (phone !== String(u.phone)) {
+    if (String(u.status) !== 'new') fail_('forbidden');
+    rateLimit_('contactupd_' + u.user_id, 5, 3600);
+    var other = findPrimaryByPhone_(phone);
+    if (other && String(other.user_id) !== String(u.user_id)) fail_('phone_taken');
+    patch.phone = phone;
+    patch.country = String(d.country || 'DZ').slice(0, 2).toUpperCase();
+  }
+  updateRow_('Users', u._row, patch);
+  return { name: name, phone: phoneDisplay_(phone) };
+}
+
 /** reg_profile (مشارك): الجنس وسنة الميلاد واللغات. يحدد الفئة (كبار/صغار) ويعيدها. */
 function act_regProfile_(ctx) {
   var d = ctx.data, g = String(d.gender);
@@ -304,6 +330,7 @@ function act_loginRequestCode_(ctx) {
 function act_me_(ctx) {
   var u = ctx.user, kids = rows_('Users').filter(function (r) { return String(r.guardian_id) === String(u.user_id); });
   var out = publicUser_(u);
+  out.reg = { phone: String(u.phone), phone2: String(u.phone2 || ''), country: String(u.country || 'DZ'), gender: String(u.gender || ''), birthYear: String(u.birth_year || '') };
   out.children = kids.map(function (k) { return { id: String(k.user_id), name: String(k.name_latin), birthYear: String(k.birth_year), languages: String(k.languages).split(',').filter(Boolean), status: String(k.status) }; });
   return out;
 }
