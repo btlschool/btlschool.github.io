@@ -97,6 +97,18 @@ input:focus,select:focus{outline:0;border-color:var(--brand);box-shadow:0 0 0 4p
 .aud3 .a1{background:linear-gradient(150deg,#FF7A00,#FF9A3D)}.aud3 .a1 b{color:#1B1740}.aud3 .a1 small{color:#3A1D00}
 .aud3 .a2{background:linear-gradient(150deg,#1C14B8,#5A4DF0);border:1.5px solid rgba(255,255,255,.4)}.aud3 .a2 small{color:#DAD8FF}
 .aud3 .a3{background:linear-gradient(150deg,#7A0E8C,#B21AC4)}.aud3 .a3 small{color:#F3D2F8}
+.grab{width:44px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 4px}
+.chips3{display:grid;grid-template-columns:1.2fr 1fr .9fr;gap:8px}.ch{border:2px solid var(--line);background:#fff;border-radius:16px;min-height:52px;font-weight:800;font-size:15px;color:var(--ink)}.ch.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.ck{display:flex;gap:10px;align-items:flex-start;font-size:13px;font-weight:600;line-height:1.7}.ck input{width:22px;height:22px;accent-color:var(--brand);flex:none;margin-top:2px}
+.vp .btn.vbtn,.btn.vbtn{background:linear-gradient(120deg,#8E0FA3,#B21AC4);box-shadow:0 12px 24px rgba(142,15,163,.3)}.vp .vbtn:after{border-color:#B21AC4}
+.vch{display:inline-flex;align-items:center;gap:6px;border:1.5px solid #E1B8EA;background:#FBF0FD;color:#7A0E8C;border-radius:99px;padding:6px 12px;font-weight:800;font-size:13px}.vch.big{padding:11px 14px;font-size:14px;background:#fff}.vch.big.on{background:#FBF0FD;border:2px solid #A11CB5}
+.vl{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.vlc{position:relative;border:2px solid var(--line);background:#fff;border-radius:16px;padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:800;font-size:12px;color:var(--ink)}.vlc .fl{width:38px;height:38px}.vlc.on{border-color:#A11CB5;background:#FBF0FD}.vlc i{position:absolute;top:-8px;right:-4px;width:22px;height:22px;border-radius:50%;background:#A11CB5;display:flex;align-items:center;justify-content:center}.vlc i svg{stroke:#fff;fill:none;stroke-width:3;width:12px;height:12px}
+.vpk{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.vpc{border:2px solid var(--line);background:#fff;border-radius:16px;padding:10px 2px;display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--mute);font-weight:700}.vpc b{font-size:17px;color:var(--ink)}.vpc.on{border-color:#A11CB5;background:#FBF0FD}.vpc.on b{color:#7A0E8C}
+.vtot{display:flex;justify-content:space-between;align-items:center;border:2px solid #E1B8EA;border-radius:18px;padding:14px;background:#fff}.vtot .amt{font-size:22px;font-weight:900;color:#7A0E8C}
+.vta{width:100%;border:2px solid #A11CB5;border-radius:18px;padding:14px;font:inherit;font-size:15px;resize:none;background:#fff;box-sizing:border-box}
+.vgrid{padding:12px 8px}.vh,.vr{display:grid;grid-template-columns:62px repeat(7,1fr);gap:5px;align-items:center;margin-bottom:6px}.vh span{font-size:9.5px;font-weight:800;color:var(--mute);text-align:center;direction:ltr}.vr b{font-size:12.5px}.vc{height:38px;border:1.5px solid var(--line);border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;padding:0}.vc.on{background:#A11CB5;border-color:#A11CB5}.vc svg{stroke:#fff;fill:none;stroke-width:3;width:14px;height:14px}
+.vsum{border-radius:22px;padding:16px;background:linear-gradient(120deg,#8E0FA3,#B21AC4);color:#fff}
+.pg.vp .hd{}
 .ring{position:relative;width:132px;height:132px;margin:0 auto}.ring svg{width:132px;height:132px;transform:rotate(-90deg)}.ring .in{position:absolute;inset:14px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--ink)}
 .ring .in b{font-size:32px;font-weight:900;line-height:1;color:var(--brand2)}.ring .in span{font-size:12px;font-weight:800;color:var(--mute)}
 .rc{border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);border-radius:22px;padding:12px;text-align:center;color:#fff;font-weight:800;width:100%}.rc.on{border-color:var(--gold);background:rgba(255,255,255,.2)}
@@ -163,7 +175,7 @@ function clearTimers(){timers.forEach(clearInterval);timers=[]}function stopTest
 function skipSplash(){T0=0;hideSplash()}
 function hideSplash(){var s=$('sp');if(!s||s.getAttribute('data-h'))return;s.setAttribute('data-h','1');var w=Math.max(0,1100-(Date.now()-T0));setTimeout(function(){s.style.opacity=0;setTimeout(function(){s.remove()},420)},w)}
 var IC={back:'<path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>',next:'<path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',timer:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>',speaker:'<path d="M4 9v6h4l5 4V5L8 9zM16 9a4 4 0 010 6"/>',tg:'<path d="M21 4L3 11l6 2 2 7 3-5 5 4z"/>',lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',chk:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/>',ph:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>',head:'<path d="M4 15v-3a8 8 0 0116 0v3"/><rect x="3" y="14" width="5" height="7" rx="2"/><rect x="16" y="14" width="5" height="7" rx="2"/>',dl:'<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>',cal:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/>'};
-function svg(n,w){return '<svg viewBox="0 0 24 24"'+(w?' width="'+w+'" height="'+w+'"':'')+' aria-hidden="true">'+IC[n]+'</svg>'}
+function svg(n,w){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"'+(w?' width="'+w+'" height="'+w+'"':'')+' aria-hidden="true">'+IC[n]+'</svg>'}
 var FLAG={EN:'<svg viewBox="0 0 60 60"><clipPath id="uk"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#uk)"><rect width="60" height="60" fill="#1F3A7A"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#D1223B" stroke-width="4"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="16"/><path d="M30 0V60M0 30H60" stroke="#D1223B" stroke-width="9"/></g></svg>',FR:'<svg viewBox="0 0 60 60"><clipPath id="fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#fr)"><rect width="20" height="60" fill="#2342A0"/><rect x="20" width="20" height="60" fill="#fff" stroke="#E4E2F6"/><rect x="40" width="20" height="60" fill="#EE2A35"/></g></svg>'};
 function call(a,d,q){
   if(!CFG.apiUrl)return Promise.reject({code:'network'});
@@ -206,9 +218,9 @@ function welcome(){
   $('scr').innerHTML='<div class="pg hero mn" style="color:#fff;padding-top:28px">'+words+'<div class="hd" style="position:relative"><img class="lg" src="assets/brand/logo-white.png" alt="BTL Languages School" style="height:46px"><div class="g"></div><button class="ghost" id="lg"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>دخول</button></div>'+
    '<div style="margin-top:auto;position:relative;text-align:center"><h1 style="font-size:30px;line-height:1.35;margin:0;font-weight:900;animation:up .5s ease both">أتقن اللغة الفرنسية<br>والإنجليزية <span style="color:#FFE600">أونلاين معنا</span></h1><p style="margin:10px 0 0;font-size:15px;line-height:1.7;font-weight:600;color:#E4E2FF">اختبر مستواك أولا، ثم ابدأ مع فوجك</p></div>'+
    '<div class="aud3"><div class="a1" data-k="kid">'+KID+'<b>للصغار</b><small>من 8 إلى 14 سنة</small></div><div class="a2" data-k="adl">'+ADL+'<b>للكبار</b><small>من 15 سنة وأكثر</small></div><div class="a3" data-k="vip">'+VIP+'<b>فردي VIP</b><small>للكبار والصغار</small></div></div>'+
-   '<div class="ft" style="padding-top:18px"><button class="btn gold" id="go"><span>اختبر مستواك مجانا</span>'+svg('next')+'</button></div></div>';
-  $('go').onclick=contact;$('lg').onclick=login;
-  on($('scr'),'.aud3>div',function(d){if(d.getAttribute('data-k')==='vip')return toast('الدروس الفردية VIP قريبا إن شاء الله');contact()});hideSplash();
+   '<div class="ft" style="padding-top:18px"><button class="btn gold" id="go"><span>اختبر مستواك مجانا</span>'+svg('next')+'</button><button class="lnk" id="wy" style="color:#E4E2FF">تعرّف على مدرسة BTL</button></div></div>';
+  $('go').onclick=contact;$('lg').onclick=login;$('wy').onclick=whyBtl;
+  on($('scr'),'.aud3>div',function(d){if(d.getAttribute('data-k')==='vip')return vipRequest();contact()});hideSplash();
 }
 var CC=[['DZ','+213','🇩🇿'],['FR','+33','🇫🇷'],['MA','+212','🇲🇦'],['TN','+216','🇹🇳'],['SA','+966','🇸🇦'],['AE','+971','🇦🇪'],['QA','+974','🇶🇦'],['EG','+20','🇪🇬'],['BE','+32','🇧🇪'],['CA','+1','🇨🇦'],['DE','+49','🇩🇪'],['TR','+90','🇹🇷']];
 function phoneField(id,cid){return '<div class="phone"><select id="'+cid+'">'+CC.map(function(c){return '<option value="'+c[0]+'">'+c[2]+' '+c[1]+'</option>'}).join('')+'</select><input id="'+id+'" class="ltr" inputmode="tel" autocomplete="tel-national" placeholder="0X XX XX XX XX"></div>'}
@@ -241,7 +253,7 @@ function profile(){
   on($('lg'),'.lang',function(b){var l=b.getAttribute('data-l');P.l[l]=!P.l[l];b.classList.toggle('on',P.l[l])});
   on($('gd'),'.gd',function(b){P.g=b.getAttribute('data-g');Array.prototype.forEach.call($('gd').children,function(x){x.classList.toggle('on',x===b)})});
   $('by').onchange=function(){var a=y-Number(this.value);$('cat').innerHTML=this.value?'<span class="chip">'+svg('chk',18).replace('<svg','<svg style="stroke:#11804A;fill:none;stroke-width:2.6"')+'فئتك: '+(a>=15?'الكبار':'الصغار')+'</span> <span class="sm">الصغار من 8 إلى 14 سنة، والكبار من 15 سنة وأكثر</span><p class="sm" style="margin:8px 0 0">أقل من 8 سنوات؟ مرحّب بك، ويحتاج الطفل إلى مرافقة وليّه أثناء الحصة.</p>':''};
-  $('vp').onclick=function(){toast('الدروس الفردية VIP قريبا إن شاء الله')};
+  $('vp').onclick=vipRequest;
   $('nx').onclick=function(){
     var langs=Object.keys(P.l).filter(function(k){return P.l[k]});
     if(!langs.length)return toast(ERR.bad_languages,true);if(!P.g)return toast(ERR.bad_gender,true);if(!$('by').value)return toast(ERR.bad_birth_year,true);
@@ -287,7 +299,7 @@ function testReady(lang,chain){
    '<div class="tip"><div class="ti" style="background:#FFE8F4"><svg viewBox="0 0 24 24" stroke="#C4087A">'+IC.back+'</svg></div><b>تخطَّ بثقة</b><span>'+(kd?'لا بأس، انتقل إلى السؤال التالي':'لا تتوقف عند سؤال صعب')+'</span></div></div>'+
    '<p class="sm" style="text-align:center;margin-top:14px">'+LANG[lang]+' · سيبدأ اختبارك بعد لحظات</p><div class="autob"><i id="ab"></i></div>',
    '<button class="btn" id="st" disabled><span>جارٍ التحضير…</span></button><button class="lnk" id="lt">ليس الآن، ذكّرني لاحقا</button>');
-  $('lt').onclick=back;
+  $('lt').onclick=function(){remindSheet()};
   var t0=Date.now();setTimeout(function(){var e=$('ab');if(e){e.style.transition='width 6s linear';e.style.width='100%'}},30);
   function go(){
     if(gone||done)return;done=true;leave();
@@ -441,8 +453,8 @@ function status(){
   var o=S.order,nm=((S.me&&S.me.name)||'').split(' ')[0];
   page({title:'حالة اشتراكك',nologo:false},stepper(3)+'<h1 style="margin-top:18px;font-size:26px">وصلنا وصلك يا '+esc(nm)+'</h1><p class="sub">تتحقق الإدارة من وصلك الآن، وعند التأكيد يظهر لك هنا رابط مجموعة فوجك وتصلك رسالة وإشعار.</p>'+
    '<div class="cd" style="background:#F0EFFF;border:0;line-height:2"><div class="row"><span class="mute">رقم الطلب</span><b>'+esc(shortCode(o&&o.order_id))+'</b></div><div class="row"><span class="mute">الفوج</span><b dir="ltr">'+esc(o?o.lines.map(function(l){return l.group_code}).join(' + '):'')+'</b></div><div class="row"><span class="mute">المبلغ</span>'+(o?da(o.net):'')+'</div><div class="row"><span class="mute">الحالة</span><span class="tag wr">قيد التحقق</span></div></div>'+codeCard(),
-   '<button class="lnk" id="lo">تسجيل الخروج</button>');
-  wireCode();$('lo').onclick=logout;
+   '<button class="cd" id="tl" style="display:flex;align-items:center;gap:12px;text-align:start;width:100%"><span style="flex:1"><b style="font-size:16px">جهّز أدواتك أثناء الانتظار</b><br><span style="font-size:13px;color:var(--mute);font-weight:600">تلغرام وZoom، ثبّت التطبيق وفعّل الإشعارات</span></span>'+svg('next',20)+'</button><button class="lnk" id="lo">تسجيل الخروج</button>');
+  wireCode();$('lo').onclick=logout;$('tl').onclick=function(){toolsSetup()};
   timers.push(setInterval(function(){call('order_get',{},true).then(function(x){if(!x||x.status!=='paid_pending'){S.order=x;route()}},function(){})},20000));
 }
 function home(){
@@ -466,8 +478,8 @@ function pendingHome(){
   var tg=CFG.telegramBot||'BTLSchoolBot',confirmed=S.me&&S.me.status==='subscribed',nm=((S.me&&S.me.name)||'').split(' ')[0];
   page({title:confirmed?'تم تأكيد اشتراكك':'حالة اشتراكك'},stepper(confirmed?4:3)+'<h1 style="margin-top:18px;font-size:26px">'+(confirmed?'مرحبا بك في فوجك يا '+esc(nm):'اشتراكك قيد التحقق')+'</h1><p class="sub">'+(confirmed?'أكّدت الإدارة اشتراكك. انضم الآن إلى مجموعة فوجك على تلغرام لتصلك الحصص والتسجيلات.':'تتحقق الإدارة من وصلك وتصلك رسالة عند التأكيد.')+'</p>'+
    (confirmed?'<div class="cd"><b style="font-size:17px">كيف تنضم؟ ثلاث نقرات</b>'+['اضغط الزر أسفل الشاشة لفتح بوت BTL','اضغط Start وشارك رقمك بنقرة واحدة','يصلك رابطك الخاص وتنضم إلى فوجك'].map(function(x,i){return '<div class="row" style="justify-content:flex-start;gap:10px;margin-top:10px"><span class="num">'+(i+1)+'</span><span style="font-weight:700;font-size:14px">'+x+'</span></div>'}).join('')+'</div>':'')+codeCard(),
-   (confirmed?'<a class="btn tg" href="https://t.me/'+esc(tg)+'" target="_blank" rel="noopener"><span>انضم إلى مجموعة الفوج</span>'+svg('tg')+'</a>':'')+'<button class="lnk" id="lo">تسجيل الخروج</button>');
-  wireCode();$('lo').onclick=logout;
+   (confirmed?'<a class="btn tg" href="https://t.me/'+esc(tg)+'" target="_blank" rel="noopener"><span>انضم إلى مجموعة الفوج</span>'+svg('tg')+'</a>':'')+'<button class="cd" id="tl" style="display:flex;align-items:center;gap:12px;text-align:start;width:100%"><span style="flex:1"><b style="font-size:16px">جهّز أدواتك أثناء الانتظار</b><br><span style="font-size:13px;color:var(--mute);font-weight:600">تلغرام وZoom، ثبّت التطبيق وفعّل الإشعارات</span></span>'+svg('next',20)+'</button><button class="lnk" id="lo">تسجيل الخروج</button>');
+  wireCode();$('lo').onclick=logout;$('tl').onclick=function(){toolsSetup()};
 }
 
 var TIPS={EN:{grammar:['المضارع البسيط مع he / she','انتبه إلى إضافة s في آخر الفعل.'],vocab:['المفردات اليومية والأفعال الشائعة','تعلّم 10 كلمات جديدة يوميا مع جملة لكل كلمة.'],reading:['الفكرة العامة قبل التفاصيل','اقرأ نصا قصيرا يوميا وحدّد فكرته الرئيسية.'],listening:['فهم الأرقام في الاستماع','تدرّب على سماع الأسعار والساعات والتواريخ.']},
@@ -615,6 +627,83 @@ function drawCart(o,kids,invs){
 }
 
 // ---------- الإقلاع ----------
+// ---------- صفحات إضافية (تصميم كامل، والمنطق الخلفي يُبنى لاحقا: «قريبا») ----------
+var SOON=function(){toast('قريبا إن شاء الله')};
+var WHY={rating:'4.2',votes:'947',recommend:'97',seats:'4256',teachers:'50',years:'6'};
+var WHY_I={tc:'<path d="M3 9l9-5 9 5-9 5z"/><path d="M7 11v5c2 2 8 2 10 0v-5"/>',gr:'<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 19c0-3 3-5 6-5s6 2 6 5M15 15c3 0 6 1 6 4"/>',lv:'<rect x="3" y="6" width="18" height="12" rx="3"/><circle cx="12" cy="12" r="2.5"/>',rc:'<circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5z"/>',cu:'<path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M5 17a3 3 0 013-3h11"/>',tm:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
+function whyBtl(){
+  var feats=[['tc','أساتذة من أفضل أساتذة الجزائر','يمرّون بمقابلة وتقييم، ويقيّمهم المشاركون بعد كل مستوى، فنبقي الأفضل فقط.','#EEEDFF','#4136E6'],['gr','أفواج صغيرة','عدد محدود ليتسنى لكل مشارك أن يتحدث ويتدرب ويستوعب.','#FFE8F4','#C4087A'],['lv','حصص مباشرة وتفاعلية','تتحدث وتشارك وتصحّح مع أستاذك وزملائك مباشرة، لا مجرد مشاهدة.','#E3F8EC','#11804A'],['rc','تسجيلات تبقى معك مدى الحياة','كل حصة تُسجَّل، تعود إليها متى شئت وتبقى عندك دائما.','#FFF1D6','#E08600'],['cu','منهاج معتمد يُقدَّم لك مجانا','يقودك خطوة بخطوة، لكل لغة وفئة، ومحادثة حقيقية في كل حصة.','#EEEDFF','#4136E6'],['tm','وقتك أنت من يحدّده','تختار أنت وفوجك الوقت المناسب لكم من بين المواعيد المتاحة.','#FFE8F4','#C4087A']];
+  var star='<svg viewBox="0 0 24 24" width="22" height="22" fill="#FFC800" stroke="#E0A800" stroke-width="1.4" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 16.9 6.6 19.8l1.1-6.1L3.2 9.4l6.1-.8z"/></svg>';
+  page({title:'لماذا BTL؟',back:welcome},
+   '<h1 style="margin-top:18px;font-size:29px;line-height:1.4">أفضل مدرسة لغات <span style="color:var(--brand)">أونلاين</span> بالجزائر</h1><p class="sub">فرنسية وإنجليزية مباشرة مع أساتذة من أفضل الأساتذة في الجزائر، وفريق بجانبك في كل خطوة.</p>'+
+   '<div class="cd" style="border:2px solid #5FD3A0;display:flex;align-items:center;gap:12px"><div style="flex:1;font-weight:700;font-size:14px;line-height:1.7"><b style="font-size:15px">تقييم المشاركين لاستفادتهم من الدورة</b><br><span style="color:var(--mute);font-size:13px">من <b style="color:var(--brand)">'+WHY.votes+'</b> تقييما، و'+WHY.recommend+'% منهم ينصحون بنا.</span></div><div style="text-align:center;direction:ltr"><div style="font-size:38px;font-weight:900;line-height:1">'+WHY.rating+'<small style="font-size:15px;color:var(--mute)">/5</small></div><div>'+star+star+star+star+star+'</div></div></div>'+
+   '<div class="cd" style="text-align:center"><div style="font-size:42px;font-weight:900;color:var(--brand);line-height:1.1">'+WHY.seats+'</div><div style="font-size:13px;font-weight:700;color:var(--mute)">مقعدا دراسيا شغله دارسونا منذ التأسيس</div></div>'+
+   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="cd" style="text-align:center"><div style="font-size:36px;font-weight:900;color:#C4087A;direction:ltr;line-height:1.1">+'+WHY.teachers+'</div><div style="font-size:12.5px;font-weight:700;color:var(--mute)">أستاذا وأستاذة، من أفضل الأساتذة في الجزائر</div></div><div class="cd" style="text-align:center"><div style="font-size:36px;font-weight:900;color:#E08600;direction:ltr;line-height:1.1">+'+WHY.years+'</div><div style="font-size:12.5px;font-weight:700;color:var(--mute)">سنوات من الخبرة في التعليم أونلاين</div></div></div>'+
+   '<div style="background:#E3F8EC;border-radius:16px;padding:12px;display:flex;align-items:center;justify-content:center;gap:8px;color:#11804A;font-weight:800;font-size:14px">'+svg('cal',20)+'أفواج جديدة تنطلق كل أسبوع</div>'+
+   '<h2 style="margin:10px 0 0;font-size:19px">ما الذي تحصل عليه؟</h2>'+feats.map(function(f){return '<div class="cd" style="display:flex;gap:12px;align-items:flex-start"><div style="width:46px;height:46px;border-radius:14px;background:'+f[3]+';display:flex;align-items:center;justify-content:center;flex:none"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="'+f[4]+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+WHY_I[f[0]]+'</svg></div><div><b style="font-size:15.5px">'+f[1]+'</b><div style="font-size:13px;font-weight:600;color:var(--mute);margin-top:3px;line-height:1.7">'+f[2]+'</div></div></div>'}).join(''),
+   '<button class="btn gold" id="go"><span>اختبر مستواك مجانا</span>'+svg('next')+'</button>');
+  $('go').onclick=contact;
+}
+function remindSheet(back){
+  ask('<div class="grab"></div><h2 style="margin:0">متى نذكّرك؟</h2><p class="sm" style="margin:0">بياناتك محفوظة عندنا، وتعود متى شئت بنفس رقمك ورمزك.</p><div class="chips3"><button class="ch on" data-t="e">الليلة 20:00</button><button class="ch" data-t="m">غدا 09:00</button><button class="ch" data-t="o">وقت آخر</button></div><label class="ck"><input type="checkbox" id="ag" checked><span>أوافق على استلام تذكير واحد على الواتساب، ويصلني إشعار أيضا إن ثبّتّ التطبيق.</span></label><button class="btn" id="ok" style="animation:none">ذكّرني</button><button class="btn sec" id="cn">إلغاء</button>',function(m){
+    on(m,'.ch',function(b){Array.prototype.forEach.call(m.querySelectorAll('.ch'),function(x){x.classList.toggle('on',x===b)})});
+    m.querySelector('#cn').onclick=closeM;m.querySelector('#ok').onclick=function(){closeM();SOON()}})}
+function retakeModal(n,max,days,go){
+  ask('<div class="grab"></div><h2 style="margin:0">هذه محاولتك '+n+' من '+max+'</h2><p class="sm" style="margin:0">لك '+max+' محاولات خلال '+days+' يوما، وقد استعملت '+(n-1===1?'واحدة':(n-1)+' منها')+'. ستحصل الآن على أسئلة جديدة لم تمر بك.</p><button class="btn" id="ok" style="animation:none">ابدأ المحاولة '+(n===2?'الثانية':'الثالثة')+'</button><button class="btn sec" id="cn">ليس الآن</button>',function(m){m.querySelector('#cn').onclick=closeM;m.querySelector('#ok').onclick=function(){closeM();if(go)go()}})}
+// جهّز أدواتك
+var TOOLS=[['tg','تلغرام','مجموعة فوجك والتسجيلات وكل جديد','#229ED9','https://t.me/BTLSchoolBot','افتح في تلغرام'],['zm','Zoom','حضور حصصك مباشرة مع أستاذك','#2D8CFF','https://zoom.us/download','افتح في المتجر'],['ap','تطبيق منصة BTL','حصصك وتقدمك وإشعاراتك في مكان واحد','#4136E6','','دليل تثبيت التطبيق']];
+var TIC={tg:'<path d="M21 4L3 11l6 2 2 7 3-5 5 4z" fill="#fff" stroke="none"/>',zm:'<rect x="3" y="7" width="12" height="10" rx="2"/><path d="M15 11l6-3v8l-6-3"/>',ap:'<rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/>'};
+function toolsSetup(back){
+  var st={};try{st=JSON.parse(ls('tools')||'{}')}catch(e){}
+  var n=TOOLS.filter(function(t){return st[t[0]]}).length;
+  page({title:'جهّز أدواتك',back:back||function(){S.me?route():welcome()}},
+   '<h1 style="margin-top:18px;font-size:27px">جهّز أدواتك قبل أول حصة</h1><p class="sub">ثبّتها وأنت تنتظر التحقق من وصلك.</p><div style="display:flex;align-items:center;gap:10px;direction:rtl"><b style="color:#11804A;font-size:13px;white-space:nowrap">جاهز '+n+' من 3</b><div class="prog" style="flex:1;background:var(--line)"><i style="width:'+Math.round(n/3*100)+'%;background:#11A862;animation:none"></i></div></div>'+
+   TOOLS.map(function(t){var ok=st[t[0]];return '<div class="cd" style="'+(ok?'border:2px solid #5FD3A0;':'')+'display:flex;flex-direction:column;gap:12px"><div style="display:flex;gap:12px;align-items:center"><div style="width:48px;height:48px;border-radius:14px;background:'+t[3]+';display:flex;align-items:center;justify-content:center;flex:none"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+TIC[t[0]]+'</svg></div><div style="flex:1"><b style="font-size:17px">'+t[1]+'</b><div style="font-size:13px;font-weight:600;color:var(--mute)">'+t[2]+'</div></div>'+(ok?'<span style="background:#E3F8EC;color:#11804A;border-radius:99px;padding:5px 12px;font-weight:800;font-size:13px;display:flex;gap:4px;align-items:center">'+svg('chk',16)+'جاهز</span>':'')+'</div>'+(ok?'<div style="font-size:12.5px;font-weight:700;color:var(--mute)">تم تأكيد التثبيت. <button class="lnk" style="min-height:0;padding:0;color:var(--brand)" data-u="'+t[0]+'">تراجع</button></div>':'<div style="display:flex;gap:10px"><button class="btn" style="flex:1.3;min-height:50px;font-size:15px;background:'+(t[0]==='ap'?'var(--brand)':'#2D8CFF')+'" data-o="'+t[0]+'">'+t[5]+'</button><button class="btn sec" style="flex:1;min-height:50px;font-size:15px" data-d="'+t[0]+'">'+svg('chk',16)+' ثبّتّه بالفعل</button></div>')+'</div>'}).join('')+
+   '<div class="note">'+svg('info',18)+'<span>الزر يفتح صفحة التطبيق في متجر هاتفك فقط، وأنت من يضغط «تثبيت». ثم ارجع واضغط «ثبّتّه بالفعل».</span></div>',
+   '<button class="btn" id="bk2"><span>العودة إلى حالة اشتراكي</span></button>');
+  function save(k,v){st[k]=v;try{ls('tools',JSON.stringify(st))}catch(e){}toolsSetup(back)}
+  on($('scr'),'[data-d]',function(b){save(b.getAttribute('data-d'),1)});on($('scr'),'[data-u]',function(b){save(b.getAttribute('data-u'),0)});
+  on($('scr'),'[data-o]',function(b){var k=b.getAttribute('data-o'),t=TOOLS.filter(function(x){return x[0]===k})[0];if(k==='ap'){var c=$('inst');if(c)return c.click();return toast('افتح المنصة من متصفح هاتفك ثم اختر «إضافة إلى الشاشة الرئيسية»')}window.open(t[4],'_blank','noopener')});
+  $('bk2').onclick=function(){S.me?route():welcome()}}
+// دروس VIP الفردية (واجهة كاملة؛ الإرسال النهائي «قريبا»)
+var VIPL=[['EN','الإنجليزية'],['FR','الفرنسية'],['AR','العربية'],['ES','الإسبانية'],['DE','الألمانية']],VIPP=[[10,1500000],[20,2400000],[30,3000000]],VIPG=['المحادثة والطلاقة','أحسّن مستواي في اللغة','التحضير لاختبار (IELTS / TCF / DELF)','العمل أو الهجرة','الدراسة في الخارج','السفر','مرافقة ابني في دراسته'];
+var VIPD=[['السبت'],['الأحد'],['الاثنين'],['الثلاثاء'],['الأربعاء'],['الخميس'],['الجمعة']],VIPS=['8-10','10-12','12-14','14-16','16-18','18-20','20-22'];
+function vipS(){if(!S.vip)S.vip={langs:{EN:1},pk:{EN:10,FR:20},goals:{},note:'',slots:{}};return S.vip}
+function vipHead(t,back){return {title:t,back:back,cls:'vp'}}
+function vipTotal(){var v=vipS(),t=0;Object.keys(v.langs).forEach(function(l){var p=VIPP.filter(function(x){return x[0]===v.pk[l]})[0];if(p)t+=p[1]});return t}
+function vipRequest(){
+  var v=vipS(),chips=['واحد لواحد مع أستاذ مختار','مواعيد تناسبك','برنامج على هدفك'].map(function(x){return '<span class="vch">'+svg('chk',14)+x+'</span>'}).join('');
+  var flag=function(c){return FLAG[c]||'<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="30" fill="'+({AR:'#0B8A4B',ES:'#E0A800',DE:'#222'}[c])+'"/><text x="30" y="38" text-anchor="middle" font-size="22" font-weight="900" fill="#fff">'+(c==='AR'?'ع':c)+'</text></svg>'};
+  page(vipHead('دروس VIP الفردية',welcome),'<h1 style="margin-top:18px;font-size:27px">أستاذ لك وحدك</h1><p class="sub">دروس فردية للكبار والصغار، بوقتك وهدفك.</p><div style="display:flex;flex-wrap:wrap;gap:8px">'+chips+'</div>'+
+   '<div><b style="font-size:15px">اللغة</b> <span style="font-size:12.5px;color:var(--mute);font-weight:600">(يمكنك اختيار أكثر من لغة)</span></div><div class="vl">'+VIPL.map(function(l){return '<button class="vlc'+(v.langs[l[0]]?' on':'')+'" data-l="'+l[0]+'"><span class="fl">'+flag(l[0])+'</span>'+l[1]+(v.langs[l[0]]?'<i>'+svg('chk',12)+'</i>':'')+'</button>'}).join('')+'</div>'+
+   Object.keys(v.langs).map(function(l){return '<div style="display:flex;align-items:center;gap:8px;margin-top:4px"><span style="width:26px;height:26px;display:inline-block">'+flag(l)+'</span><b>باقة '+VIPL.filter(function(x){return x[0]===l})[0][1]+'</b></div><div class="vpk">'+VIPP.map(function(p){return '<button class="vpc'+(v.pk[l]===p[0]?' on':'')+'" data-l="'+l+'" data-h="'+p[0]+'"><b>'+p[0]+(p[0]===10?' ساعات':' ساعة')+'</b><span>'+da(fmtC(p[1]))+'</span></button>'}).join('')+'</div>'}).join('')+
+   '<div class="vtot"><b>المجموع للدفع</b>'+da(fmtC(vipTotal()))+'</div>',
+   '<button class="btn vbtn" id="nx"><span>التالي</span>'+svg('next')+'</button><button class="lnk" id="bk3">ليس ما أريد، العودة إلى الفوج الجماعي</button>');
+  $('bk3').onclick=welcome;
+  on($('scr'),'.vlc',function(b){var l=b.getAttribute('data-l');if(v.langs[l]){if(Object.keys(v.langs).length>1)delete v.langs[l]}else{v.langs[l]=1;if(!v.pk[l])v.pk[l]=10}vipRequest()});
+  on($('scr'),'.vpc',function(b){v.pk[b.getAttribute('data-l')]=+b.getAttribute('data-h');vipRequest()});
+  $('nx').onclick=vipGoal}
+function vipGoal(){
+  var v=vipS();
+  page(vipHead('دروس VIP الفردية',vipRequest),'<h1 style="margin-top:18px;font-size:27px">ما هدفك من الدراسة؟</h1><p class="sub">اختر هدفا أو أكثر، ثم أضف ما تشاء بكلماتك.</p><div style="display:flex;flex-wrap:wrap;gap:8px">'+VIPG.map(function(g,i){return '<button class="vch big'+(v.goals[i]?' on':'')+'" data-g="'+i+'">'+(v.goals[i]?svg('chk',14):'')+g+'</button>'}).join('')+'</div><div><b style="font-size:14.5px">أو اكتب هدفك بحرية</b> <span style="font-size:12.5px;color:var(--mute)">(اختياري، حتى بعد الاختيار)</span></div><textarea id="nt" class="vta" rows="4" placeholder="مثال: أريد تحضير اختبار TCF للدراسة في فرنسا خلال ستة أشهر">'+esc(v.note)+'</textarea>',
+   '<button class="btn vbtn" id="nx"><span>التالي</span>'+svg('next')+'</button>');
+  on($('scr'),'[data-g]',function(b){v.note=$('nt').value;var i=b.getAttribute('data-g');v.goals[i]=!v.goals[i];vipGoal()});
+  $('nx').onclick=function(){v.note=$('nt').value.trim();if(!Object.keys(v.goals).some(function(k){return v.goals[k]})&&!v.note)return toast('اختر هدفا أو اكتب هدفك',true);vipTimes()}}
+function vipTimes(){
+  var v=vipS(),n=Object.keys(v.slots).filter(function(k){return v.slots[k]}).length;
+  page(vipHead('دروس VIP الفردية',vipGoal),'<h1 style="margin-top:18px;font-size:27px">أخبرنا بأوقاتك</h1><p class="sub">اختر أكبر عدد ممكن من الفترات التي تناسبك أسبوعيا.</p><div class="cd vgrid"><div class="vh"><i></i>'+VIPS.map(function(s){return '<span>'+s+'</span>'}).join('')+'</div>'+VIPD.map(function(d,di){return '<div class="vr"><b>'+d[0]+'</b>'+VIPS.map(function(s,si){var k=di+'_'+si;return '<button class="vc'+(v.slots[k]?' on':'')+'" data-k="'+k+'" aria-label="'+d[0]+' '+s+'">'+(v.slots[k]?svg('chk',14):'')+'</button>'}).join('')+'</div>'}).join('')+'</div>'+
+   '<div style="background:#E3F8EC;border-radius:16px;padding:12px;display:flex;gap:8px;align-items:center;color:#11804A;font-weight:700;font-size:13.5px">'+svg('timer',20)+'<span>اخترت '+n+' فترة. كلما زادت خياراتك وجدنا لك أستاذا أسرع.</span></div>',
+   '<button class="btn vbtn" id="nx"><span>التالي: الدفع</span>'+svg('next')+'</button>');
+  on($('scr'),'.vc',function(b){var k=b.getAttribute('data-k');v.slots[k]=!v.slots[k];vipTimes()});
+  $('nx').onclick=function(){if(!n)return toast('اختر فترة واحدة على الأقل',true);vipPay()}}
+function vipPay(){
+  var v=vipS(),ls2=Object.keys(v.langs).map(function(l){var p=VIPP.filter(function(x){return x[0]===v.pk[l]})[0];return VIPL.filter(function(x){return x[0]===l})[0][1]+' '+p[0]+' ساعة'}).join(' + ');
+  page(vipHead('دفع دروس VIP',vipTimes),stepper(1)+'<div class="vsum"><div style="display:flex;justify-content:space-between;align-items:center"><span style="background:rgba(255,255,255,.18);border-radius:99px;padding:3px 10px;font-size:12px;font-weight:800">طلب جديد</span><b style="color:#FFE600">VIP · '+esc(ls2)+'</b></div><div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:10px"><span style="font-size:13px;opacity:.85">المبلغ المطلوب</span></div><div style="font-size:34px;font-weight:900">'+da(fmtC(vipTotal()))+'</div></div>'+
+   '<b style="font-size:15.5px">حوّل المبلغ إلى هذا الحساب</b><div class="cd" style="border:2px solid var(--brand)"><div style="font-size:13px;color:var(--mute);font-weight:700">صاحب الحساب</div><b style="font-size:18px">سيظهر اسم الحساب هنا</b><div style="font-size:13px;color:var(--mute);font-weight:700;margin-top:8px">رقم الحساب CCP</div><b class="ltr" style="font-size:18px">—</b></div><div class="note">'+svg('info',18)+'<span>يظهر الحساب الحقيقي وزر النسخ عند تفعيل دفع VIP. نتواصل معك عبر الواتساب لتأكيد الأستاذ والمواعيد.</span></div>',
+   '<button class="btn" id="nx"><span>حوّلت المبلغ، ارفع الوصل</span>'+svg('next')+'</button><button class="lnk" id="lt">سأدفع لاحقا، احفظ طلبي</button>');
+  $('nx').onclick=SOON;$('lt').onclick=SOON}
+
+window.BTLX={whyBtl:whyBtl,vipRequest:vipRequest,vipGoal:vipGoal,vipTimes:vipTimes,vipPay:vipPay,toolsSetup:toolsSetup,remindSheet:remindSheet,retakeModal:retakeModal,testReady:testReady};
 (function(){var t=ls('tok'),sp=$('sp');if(sp)sp.onclick=skipSplash;if(t){S.token=t;route()}else{welcome();setTimeout(function(){call('ping',{},true).catch(function(){})},50)}})();
 })();
 </script>
