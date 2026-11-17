@@ -133,3 +133,14 @@ function act_offersNow_(ctx) {
   var live = offersNow_().sort(function (a, b) { return Number(b.pct) - Number(a.pct); });
   return live.slice(0, 1).map(function (o) { return { id: String(o.offer_id), name: String(o.name), pct: Number(o.pct), scopeType: String(o.scope_type), scopeValue: String(o.scope_value), endsAt: String(o.ends_at), banner: String(o.banner_text) }; });
 }
+
+/** site_config: الأرقام والباقات المعروضة في الواجهة العامة (تُعدَّل من الإعدادات). */
+function act_siteConfig_(ctx) {
+  var g = function (k, d) { return String(getSetting_(k, d)); };
+  var pop = Number(g('site_vip_popular', 20));
+  return {
+    why: { rating: g('site_why_rating', '4.2'), votes: g('site_why_votes', '947'), recommend: g('site_why_recommend', '97'),
+           seats: g('site_why_seats', '4256'), teachers: g('site_why_teachers', '50'), years: g('site_why_years', '6'), source: g('site_why_source', 'manual') },
+    vip: { p10: Number(g('vip_10h', 15000)), p20: Number(g('vip_20h', 24000)), p30: Number(g('vip_30h', 30000)), popular: [10, 20, 30].indexOf(pop) >= 0 ? pop : 20 }
+  };
+}

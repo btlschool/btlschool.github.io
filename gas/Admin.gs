@@ -4,6 +4,7 @@
  */
 var SECRET_KEY_RE_ = /token|secret|pepper|password|private/i;
 var SETTING_GROUPS_ = [
+  ['site', 'واجهة الزبائن (الأرقام والباقات المعروضة)', /^site_/],
   ['pricing', 'الأسعار والخصومات', /^(price_|discount_|vip_|order_)/],
   ['test', 'الاختبار', /^test_/],
   ['groups', 'الأفواج والجداول', /^(group_|level_hours|session_hours|seats_)/],

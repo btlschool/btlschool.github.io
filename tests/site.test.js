@@ -1,0 +1,10 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const ctx={};vm.createContext(ctx);
+for(const f of ['Core','Pricing'])vm.runInContext(fs.readFileSync(require('path').join(__dirname,'../gas/'+f+'.gs'),'utf8'),ctx);
+let n=0;const t=(name,fn)=>{fn();n++;console.log('ok',name)};
+const S={site_why_rating:'4.5',vip_20h:'25000',site_vip_popular:'30'};
+ctx.getSetting_=(k,d)=>S[k]!==undefined?S[k]:String(d);
+t('site_config is public',()=>assert.ok(ctx.PUBLIC_ACTIONS.site_config));
+t('site_config reads settings with defaults',()=>{const r=ctx.act_siteConfig_({});assert.equal(r.why.rating,'4.5');assert.equal(r.why.seats,'4256');assert.equal(r.vip.p20,25000);assert.equal(r.vip.p10,15000);assert.equal(r.vip.popular,30)});
+t('bad popular falls back to 20',()=>{S.site_vip_popular='7';assert.equal(ctx.act_siteConfig_({}).vip.popular,20)});
+console.log(n+' tests passed');

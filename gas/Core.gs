@@ -11,6 +11,7 @@ var PUBLIC_ACTIONS = {   // أفعال مسموحة بدون جلسة (الدو�
   staff_login: function (c) { return act_staffLogin_(c); },
   price_preview: function (c) { return act_pricePreview_(c); },
   offers_now: function (c) { return act_offersNow_(c); },
+  site_config: function (c) { return act_siteConfig_(c); },
   invite_open: function (c) { return act_inviteOpen_(c); }
 };
 var USER_ACTIONS = {       // أفعال تحتاج جلسة مشارك
