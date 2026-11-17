@@ -101,15 +101,15 @@ function initG(){
 $('out').onclick=function(){var t=TOK;api('staff_logout',{},true).then(function(){},function(){});TOK='';store('t',null);logout()};
 
 // ---------- الهيكل ----------
-var ICON={acc:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>',notif:'<path d="M6 8a6 6 0 1112 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 004 0"/>',stops:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',inbox:'<path d="M3 13l2-8h14l2 8M3 13v6h18v-6M3 13h5l1 2h6l1-2h5"/>',pay:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/>',contact:'<path d="M21 12a8 8 0 01-11.5 7.2L4 20l1-4.5A8 8 0 1121 12z"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 000 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/>'};
+var ICON={today:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',offers:'<path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',acc:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>',notif:'<path d="M6 8a6 6 0 1112 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 004 0"/>',stops:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',inbox:'<path d="M3 13l2-8h14l2 8M3 13v6h18v-6M3 13h5l1 2h6l1-2h5"/>',pay:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/>',contact:'<path d="M21 12a8 8 0 01-11.5 7.2L4 20l1-4.5A8 8 0 1121 12z"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 000 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/>'};
 function renderNav(){
-  var tabs=[['inbox','الوارد'],['pay','المدفوعات'],['contact','التواصل'],['stops','التوقف']];
-  if(STAFF&&STAFF.role==='admin'){tabs.push(['acc','الحسابات']);tabs.push(['notif','الإشعارات']);tabs.push(['settings','الإعدادات'])}
+  var tabs=[['today','اليوم'],['inbox','الوارد'],['pay','المدفوعات'],['contact','التواصل'],['stops','التوقف']];
+  if(STAFF&&STAFF.role==='admin'){tabs.push(['acc','الحسابات']);tabs.push(['notif','الإشعارات']);tabs.push(['offers','العروض']);tabs.push(['settings','الإعدادات'])}
   var cnt={pay:INBOX&&INBOX.payments_pending,contact:INBOX&&INBOX.outreach_pending,stops:INBOX&&INBOX.stops_pending};
   $('nav').innerHTML=tabs.map(function(t){return '<button data-t="'+t[0]+'" class="'+(TAB===t[0]?'on':'')+'"><svg viewBox="0 0 24 24">'+ICON[t[0]]+'</svg>'+t[1]+(cnt[t[0]]?'<span class="badge">'+cnt[t[0]]+'</span>':'')+'</button>'}).join('');
   Array.prototype.forEach.call($('nav').children,function(b){b.onclick=function(){go(b.getAttribute('data-t'))}});
 }
-function go(t){TAB=t;var f={inbox:vInbox,pay:vPay,contact:vContact,stops:vStops,acc:vAcc,notif:vNotif,settings:vSettings}[t];$('title').textContent={inbox:'الإدارة',pay:'المدفوعات',contact:'بانتظار التواصل',stops:'طلبات التوقف',acc:'حسابات CCP',notif:'الإشعارات',settings:'الإعدادات'}[t];renderNav();f()}
+function go(t){TAB=t;var f={today:vToday,offers:vOffers,inbox:vInbox,pay:vPay,contact:vContact,stops:vStops,acc:vAcc,notif:vNotif,settings:vSettings}[t];$('title').textContent={today:'مهام الإداري',offers:'الخصومات والعروض',inbox:'الإدارة',pay:'المدفوعات',contact:'بانتظار التواصل',stops:'طلبات التوقف',acc:'حسابات CCP',notif:'الإشعارات',settings:'الإعدادات'}[t];renderNav();f()}
 function start(){
   $('login').classList.add('hidden');$('app').classList.remove('hidden');$('who').textContent=(STAFF&&STAFF.name)||'';
   api('staff_inbox').then(function(x){INBOX=x;STAFF=Object.assign({},STAFF,x.staff);$('who').textContent=STAFF.name;go('inbox')},function(e){renderNav();fail(e)});
@@ -188,6 +188,29 @@ function vStops(){
         m.querySelector('#no').onclick=closeModal;m.querySelector('#ok').onclick=function(){var nt=m.querySelector('#nt').value;closeModal();api('staff_stop_done',{stop_id:b.getAttribute('data-w'),note:nt}).then(function(){toast('تم');refreshInbox();vStops()},function(e){fail(e);vStops()})}})}});
   },fail)
 }
+
+
+// ---------- مهام اليوم (واجهة؛ الإرسال «قريبا») ----------
+function vToday(){
+  var G=[['طلب رمز جديد',2,'urgent',[['Rym H.','جديد','تحقق من الاسم وسنة الميلاد']]],['لم يكمل الاختبار',3,'',[['Nour E.','جديد','منذ 48 ساعة'],['Walid T.','جديد','طلب التذكير الليلة 20:00']]],['اختار فوجا ولم يدفع',4,'',[['Amine B.','مهتم','منذ 24 ساعة'],['Sara K.','مهتم','تنتهي مهلته غدا']]]];
+  $('view').innerHTML='<h2 style="margin:6px 0 2px">يحتاجون متابعتك</h2><p class="mute">المنصة تغيّر الحالات وحدها، وهنا من يحتاج رسالة منك فقط. تختفي المهمة عندما يتقدم الدارس.</p><div class="card mute" style="border-style:dashed">بيانات تجريبية للتصميم. الربط الحقيقي قريبا.</div>'+G.map(function(g){return '<h2 style="'+(g[2]?'color:#C4233B':'')+'">'+g[0]+' ('+g[1]+')</h2>'+g[3].map(function(p){return '<div class="card"><div class="row"><b>'+p[0]+'</b><button class="btn" data-s="1" style="background:#1FA14A;min-height:44px">أرسل</button></div><div class="mute"><span class="tag">'+p[1]+'</span> '+p[2]+'</div></div>'}).join('')}).join('');
+  Array.prototype.forEach.call($('view').querySelectorAll('[data-s]'),function(b){b.onclick=function(){toast('قريبا إن شاء الله')}})}
+// ---------- الخصومات والعروض ----------
+function vOffers(){
+  api('staff_settings_get').then(function(groups){
+    var all={};groups.forEach(function(g){g.items.forEach(function(it){all[it.key]=it.value})});
+    var v={t1m:+all.discount_tier1_min||2,t1p:+all.discount_tier1_pct||5,t2m:+all.discount_tier2_min||4,t2p:+all.discount_tier2_pct||10};
+    function step(k,label){return '<div class="row" style="margin:10px 0"><b>'+label+'</b><span style="display:flex;align-items:center;gap:10px"><button class="btn sec" data-m="'+k+'" style="min-width:44px;min-height:44px;padding:0">−</button><b class="ltr" style="min-width:48px;text-align:center;font-size:18px">'+v[k]+'%</b><button class="btn sec" data-p="'+k+'" style="min-width:44px;min-height:44px;padding:0">+</button></span></div>'}
+    function draw(){
+      $('view').innerHTML='<div class="card"><b>خصم تعدد الأفواج (جماعي فقط)</b>'+step('t1p',v.t1m+' أو '+(v.t2m-1)+' أفواج')+step('t2p',v.t2m+' أفواج فأكثر')+'<p class="mute" style="margin:6px 0 0">يُحسب على الدفعة الواحدة ولا يشمل الدروس الفردية. تتحمله المدرسة، وأجر الأستاذ على السعر الكامل.</p></div>'+
+       '<div class="row" style="margin-top:14px"><h2 style="margin:0">العروض الموسمية</h2><button class="btn" data-a="1" style="min-height:44px">+ إضافة عرض</button></div>'+
+       [['الجمعة الأبيض','50% على كل الدورات الجماعية','الجمعة 00:00 ← السبت 00:00 (24 ساعة)',1],['عرض الصيف','20% على الإنجليزية فقط','من 1 جوان إلى 15 جوان',0]].map(function(o){return '<div class="card"><div class="row"><span><b>'+o[0]+'</b><div class="mute">'+o[1]+'</div><div style="color:var(--brand);font-weight:700;font-size:13px">'+o[2]+'</div></span><button class="btn '+(o[3]?'':'sec')+'" data-a="1" style="min-height:40px;min-width:64px">'+(o[3]?'مفعّل':'متوقف')+'</button></div></div>'}).join('')+
+       '<div class="card" style="background:#FFF7D6">عند وجود عرض وخصم أفواج معا يُطبَّق الأفضل للزبون، ولا يجتمعان. يُحفظ العرض ونسبته في كل تسجيل وقت الدفع.</div><div class="btns"><button class="btn" id="save">حفظ الإعدادات</button></div>';
+      Array.prototype.forEach.call($('view').querySelectorAll('[data-m]'),function(b){b.onclick=function(){var k=b.getAttribute('data-m');v[k]=Math.max(0,v[k]-1);draw()}});
+      Array.prototype.forEach.call($('view').querySelectorAll('[data-p]'),function(b){b.onclick=function(){var k=b.getAttribute('data-p');v[k]=Math.min(50,v[k]+1);draw()}});
+      Array.prototype.forEach.call($('view').querySelectorAll('[data-a]'),function(b){b.onclick=function(){toast('العروض الموسمية قريبا إن شاء الله')}});
+      $('save').onclick=function(){var ch={discount_tier1_pct:String(v.t1p),discount_tier2_pct:String(v.t2p)};api('staff_settings_set',{changes:ch}).then(function(r){toast('تم الحفظ')},fail)}}
+    draw()},fail)}
 
 // ---------- حسابات CCP ----------
 function vAcc(){
