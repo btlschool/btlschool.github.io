@@ -164,7 +164,8 @@ function pRes(){return P0().id?(P0().results=P0().results||{}):S.results}
 function pSug(){return P0().id?P0().sug:S.sug}
 function setPSug(g){if(P0().id)P0().sug=g;else S.sug=g}
 var SKK={grammar:'الجمل',vocab:'الكلمات',reading:'القراءة',listening:'الاستماع'};
-function skl(k){return pKids()?SKK[k]:SK[k]}
+function skl(k){return (pKids()?SKK[k]:SK[k])||''}
+function spc(s){var n=Number(s&&s.pct);return isFinite(n)?n:0}
 function lvlTxt(c){var m=/^K(\d)$/.exec(String(c));return m?'المستوى '+m[1]:String(c)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function nb(s){return String(s).replace(/ /g,' ')}
@@ -391,8 +392,8 @@ function showResult(lang,r,pick){
   pRes()[lang]=r;clearTimers();setPSug((pSug()||[]).map(function(x){return x.language===lang&&x.status==='test_required'?{language:lang,status:'done'}:x}));
   var cur=pick||lang,cr=pRes()[cur],langs=Object.keys(pRes());
   var more=(pSug()||[]).filter(function(x){return x.status==='test_required'})[0];
-  var sk=Object.keys(cr.skills||{}),min=sk.reduce(function(a,k){return a===null||cr.skills[k].pct<cr.skills[a].pct?k:a},null);
-  var bars=sk.map(function(k){var s=cr.skills[k];return '<div class="row" style="gap:10px;margin:8px 0"><span style="width:62px;font-weight:700;font-size:13px">'+skl(k)+'</span><div class="bar"><i class="'+(k===min&&sk.length>1?'lo':'')+'" style="width:'+s.pct+'%"></i></div><b style="width:42px;text-align:left;direction:ltr">'+s.pct+'%</b></div>'}).join('');
+  var sk=Object.keys(cr.skills||{}),min=sk.reduce(function(a,k){return a===null||spc(cr.skills[k])<spc(cr.skills[a])?k:a},null);
+  var bars=sk.map(function(k){var s={pct:spc(cr.skills[k])};return '<div class="row" style="gap:10px;margin:8px 0"><span style="width:62px;font-weight:700;font-size:13px">'+skl(k)+'</span><div class="bar"><i class="'+(k===min&&sk.length>1?'lo':'')+'" style="width:'+s.pct+'%"></i></div><b style="width:42px;text-align:left;direction:ltr">'+s.pct+'%</b></div>'}).join('');
   var conf='';for(var i=0;i<16;i++)conf+='<i class="conf" style="left:'+(i*6.4)+'%;background:'+['#FFE600','#FF6A7A','#7CF0C0','#9391FC','#FFA43A'][i%5]+';animation-delay:'+(i%8*.35)+'s"></i>';
   page({title:'نتيجتك',cls:'dark',nologo:false},conf+'<div style="text-align:center;margin-top:18px;animation:up .5s ease both"><div style="font-weight:700;color:#E4E2FF">أحسنت، أنهيت الاختبار</div><div style="font-size:30px;font-weight:900;margin:4px 0">مبروك يا <span style="color:#FFE600">'+esc(pName().split(' ')[0])+'</span></div><div style="color:#E4E2FF;font-size:14px">هذا مستواك في كل لغة، ومنه تنطلق رحلتك</div></div>'+
    '<div class="cards2" style="margin-top:6px">'+langs.map(function(l){var x=pRes()[l];return '<button class="rc'+(l===cur?' on':'')+'" data-r="'+l+'"><div style="margin-bottom:8px">'+LANG[l]+'</div>'+ring(x)+'<div style="margin-top:8px"><span class="tag" style="background:#FFE600;color:#1B1740">'+(pKids()?'ابدأ من المستوى '+esc(x.level):'مستواك '+esc(x.level))+'</span></div></button>'}).join('')+'</div>'+
@@ -502,8 +503,8 @@ var TIPS={EN:{grammar:['المضارع البسيط مع he / she','انتبه �
  FR:{grammar:['الفعل المساعد avoir / être مع الماضي المركب','احفظ الأفعال التي تأخذ être.'],vocab:['مفردات الحياة اليومية','تعلّم 10 كلمات جديدة يوميا مع جملة لكل كلمة.'],reading:['الفكرة العامة قبل التفاصيل','اقرأ نصا قصيرا يوميا وحدّد فكرته الرئيسية.'],listening:['تمييز الأصوات والأرقام الفرنسية','استمع لنشرة مبسطة وسجّل الأرقام التي تسمعها.']}};
 function report(lang){
   call('report',{language:lang}).then(function(r){
-    var ks=Object.keys(r.skills),sorted=ks.slice().sort(function(a,b){return r.skills[b].pct-r.skills[a].pct}),weak=sorted[sorted.length-1],strong=sorted.slice(0,2);
-    var bars=ks.map(function(k){var p=r.skills[k].pct,lo=k===weak&&ks.length>1;return '<div class="row" style="gap:10px;margin:9px 0"><span style="width:64px;font-weight:800;font-size:13.5px">'+SK[k]+'</span><div class="bar"><i class="'+(lo?'lo':'')+'" style="width:'+p+'%"></i></div><b style="width:44px;text-align:left;direction:ltr;color:'+(lo?'#E08600':'#4136E6')+'">'+p+'%</b></div>'}).join('');
+    var ks=Object.keys(r.skills),sorted=ks.slice().sort(function(a,b){return spc(r.skills[b])-spc(r.skills[a])}),weak=sorted[sorted.length-1],strong=sorted.slice(0,2);
+    var bars=ks.map(function(k){var p=spc(r.skills[k]),lo=k===weak&&ks.length>1;return '<div class="row" style="gap:10px;margin:9px 0"><span style="width:64px;font-weight:800;font-size:13.5px">'+SK[k]+'</span><div class="bar"><i class="'+(lo?'lo':'')+'" style="width:'+p+'%"></i></div><b style="width:44px;text-align:left;direction:ltr;color:'+(lo?'#E08600':'#4136E6')+'">'+p+'%</b></div>'}).join('');
     var topics=sorted.slice().reverse().slice(0,3).map(function(k,i){var t=(TIPS[r.language]||TIPS.EN)[k]||['',''];return '<div class="row" style="justify-content:flex-start;gap:12px;align-items:flex-start;margin:10px 0"><span class="num">'+(i+1)+'</span><div><b style="font-size:14.5px">'+esc(t[0])+'</b><div class="sm">'+esc(t[1])+'</div></div></div>'}).join('');
     var grp=r.group_code?'<div style="border-radius:20px;padding:14px 16px;color:#fff;background:linear-gradient(120deg,#2A1FB8,#4136E6)" class="row"><div><div style="font-size:12.5px;color:#DAD8FF;font-weight:700">فوجك المناسب</div>'+(r.first_day!==null?'<div style="font-size:13px;font-weight:700;color:#E4E2FF">يبدأ أول حصة: '+DAYS[r.first_day]+' '+esc(dateTxt(r.start_date))+'</div>':'')+'</div><b dir="ltr" style="color:#FFE600;font-size:16px;white-space:nowrap">'+esc(r.group_code)+'</b></div>':'';
     var C=2*Math.PI*54,pc=0;
