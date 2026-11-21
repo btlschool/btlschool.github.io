@@ -19,8 +19,8 @@
 body{font-family:'Expo Arabic','Cairo',system-ui,sans-serif;color:var(--ink);font-size:15px;line-height:1.6}
 button,a{font:inherit;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;text-decoration:none}.hidden{display:none!important}
 @keyframes cta{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,230,0,.55)}50%{transform:scale(1.035);box-shadow:0 0 0 12px rgba(255,230,0,0)}}.btn.gold.mo{animation:cta 1.8s ease-in-out infinite}@media (prefers-reduced-motion:reduce){.btn.gold.mo{animation:none}}#ht{position:absolute;inset:0;background:#4136E6;transition:background 1s ease;z-index:0}
-#hh{position:relative;flex:1;min-height:230px;margin:6px -22px 0;z-index:0;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,transparent,#000 14%,#000 78%,transparent);mask-image:linear-gradient(to bottom,transparent,#000 14%,#000 78%,transparent)}
-#hh img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 22%;opacity:0;transition:opacity 1s ease}#hh img.on{opacity:1}
+#hh{position:absolute;top:0;left:0;right:0;height:62%;z-index:0;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,#000 38%,transparent 100%);mask-image:linear-gradient(to bottom,#000 38%,transparent 100%)}.pg>.wsc{position:absolute;top:0;left:0;right:0;height:120px;z-index:0;pointer-events:none;background:linear-gradient(to bottom,rgba(20,12,90,.55),transparent)}.pg>.wgl{position:absolute;z-index:0;border-radius:50%;pointer-events:none}
+#hh img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 15%;opacity:0;transition:opacity 1s ease}#hh img.on{opacity:1}
 @keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 @keyframes pop{0%{transform:scale(.92)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
 @keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
@@ -29,9 +29,18 @@ button,a{font:inherit;cursor:pointer;touch-action:manipulation;user-select:none;
 @keyframes spin{to{transform:rotate(360deg)}}@keyframes fall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(520px) rotate(540deg);opacity:0}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 .pg{position:relative;width:100%;max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;padding:24px 22px 28px;display:flex;flex-direction:column;overflow:hidden;
- background:radial-gradient(ellipse 340px 92px at 50% 0,#3B30D8 99%,rgba(59,48,216,0) 100%),radial-gradient(circle 190px at 100% 100%,rgba(147,145,252,.38),rgba(147,145,252,0) 100%),radial-gradient(circle 150px at 0 62%,rgba(255,230,0,.22),rgba(255,230,0,0) 100%),#F6F5FF}
+ background:radial-gradient(circle 190px at 100% 100%,rgba(147,145,252,.38),rgba(147,145,252,0) 100%),radial-gradient(circle 150px at 0 62%,rgba(255,230,0,.22),rgba(255,230,0,0) 100%),#F6F5FF}
 @media(min-width:481px){.pg{box-shadow:0 0 60px rgba(65,54,230,.12)}}
 .pg>*{position:relative}.hd{display:flex;align-items:center;gap:14px;animation:up .4s ease both}
+.pg:not(.dark):not(.hero)>.hd{margin:-24px -22px 14px;padding:20px 22px 22px;background:linear-gradient(150deg,#4B40F0,#2A1FB8 70%);border-radius:0 0 32px 32px;box-shadow:0 12px 28px rgba(42,31,184,.25);overflow:hidden}
+.pg:not(.dark):not(.hero)>.hd::before{content:'';position:absolute;left:-36px;top:-46px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,0,.38),rgba(255,230,0,0) 70%)}
+.pg:not(.dark):not(.hero)>.hd::after{content:'';position:absolute;right:-50px;bottom:-70px;width:170px;height:170px;border-radius:50%;border:2px dashed rgba(255,255,255,.2)}
+.pg:not(.dark):not(.hero)>.hd>*{position:relative;z-index:1}
+.pg:not(.dark):not(.hero)>.hd .g.tt{color:#fff;font-size:22px;font-weight:900;line-height:1.3}
+.pg:not(.dark):not(.hero)>.hd .ib{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.35);color:#fff}
+.hd .stp{display:inline-flex;align-items:center;gap:6px;background:#FFE600;color:#1B1740;font-size:13px;font-weight:900;border-radius:99px;padding:4px 12px;margin-bottom:8px}
+.hd .ttl{font-size:22px;font-weight:900;line-height:1.3;color:#fff;margin-bottom:10px}
+.pg:not(.dark):not(.hero)>.hd .prog{height:10px;background:rgba(255,255,255,.28)}
 .ib{width:44px;height:44px;border-radius:14px;background:#fff;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;flex:none;padding:0;color:var(--ink)}
 .ib svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .hd .g{flex:1;min-width:0;font-size:13px;font-weight:700;color:#E4E2FF}.hd .g b{display:block;margin-bottom:6px}
@@ -212,7 +221,9 @@ function shortCode(id){return 'R-'+String(id||'').replace(/[^a-z0-9]/gi,'').slic
 // ---------- الهيكل ----------
 function page(o,body,foot){
   clearTimers();
-  var h='<div class="hd">'+(o.back?'<button class="ib" id="bk" aria-label="رجوع">'+svg('back')+'</button>':'')+'<div class="g'+(o.step||o.cls==='dark'?'':' tt')+'">'+(o.step?'<b>'+esc(o.step)+'</b><div class="prog"><i style="width:'+(o.pct||0)+'%"></i></div>':esc(o.title||''))+'</div>'+(o.right||'')+(o.nologo?'':'<img class="lg" src="assets/brand/logo-white.png" alt="BTL">')+'</div>';
+  var h1=null;if(o.cls!=='dark'){var mm=/^<h1[^>]*>([\s\S]*?)<\/h1>/.exec(body);if(mm&&mm[1].replace(/<[^>]*>/g,'').length<=38){h1=mm[1];body=body.slice(mm[0].length)}}
+  var ttl=o.title||h1||'';
+  var h='<div class="hd">'+(o.back?'<button class="ib" id="bk" aria-label="رجوع">'+svg('back')+'</button>':'')+'<div class="g'+(o.step||o.cls==='dark'?'':' tt')+'">'+(o.step?(o.cls!=='dark'&&h1?'<span class="stp">'+esc(o.step)+'</span><div class="ttl">'+h1+'</div>':'<b>'+esc(o.step)+'</b>')+'<div class="prog"><i style="width:'+(o.pct||0)+'%"></i></div>':(o.title?esc(o.title):h1||''))+'</div>'+(o.right||'')+(o.nologo?'':'<img class="lg" src="assets/brand/logo-white.png" alt="BTL">')+'</div>';
   $('scr').innerHTML='<div class="pg'+(o.cls?' '+o.cls:'')+'">'+h+body+(foot?'<div class="ft">'+foot+'</div>':'')+'</div>';
   if(o.back&&$('bk'))$('bk').onclick=o.back;window.scrollTo(0,0);hideSplash();
 }
@@ -228,8 +239,8 @@ function heroRot(){var H=[['adult','#4136E6'],['kids','#C4087A'],['vip_adult','#
 function welcome(){
   clearTimers();
   var words=[['Bonjour',70,52,22,-12],['Hello',110,20,20,6],['Read',190,16,20,-12],['Learn',250,12,22,-5],['Merci',300,60,18,5]].map(function(x){return '<b dir="ltr" class="mw" style="top:'+x[1]+'px;right:'+x[2]+'%;font-size:'+x[3]+'px;rotate:'+x[4]+'deg;animation-delay:'+(x[1]/60)+'s">'+x[0]+'</b>'}).join('');
-  $('scr').innerHTML='<div class="pg hero mn" style="color:#fff;padding-top:28px"><div id="ht"></div><div class="hd" style="position:relative"><img class="lg" src="assets/brand/logo-white.png" alt="BTL Languages School" style="height:46px"><div class="g"></div><button class="ghost" id="lg"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>دخول</button></div>'+
-   '<div id="hh"><img class="on" src="assets/hero/adult.webp" alt="" width="736" height="1056" fetchpriority="high"></div><div style="position:relative;text-align:center"><h1 style="font-size:34px;line-height:1.35;margin:0;font-weight:900;animation:up .5s ease both">أتقن اللغة الفرنسية<br>والإنجليزية <span style="color:#FFE600">أونلاين معنا</span></h1><p style="margin:10px 0 0;font-size:15px;line-height:1.7;font-weight:600;color:#E4E2FF">اختبر مستواك أولا، ثم ابدأ مع فوجك</p></div>'+
+  $('scr').innerHTML='<div class="pg hero mn" style="color:#fff;padding-top:28px"><div id="ht"></div><div id="hh"><img class="on" src="assets/hero/adult.webp" alt="" width="736" height="1056" fetchpriority="high"></div><div class="wsc"></div><div class="wgl" style="bottom:110px;right:-90px;width:260px;height:260px;background:radial-gradient(circle,rgba(255,230,0,.22),rgba(255,230,0,0) 68%)"></div><div class="hd" style="position:relative"><img class="lg" src="assets/brand/logo-white.png" alt="BTL Languages School" style="height:46px"><div class="g"></div><button class="ghost" id="lg"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>دخول</button></div>'+
+   '<div style="flex:1;min-height:230px"></div><div style="position:relative;text-align:center"><h1 style="font-size:34px;line-height:1.35;margin:0;font-weight:900;animation:up .5s ease both">أتقن اللغة الفرنسية<br>والإنجليزية <span style="color:#FFE600">أونلاين معنا</span></h1><p style="margin:10px 0 0;font-size:15px;line-height:1.7;font-weight:600;color:#E4E2FF">اختبر مستواك أولا، ثم ابدأ مع فوجك</p></div>'+
    '<div class="aud3"><div class="a1" data-k="kid">'+KID+'<b>للصغار</b><small>من 8 إلى 14 سنة</small></div><div class="a2" data-k="adl">'+ADL+'<b>للكبار</b><small>من 15 سنة وأكثر</small></div><div class="a3" data-k="vip">'+VIP+'<b>فردي VIP</b><small>للكبار والصغار</small></div></div>'+
    '<div class="ft" style="padding-top:18px"><button class="btn gold mo" id="go"><span>اختبر مستواك مجانا</span>'+svg('next')+'</button><button class="lnk" id="wy" style="color:#E4E2FF">تعرّف على مدرسة BTL</button></div></div>';
   $('go').onclick=contact;$('lg').onclick=login;$('wy').onclick=whyBtl;heroRot();
