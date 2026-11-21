@@ -45,6 +45,7 @@ button,a{font:inherit;cursor:pointer;touch-action:manipulation;user-select:none;
 .tr{position:relative;width:62px;height:62px;margin:0 auto;direction:ltr}.tr svg{width:62px;height:62px;transform:rotate(-90deg)}.tr .in{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14.5px;color:#fff}.tr.lo .in{color:#FFD0D8}
 .hd.t3{display:grid;grid-template-columns:44px 1fr 44px;align-items:start;gap:0}.hd.t3 .r2{grid-column:1/-1;margin-top:10px;display:flex;align-items:center;gap:12px}.hd.t3 .r2 .prog{flex:1}.hd.t3 .r2 .stp{margin:0}
 .tr3{display:flex;flex-direction:column;align-items:center;gap:2px;direction:ltr}.tr3 .rg{position:relative;width:92px;height:92px}.tr3 .rg svg{width:92px;height:92px;transform:rotate(-90deg)}.tr3 .rg .lgw{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:42px;height:40px}.tr3 .rg .lgw img{width:42px;height:40px;display:block}.tr3 .dg{font-size:20px;font-weight:900;color:#fff;letter-spacing:1px}.tr3.lo .dg{color:#FFD0D8}
+.pg.tst{height:100vh;height:100dvh;min-height:0}.pg.tst>div:not(.hd):not(.ft):not(.mid){flex:none}.pg.tst .mid{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;justify-content:space-evenly;gap:14px;padding:8px 0}.pg.tst .ft{flex:none}
 .spd{flex:1;display:flex;flex-direction:column;justify-content:space-evenly;gap:14px;padding:8px 0}
 .mot{text-align:center;font-weight:800;font-size:14px;color:var(--brand2);background:#EEEDFF;border-radius:99px;padding:8px 14px;animation:up .3s ease both}
 #slow{position:fixed;inset:0;z-index:80;background:linear-gradient(160deg,#4B40F0,#2A1FB8);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:30px;text-align:center}#slow.hidden{display:none}
@@ -262,7 +263,7 @@ function welcome(){
    '<div class="aud3"><div class="a1" data-k="kid">'+KID+'<b>للصغار</b><small>من 8 إلى 14 سنة</small></div><div class="a2" data-k="adl">'+ADL+'<b>للكبار</b><small>من 15 سنة وأكثر</small></div><div class="a3" data-k="vip">'+VIP+'<b>فردي VIP</b><small>للكبار والصغار</small></div></div>'+
    '<div class="ft" style="padding-top:18px"><button class="btn gold mo" id="go"><span>اختبر مستواك مجانا</span>'+svg('next')+'</button><button class="lnk" id="wy" style="color:#E4E2FF">تعرّف على مدرسة BTL</button></div></div>';
   $('go').onclick=contact;$('lg').onclick=login;$('wy').onclick=whyBtl;heroRot();
-  on($('scr'),'.aud3>div',function(d){if(d.getAttribute('data-k')==='vip')return vipRequest();contact()});hideSplash();
+  on($('scr'),'.aud3>div',function(d){if(d.getAttribute('data-k')==='vip'){S.vipBack=welcome;return vipRequest()}contact()});hideSplash();
 }
 var CC=[['DZ','+213','🇩🇿'],['FR','+33','🇫🇷'],['MA','+212','🇲🇦'],['TN','+216','🇹🇳'],['SA','+966','🇸🇦'],['AE','+971','🇦🇪'],['QA','+974','🇶🇦'],['EG','+20','🇪🇬'],['BE','+32','🇧🇪'],['CA','+1','🇨🇦'],['DE','+49','🇩🇪'],['TR','+90','🇹🇷']];
 function phoneField(id,cid){return '<div class="phone"><select id="'+cid+'">'+CC.map(function(c){return '<option value="'+c[0]+'">'+c[2]+' '+c[1]+'</option>'}).join('')+'</select><input id="'+id+'" class="ltr" inputmode="tel" autocomplete="tel-national" placeholder="0X XX XX XX XX"></div>'}
@@ -307,7 +308,7 @@ function profile(){
   if(pf){Object.keys(pf.l||{}).forEach(function(k){if(pf.l[k]){P.l[k]=true;var bb=$('lg').querySelector('[data-l="'+k+'"]');if(bb)bb.classList.add('on')}});if(pf.g){P.g=pf.g;var gb=$('gd').querySelector('[data-g="'+pf.g+'"]');if(gb)gb.classList.add('on')}if(pf.y)$('by').value=String(pf.y)}
   on($('gd'),'.gd',function(b){P.g=b.getAttribute('data-g');Array.prototype.forEach.call($('gd').children,function(x){x.classList.toggle('on',x===b)})});
   $('by').onchange=function(){var a=y-Number(this.value);$('cat').innerHTML=this.value?'<span class="chip">'+svg('chk',18).replace('<svg','<svg style="stroke:#11804A;fill:none;stroke-width:2.6"')+'فئتك: '+(a>=15?'الكبار':'الصغار')+'</span> <span class="sm">الصغار من 8 إلى 14 سنة، والكبار من 15 سنة وأكثر</span>'+(a<8?'<p class="sm" style="margin:8px 0 0">طفلك أقل من 8 سنوات؟ مرحّب به، ويحتاج إلى مرافقتك أثناء الحصة.</p>':''):''};
-  $('vp').onclick=vipRequest;
+  $('vp').onclick=function(){S.vipBack=profile;vipRequest()};
   if($('by').value)$('by').onchange.call($('by'));
   $('nx').onclick=function(){
     var langs=Object.keys(P.l).filter(function(k){return P.l[k]});
@@ -396,10 +397,10 @@ function showQ(){
     card='<div class="cd"><div class="qs">'+(/_{2,}/.test(stem)?'أكمل الجملة':'اختر الإجابة الصحيحة')+'</div><div class="q">'+bl(stem)+'</div></div>';
   }
   var MOT=['ممتاز، واصل!','أنت تتقدم بثبات','ركّز، أنت قادر على ذلك','كل إجابة تقرّبك من مستواك الحقيقي','لا تتوقف عند سؤال صعب، تخطَّ بثقة','أحسنت، استمر'],half=T.idx===Math.floor(T.t.total/2),mot=half?'نصف الطريق تمّ! واصل بنفس الحماس':(T.idx>0&&T.idx%4===1?MOT[(T.idx>>2)%MOT.length]:'');
-  var body='<div><div class="sk" style="margin-top:0">'+skills.map(function(k){return '<span class="'+(k===q.skill?'on':'')+'">'+skl(k)+'</span>'}).join('')+'</div>'+
-   '</div><div>'+card+qq+'</div><div style="display:flex;flex-direction:column;gap:10px">'+
-   q.options.map(function(o,i){return '<button class="opt" data-i="'+i+'"><i></i><span>'+esc(o)+'</span></button>'}).join('')+'</div>';
-  page({step:'السؤال '+(T.idx+1)+' من '+T.t.total,pct:Math.round(T.idx/T.t.total*100),spread:1,still:1,
+  var body='<div><div class="sk" style="margin-top:0">'+skills.map(function(k){return '<span class="'+(k===q.skill?'on':'')+'">'+skl(k)+'</span>'}).join('')+'</div></div>'+
+   '<div class="mid"><div>'+card+qq+'</div><div style="display:flex;flex-direction:column;gap:10px">'+
+   q.options.map(function(o,i){return '<button class="opt" data-i="'+i+'"><i></i><span>'+esc(o)+'</span></button>'}).join('')+'</div></div>';
+  page({step:'السؤال '+(T.idx+1)+' من '+T.t.total,pct:Math.round(T.idx/T.t.total*100),cls:'tst',still:1,
    mid:trHtml(T),back:function(){exitAsk()}},body,
    '<div class="nv">'+(T.idx>0?'<button class="btn sec pv" id="pv">السابق '+svg('back')+'</button>':'')+'<button class="btn" id="nx" disabled><span>'+(last?'إنهاء وإرسال الإجابات':'التالي')+'</span>'+svg(last?'chk':'next')+'</button></div><button class="lnk" id="sk">لا أعرف الإجابة، تخطَّ السؤال</button>');
   $('bk').innerHTML=svg('x');
@@ -471,7 +472,7 @@ function groups(){
    '<div class="sm" style="text-align:center;margin-top:12px">'+esc(whenTxt(g))+' · يبدأ '+esc(dateTxt(g.start_date))+'</div>'+
    (list.length>1?'<button class="btn '+(S.sel[x.language]?'':'sec')+'" data-t="'+x.language+'" style="margin-top:10px;min-height:48px;font-size:15px;animation:none">'+(S.sel[x.language]?'✓ مضاف إلى طلبي':'أضف إلى طلبي')+'</button>':'')+'</div></div>'}).join('');
   page({title:'فوجك المناسب'},(S.order&&S.order.status==='checkout'?'<button class="btn gold" id="rp" style="animation:none"><span>لديك طلب بانتظار الدفع، تابع الدفع</span>'+svg('next')+'</button>':'')+'<p class="sub" style="font-size:15px;font-weight:700;color:var(--ink);margin:10px 0 0">فوجك جاهز، بقيت لك خطوة أخيرة لتبدأ رحلة تعلمك معنا.</p>'+(list.length>1?'<div class="cards2" style="gap:8px">'+list.map(function(x){return '<div class="tag pu" style="justify-content:center;padding:6px">'+LANG[x.language]+' · '+esc(lvlTxt(x.level_code))+'</div>'}).join('')+'</div>':'<div><span class="tag pu">'+LANG[list[0].language]+' · '+esc(lvlTxt(list[0].level_code))+'</span></div>')+cards+vipCard()+'<div class="sm" style="text-align:center">'+svg('chk',16).replace('<svg','<svg style="vertical-align:middle;stroke:#11804A;fill:none;stroke-width:2.4"')+' يبدأ فوجك خلال 15 يوما.</div>'+(list.length>1?'<div class="note">عند الدفع لفوجين معا تحصل على خصم يظهر في الخطوة التالية.</div>':''),'<button class="btn" id="jn"><span>انضم إلى فوجك الآن</span>'+svg('next')+'</button><button class="btn sec" id="ap">تسجيل ابن ثان أو شخص آخر</button><button class="lnk" id="lo">تسجيل الخروج</button>');
-  $('vp2').onclick=vipRequest;if($('rp'))$('rp').onclick=pay;
+  $('vp2').onclick=function(){S.vipBack=groups;vipRequest()};if($('rp'))$('rp').onclick=pay;
   on($('scr'),'[data-t]',function(b){var l=b.getAttribute('data-t');S.sel[l]=!S.sel[l];groups()});
   $('lo').onclick=logout;$('ap').onclick=addPerson;
   $('jn').onclick=function(){
@@ -755,7 +756,7 @@ function vipRequest(){
    Object.keys(v.langs).map(function(l){return '<div style="display:flex;align-items:center;gap:8px;margin-top:4px"><span style="width:26px;height:26px;display:inline-block">'+flag(l)+'</span><b>باقة '+VIPL.filter(function(x){return x[0]===l})[0][1]+'</b></div><div class="vpk">'+VIPP.map(function(p){return '<button class="vpc'+(v.pk[l]===p[0]?' on':'')+'" data-l="'+l+'" data-h="'+p[0]+'">'+(p[0]===VIPPOP?'<em class="pop">الأكثر طلبا</em>':'')+'<b>'+p[0]+(p[0]===10?' ساعات':' ساعة')+'</b><span>'+da(fmtC(p[1]))+'</span></button>'}).join('')+'</div>'}).join('')+
    '<div class="vtot"><b>المجموع للدفع</b>'+da(fmtC(vipTotal()))+'</div>',
    '<button class="btn vbtn" id="nx"><span>التالي</span>'+svg('next')+'</button><button class="lnk" id="bk3">ليس ما أريد، العودة إلى الفوج الجماعي</button>');
-  $('bk3').onclick=welcome;
+  $('bk3').onclick=function(){(S.vipBack||welcome)()};
   on($('scr'),'.vlc',function(b){var l=b.getAttribute('data-l');if(v.langs[l]){if(Object.keys(v.langs).length>1)delete v.langs[l]}else{v.langs[l]=1;if(!v.pk[l])v.pk[l]=VIPPOP}vipRequest()});
   on($('scr'),'.vpc',function(b){v.pk[b.getAttribute('data-l')]=+b.getAttribute('data-h');vipRequest()});
   $('nx').onclick=vipGoal}
