@@ -1,2 +1,6 @@
 .clasp.json
 push-log.txt
+
+# الكود الخلفي والاختبارات في المستودع الخاص btl-backend
+gas/
+tests/
