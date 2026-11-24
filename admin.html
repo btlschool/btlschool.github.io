@@ -29,7 +29,7 @@ nav{position:fixed;bottom:0;inset-inline:0;background:#fff;border-top:1px solid 
 nav button{flex:1;border:0;background:none;padding:9px 2px;color:var(--mute);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
 nav button.on{color:var(--brand)}nav svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .badge{position:absolute;top:3px;inset-inline-start:calc(50% + 6px);background:var(--bad);color:#fff;border-radius:999px;font-size:10px;min-width:16px;padding:0 4px;line-height:16px}
-img.rc{width:100%;border-radius:12px;border:1px solid var(--line);max-height:60vh;object-fit:contain;background:#fff}
+button.rth{display:flex;width:100%;margin-top:10px;padding:0;border:1px solid var(--line);border-radius:12px;background:#fff;min-height:70px;max-height:190px;overflow:hidden;align-items:center;justify-content:center;cursor:zoom-in}img.rt{width:100%;max-height:190px;object-fit:contain}img.rc{width:100%;border-radius:12px;border:1px solid var(--line);max-height:60vh;object-fit:contain;background:#fff}
 input,select,textarea{font:inherit;width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
 textarea{min-height:70px;direction:ltr;text-align:left}input[type=number],input.ltr{direction:ltr;text-align:left}
 label{display:block;font-size:12px;color:var(--mute);margin:8px 0 4px}
@@ -129,28 +129,25 @@ function vInbox(){
 }
 
 // ---------- المدفوعات ----------
+var RCP={};
+function rcpImg(p,cls){var r=RCP[p.payment_id];return r?'<img class="'+cls+'" alt="وصل الدفع" src="data:'+esc(r.mime)+';base64,'+esc(r.b64)+'">':''}
 function vPay(){
   api('staff_payment_list').then(function(list){
     $('view').innerHTML=list.length?list.map(function(p,i){return '<div class="card"><div class="row"><b>'+esc(p.payer)+'</b><span class="mute">'+esc(ago(p.submitted_at))+'</span></div>'+
       p.lines.map(function(l){return '<div class="mute" style="margin-top:4px">'+esc(l.name)+' · '+esc(l.group_code)+(l.discount_pct?' · خصم '+l.discount_pct+'%':'')+'</div>'}).join('')+
-      '<div class="row" style="margin-top:8px"><span>'+da(p.amount)+' <span class="tag">'+esc(p.account)+'</span></span><button class="btn" data-i="'+i+'">راجع</button></div></div>'}).join(''):'<div class="card mute">لا توجد وصولات بانتظار المراجعة.</div>';
-    Array.prototype.forEach.call($('view').querySelectorAll('[data-i]'),function(b){b.onclick=function(){review(list[+b.getAttribute('data-i')])}});
+      '<div class="row" style="margin-top:8px"><span>'+da(p.amount)+' <span class="tag">'+esc(p.account)+'</span></span><span class="tag">'+esc(p.order_id)+'</span></div>'+
+      '<button class="rth" data-z="'+i+'" id="th'+i+'" aria-label="تكبير الوصل"><span class="mute">تحميل الوصل…</span></button>'+
+      '<div class="btns"><button class="btn ok" data-y="'+i+'">تأكيد الدفع</button><button class="btn bad" data-n="'+i+'">رفض</button></div></div>'}).join(''):'<div class="card mute">لا توجد وصولات بانتظار المراجعة.</div>';
+    list.forEach(function(p,i){api('staff_payment_receipt',{payment_id:p.payment_id},true).then(function(r){RCP[p.payment_id]=r;var t=$('th'+i);if(t)t.innerHTML=rcpImg(p,'rt')},function(){var t=$('th'+i);if(t)t.innerHTML='<span class="mute">تعذر تحميل الصورة</span>'})});
+    Array.prototype.forEach.call($('view').querySelectorAll('[data-z]'),function(b){b.onclick=function(){var p=list[+b.getAttribute('data-z')];if(RCP[p.payment_id])ask('<h2>وصل '+esc(p.payer)+'</h2>'+rcpImg(p,'rc')+'<div class="btns"><button class="btn sec" id="cz">إغلاق</button></div>',function(m){m.querySelector('#cz').onclick=closeModal})}});
+    Array.prototype.forEach.call($('view').querySelectorAll('[data-y]'),function(b){b.onclick=function(){confirmPay(list[+b.getAttribute('data-y')])}});
+    Array.prototype.forEach.call($('view').querySelectorAll('[data-n]'),function(b){b.onclick=function(){rejectPay(list[+b.getAttribute('data-n')])}});
   },fail)
 }
-function review(p){
-  $('title').textContent='مراجعة الدفع';
-  $('view').innerHTML='<button class="btn sec" id="back">رجوع</button><div class="card" style="margin-top:10px"><div class="row"><b>'+esc(p.payer)+'</b><span class="tag">'+esc(p.order_id)+'</span></div>'+
-   p.lines.map(function(l){return '<div class="row" style="margin-top:6px"><span>'+esc(l.name)+' · '+esc(l.group_code)+'</span><span>'+da(l.net)+'</span></div>'}).join('')+
-   '<div class="row" style="margin-top:10px;border-top:1px solid var(--line);padding-top:8px"><span>المتوقع</span>'+da(p.amount)+'</div><div class="mute">الحساب: '+esc(p.account)+'</div></div>'+
-   '<div class="card"><div id="rimg" class="mute">تحميل صورة الوصل…</div></div>'+
-   '<div class="btns"><button class="btn ok" id="yes">تأكيد الدفع وإضافته إلى الفوج</button><button class="btn bad" id="no">رفض مع السبب</button></div><p class="mute">يُسجَّل من أكّد ومتى، ولا يُحذف السجل.</p>';
-  $('back').onclick=function(){go('pay')};
-  api('staff_payment_receipt',{payment_id:p.payment_id},true).then(function(r){$('rimg').innerHTML='<img class="rc" alt="وصل الدفع" src="data:'+esc(r.mime)+';base64,'+esc(r.b64)+'">'},function(){$('rimg').textContent='تعذر تحميل الصورة'});
-  $('yes').onclick=function(){ask('<h2>تأكيد الدفع؟</h2><p>سيُضاف '+da(p.amount)+' إلى الدفتر ويُؤكَّد الاشتراك.</p><div class="btns"><button class="btn ok" id="y2">نعم، أكّد</button><button class="btn sec" id="c2">إلغاء</button></div>',function(m){
-    m.querySelector('#c2').onclick=closeModal;m.querySelector('#y2').onclick=function(){closeModal();decide(p,'confirm')}})};
-  $('no').onclick=function(){ask('<h2>سبب الرفض</h2><select id="rs"><option>الوصل غير واضح</option><option>المبلغ غير مطابق</option><option>الحوالة غير موجودة في كشف الحساب</option><option>صورة مكررة</option><option value="">سبب آخر…</option></select><label>ملاحظة تصل للمشترك</label><input id="rn" maxlength="150"><div class="btns"><button class="btn bad" id="n2">رفض</button><button class="btn sec" id="c3">إلغاء</button></div>',function(m){
-    m.querySelector('#c3').onclick=closeModal;m.querySelector('#n2').onclick=function(){var note=(m.querySelector('#rs').value+' '+m.querySelector('#rn').value).trim();closeModal();decide(p,'reject',note)}})};
-}
+function confirmPay(p){ask('<h2>تأكيد الدفع؟</h2><div class="row"><b>'+esc(p.payer)+'</b>'+da(p.amount)+'</div><div class="mute">الحساب: '+esc(p.account)+'</div>'+(RCP[p.payment_id]?'<div style="margin-top:8px">'+rcpImg(p,'rc')+'</div>':'')+'<p>سيُضاف المبلغ إلى الدفتر ويُؤكَّد الاشتراك. يُسجَّل من أكّد ومتى ولا يُحذف السجل.</p><div class="btns"><button class="btn ok" id="y2">نعم، أكّد</button><button class="btn sec" id="c2">إلغاء</button></div>',function(m){
+    m.querySelector('#c2').onclick=closeModal;m.querySelector('#y2').onclick=function(){closeModal();decide(p,'confirm')}})}
+function rejectPay(p){ask('<h2>سبب الرفض</h2><select id="rs"><option>الوصل غير واضح</option><option>المبلغ غير مطابق</option><option>الحوالة غير موجودة في كشف الحساب</option><option>صورة مكررة</option><option value="">سبب آخر…</option></select><label>ملاحظة تصل للمشترك</label><input id="rn" maxlength="150"><div class="btns"><button class="btn bad" id="n2">رفض</button><button class="btn sec" id="c3">إلغاء</button></div>',function(m){
+    m.querySelector('#c3').onclick=closeModal;m.querySelector('#n2').onclick=function(){var note=(m.querySelector('#rs').value+' '+m.querySelector('#rn').value).trim();closeModal();decide(p,'reject',note)}})}
 function decide(p,d,note){api('staff_payment_review',{payment_id:p.payment_id,decision:d,note:note}).then(function(){toast(d==='confirm'?'تم تأكيد الدفع':'تم رفض الوصل');refreshInbox();go('pay')},function(e){fail(e);if(e.code==='not_allowed')go('pay')})}
 
 // ---------- التواصل ----------
