@@ -101,18 +101,19 @@ function initG(){
 $('out').onclick=function(){var t=TOK;api('staff_logout',{},true).then(function(){},function(){});TOK='';store('t',null);logout()};
 
 // ---------- الهيكل ----------
-var ICON={today:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',offers:'<path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',acc:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>',notif:'<path d="M6 8a6 6 0 1112 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 004 0"/>',stops:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',inbox:'<path d="M3 13l2-8h14l2 8M3 13v6h18v-6M3 13h5l1 2h6l1-2h5"/>',pay:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/>',contact:'<path d="M21 12a8 8 0 01-11.5 7.2L4 20l1-4.5A8 8 0 1121 12z"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 000 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/>'};
+var ICON={times:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',today:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',offers:'<path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',acc:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>',notif:'<path d="M6 8a6 6 0 1112 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 004 0"/>',stops:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',inbox:'<path d="M3 13l2-8h14l2 8M3 13v6h18v-6M3 13h5l1 2h6l1-2h5"/>',pay:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/>',contact:'<path d="M21 12a8 8 0 01-11.5 7.2L4 20l1-4.5A8 8 0 1121 12z"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 000 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/>'};
 function renderNav(){
-  var tabs=[['today','اليوم'],['inbox','الوارد'],['pay','المدفوعات'],['contact','التواصل'],['stops','التوقف']];
+  var tabs=[['today','اليوم'],['inbox','الوارد'],['pay','المدفوعات'],['contact','التواصل'],['stops','التوقف'],['times','الأفواج']];
+  if(STAFF&&STAFF.role==='teacher')tabs=[['times','الأفواج']];
   if(STAFF&&STAFF.role==='admin'){tabs.push(['acc','الحسابات']);tabs.push(['notif','الإشعارات']);tabs.push(['offers','العروض']);tabs.push(['settings','الإعدادات'])}
-  var cnt={pay:INBOX&&INBOX.payments_pending,contact:INBOX&&INBOX.outreach_pending,stops:INBOX&&INBOX.stops_pending};
+  var cnt={times:INBOX&&INBOX.avail_missing,pay:INBOX&&INBOX.payments_pending,contact:INBOX&&INBOX.outreach_pending,stops:INBOX&&INBOX.stops_pending};
   $('nav').innerHTML=tabs.map(function(t){return '<button data-t="'+t[0]+'" class="'+(TAB===t[0]?'on':'')+'"><svg viewBox="0 0 24 24">'+ICON[t[0]]+'</svg>'+t[1]+(cnt[t[0]]?'<span class="badge">'+cnt[t[0]]+'</span>':'')+'</button>'}).join('');
   Array.prototype.forEach.call($('nav').children,function(b){b.onclick=function(){go(b.getAttribute('data-t'))}});
 }
-function go(t){TAB=t;var f={today:vToday,offers:vOffers,inbox:vInbox,pay:vPay,contact:vContact,stops:vStops,acc:vAcc,notif:vNotif,settings:vSettings}[t];$('title').textContent={today:'مهام الإداري',offers:'الخصومات والعروض',inbox:'الإدارة',pay:'المدفوعات',contact:'بانتظار التواصل',stops:'طلبات التوقف',acc:'حسابات CCP',notif:'الإشعارات',settings:'الإعدادات'}[t];renderNav();f()}
+function go(t){TAB=t;var f={today:vToday,offers:vOffers,inbox:vInbox,pay:vPay,contact:vContact,stops:vStops,times:vTimes,acc:vAcc,notif:vNotif,settings:vSettings}[t];$('title').textContent={times:'الأفواج وأوقاتها',today:'مهام الإداري',offers:'الخصومات والعروض',inbox:'الإدارة',pay:'المدفوعات',contact:'بانتظار التواصل',stops:'طلبات التوقف',acc:'حسابات CCP',notif:'الإشعارات',settings:'الإعدادات'}[t];renderNav();f()}
 function start(){
   $('login').classList.add('hidden');$('app').classList.remove('hidden');$('who').textContent=(STAFF&&STAFF.name)||'';
-  api('staff_inbox').then(function(x){INBOX=x;STAFF=Object.assign({},STAFF,x.staff);$('who').textContent=STAFF.name;go('inbox')},function(e){renderNav();fail(e)});
+  api('staff_inbox').then(function(x){INBOX=x;STAFF=Object.assign({},STAFF,x.staff);$('who').textContent=STAFF.name;go(STAFF&&STAFF.role==='teacher'?'times':'inbox')},function(e){renderNav();fail(e)});
 }
 function refreshInbox(){return api('staff_inbox',{},true).then(function(x){INBOX=x;renderNav()},function(){})}
 function ago(iso){var h=Math.max(0,Math.round((Date.now()-new Date(iso+'+01:00').getTime())/36e5));if(h<1)return 'قبل قليل';if(h<24)return 'منذ '+h+' ساعة';return 'منذ '+Math.round(h/24)+' يوم'}
@@ -124,9 +125,46 @@ function vInbox(){
    '<button class="stat'+(i.payments_pending?' alert':'')+'" data-g="pay"><b>'+(i.payments_pending||0)+'</b><span>مدفوعات بانتظار التأكيد</span></button>'+
    '<button class="stat'+(i.outreach_urgent?' alert':'')+'" data-g="contact"><b>'+(i.outreach_pending||0)+'</b><span>بانتظار التواصل'+(i.outreach_urgent?' ('+i.outreach_urgent+' عاجل)':'')+'</span></button>'+
    '<button class="stat'+(i.stops_final?' alert':'')+'" data-g="stops"><b>'+(i.stops_pending||0)+'</b><span>طلبات توقف'+(i.stops_final?' ('+i.stops_final+' نهائي)':'')+'</span></button>'+
+   '<button class="stat'+(i.avail_missing?' alert':'')+'" data-g="times"><b>'+(i.avail_missing||0)+'</b><span>لم يحفظوا أوقاتهم</span></button>'+
    '<div class="stat"><b>'+(i.orders_unpaid||0)+'</b><span>طلبات لم تُدفع بعد</span></div></div>';
   Array.prototype.forEach.call(document.querySelectorAll('[data-g]'),function(b){b.onclick=function(){go(b.getAttribute('data-g'))}});
 }
+
+
+// ---------- الأفواج وأوقاتها (الإدارة والأستاذ) ----------
+var TF={language:'',level:'',teacher_id:'',age_group:''},DNM=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+function schTxt(a){return (a||[]).map(function(z){return DNM[z.d]+' <bdi dir="ltr">'+esc(z.t+(z.e?'–'+z.e:''))+'</bdi>'}).join(' · ')}
+function vTimes(){
+  Promise.all([api('staff_schedule_board',TF),api('staff_avail_missing',{},true)]).then(function(r){
+    var b=r[0],ms=r[1].list,isAdmin=STAFF&&STAFF.role==='admin';
+    function sel(k,lab,opts){return '<select data-f="'+k+'" aria-label="'+lab+'"><option value="">'+lab+'</option>'+opts.map(function(o){return '<option value="'+esc(o[0])+'"'+(TF[k]===o[0]?' selected':'')+'>'+esc(o[1])+'</option>'}).join('')+'</select>'}
+    var miss=ms.length?'<div class="card" style="border:2px solid #E5484D"><div class="row"><b>لم يحفظوا أوقاتهم ('+ms.length+')</b><button class="btn" id="rm" style="width:auto;padding:6px 14px">ذكّر الجميع</button></div>'+ms.slice(0,8).map(function(m){return '<div class="mute" style="margin-top:4px">'+esc(m.name)+' · <bdi>'+esc(m.group_code)+'</bdi> · <bdi dir="ltr">'+esc(m.phone)+'</bdi></div>'}).join('')+(ms.length>8?'<div class="mute">و'+(ms.length-8)+' آخرون</div>':'')+'</div>':'';
+    $('view').innerHTML=miss+'<div class="card" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+sel('language','اللغة',[['EN','الإنجليزية'],['FR','الفرنسية']])+sel('age_group','الفئة',[['adult','كبار'],['kids','صغار']])+sel('level','المستوى',['A1','A2','B1','B2','C1','C2','K1','K2','K3','K4','K5','K6'].map(function(x){return [x,x]}))+sel('teacher_id','الأستاذ',b.teachers.map(function(t){return [t.id,t.name]}))+'</div>'+
+     (b.groups.length?b.groups.map(function(g){return '<div class="card"><div class="row"><b dir="ltr">'+esc(g.code)+'</b><span class="tag'+(g.closed&&!g.late_ok?' urgent':'')+'">'+(g.late_ok?'مفتوح استثناءً':g.closed?'مغلق للانضمام':'مفتوح')+'</span></div>'+
+       '<div class="mute" style="margin-top:4px">'+esc(g.age_group==='kids'?'صغار':'كبار')+' · '+(g.teacher?esc(g.teacher):'بلا أستاذ')+' · يبدأ '+esc(g.start_date)+'</div>'+
+       '<div style="margin:8px 0;font-weight:700">'+(g.times_set?schTxt(g.schedule):'<span style="color:#C62832">لم تُثبَّت المواقيت</span>')+'</div>'+
+       '<div class="row"><span class="mute">'+g.members+' مشترك · حفظ أوقاته '+g.saved+'</span><span><button class="btn" data-t="'+esc(g.group_id)+'" style="width:auto;padding:6px 14px">'+(g.times_set?'تعديل المواقيت':'اختيار المواقيت')+'</button>'+(isAdmin&&g.closed?' <button class="btn sec" data-l="'+esc(g.group_id)+'" data-on="'+(g.late_ok?0:1)+'" style="width:auto;padding:6px 14px">'+(g.late_ok?'إلغاء الاستثناء':'فتح استثناءً')+'</button>':'')+'</span></div></div>'}).join(''):'<div class="card mute">لا توجد أفواج بهذه المعايير.</div>');
+    Array.prototype.forEach.call(document.querySelectorAll('#view [data-f]'),function(e){e.onchange=function(){TF[e.getAttribute('data-f')]=e.value;vTimes()}});
+    Array.prototype.forEach.call(document.querySelectorAll('#view [data-t]'),function(e){e.onclick=function(){timesPick(e.getAttribute('data-t'))}});
+    Array.prototype.forEach.call(document.querySelectorAll('#view [data-l]'),function(e){e.onclick=function(){lateAsk(e.getAttribute('data-l'),e.getAttribute('data-on')==='1')}});
+    if($('rm'))$('rm').onclick=function(){api('staff_avail_remind',{}).then(function(x){toast('أُرسل التذكير إلى '+x.sent);refreshInbox()},fail)};
+  },fail)}
+function lateAsk(gid,on){
+  ask('<h2 style="margin:0 0 6px">'+(on?'فتح الانضمام استثناءً':'إلغاء الاستثناء')+'</h2>'+(on?'<p class="mute">اكتب سبب الاستثناء، فيُسجَّل في سجل التدقيق.</p><textarea id="lr" rows="3" placeholder="مثال: طالب متميز يلحق بالمجموعة"></textarea>':'')+'<div class="btns"><button class="btn ok" id="ly">تأكيد</button><button class="btn sec" id="ln">إلغاء</button></div>',function(){
+    $('ln').onclick=closeModal;$('ly').onclick=function(){var rs=on?$('lr').value.trim():'';if(on&&rs.length<3)return toast('اكتب السبب',true);api('staff_group_late',{group_id:gid,on:on,reason:rs}).then(function(){closeModal();toast('تم');vTimes()},fail)}})}
+function timesPick(gid){
+  api('staff_group_times',{group_id:gid}).then(function(r){
+    var sel={},g=r.group,pre=(g.schedule||[]).map(function(z){return z.d});
+    r.ranked.forEach(function(x){if(pre.indexOf(x.d)>=0&&g.times_set&&g.schedule.some(function(z){return z.d===x.d&&z.t===('0'+x.slot.split('-')[0]).slice(-2)+':00'}))sel[x.key]=x});
+    function body(){return '<h2 style="margin:0 0 4px" dir="ltr">'+esc(g.code)+'</h2><p class="mute" style="margin:0 0 8px">'+r.members+' مشترك'+(r.nosave.length?' · لم يحفظ أوقاته: '+r.nosave.map(function(n){return esc(n.name)}).join('، '):'')+'</p><b>أفضل الأوقات (اختر حتى 3 أيام مختلفة)</b>'+
+      r.ranked.map(function(x){var on=!!sel[x.key];return '<button class="card" data-k="'+x.key+'" style="width:100%;text-align:start;margin:6px 0;border:2px solid '+(on?'#2A1FB8':'#E4E2FF')+';background:'+(on?'#F2F0FF':'#fff')+'"><div class="row"><b>'+DNM[x.d]+' <bdi dir="ltr">'+esc(x.slot)+'</bdi></b><span class="tag'+(x.free<x.total?' urgent':'')+'"><bdi dir="ltr">'+x.free+' / '+x.total+'</bdi></span></div>'+(x.missing.length?'<div class="mute">غير متاح: '+x.missing.map(esc).join('، ')+'</div>':'<div class="mute">الجميع متاحون</div>')+'</button>'}).join('')+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px"><label class="mute">تاريخ أول حصة<input type="date" id="sd" value="'+esc(g.start_date)+'"></label><label class="mute">وقت الحصة التعريفية<input type="time" id="it" value="'+esc(g.intro_time||'21:15')+'"></label></div><div class="btns"><button class="btn ok" id="sy">اعتمد وأعلم المشتركين</button><button class="btn sec" id="sn">إغلاق</button></div>'}
+    function draw(){ask(body(),function(){
+      Array.prototype.forEach.call(document.querySelectorAll('#mbody [data-k]'),function(b){b.onclick=function(){var k=b.getAttribute('data-k'),x=r.ranked.filter(function(y){return y.key===k})[0];
+        if(sel[k])delete sel[k];else{Object.keys(sel).forEach(function(o){if(sel[o].d===x.d)delete sel[o]});if(Object.keys(sel).length>=3)return toast('ثلاثة أيام كحد أقصى',true);sel[k]=x}var sd=$('sd').value,it=$('it').value;draw();$('sd').value=sd;$('it').value=it}});
+      $('sn').onclick=closeModal;$('sy').onclick=function(){var ks=Object.keys(sel);if(!ks.length)return toast('اختر وقتا واحدا على الأقل',true);
+        api('staff_group_time_set',{group_id:gid,times:ks.map(function(k){return {d:sel[k].d,s:sel[k].s}}),start_date:$('sd').value,intro_time:$('it').value}).then(function(x){closeModal();toast('تم اعتماد المواقيت');vTimes();refreshInbox()},fail)}})}
+    draw()},fail)}
 
 // ---------- المدفوعات ----------
 var RCP={};
