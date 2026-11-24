@@ -585,51 +585,73 @@ var CONTACT={phone:'0699184817',whatsapp:'0699184817',telegram:'@BTLSchool',face
 function loadImg(src){return new Promise(function(ok){var i=new Image();i.onload=function(){ok(i)};i.onerror=function(){ok(null)};i.src=src})}
 function svgImg(x){return loadImg('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(x.replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" ')))}
 var RIC={phone:['M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z'],whatsapp:['M3 21l1.6-4.8A8.5 8.5 0 118 19.6z','M9 9c0 3 3 6 6 6l1.2-1.4-2-1-.9.7c-.9-.4-1.8-1.3-2.2-2.2l.7-.9-1-2z'],telegram:['M21 4L3 11l5 2 2 6 3-4 5 4z','M8 13l9-6'],facebook:['M14 8h3V4h-3a4 4 0 00-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8z'],instagram:['M8 3h8a5 5 0 015 5v8a5 5 0 01-5 5H8a5 5 0 01-5-5V8a5 5 0 015-5z','M12 8a4 4 0 100 8 4 4 0 000-8z'],web:['M12 3a9 9 0 100 18 9 9 0 000-18z','M3 12h18','M12 3c3 3 3 15 0 18','M12 3c-3 3-3 15 0 18']};
+var RT={EN:{title:'LEVEL REPORT',sub:'Placement Test · Official Result',cand:'CANDIDATE',lang:'Test language',langName:'English',date:'Test date',ref:'Reference',lvl:'CEFR LEVEL',overall:'Overall score',skills:'SKILL BREAKDOWN',str:'Strengths',foc:'Focus areas',grp:'Recommended group',starts:'Starts',nx:'Next step',
+ L:{A1:['Beginner','Can understand and use familiar everyday expressions and very basic phrases.'],A2:['Elementary','Can communicate in simple, routine tasks and describe immediate needs.'],B1:['Intermediate','Can deal with most everyday situations and express opinions on familiar topics.'],B2:['Upper-Intermediate','Can interact fluently and discuss a wide range of topics with some detail.']},K:['Level','A fun start: first words, sentences and listening.'],
+ S:{grammar:'Grammar',vocab:'Vocabulary',reading:'Reading',listening:'Listening',general:'Language'},SK:{grammar:'Sentences',vocab:'Words',reading:'Reading',listening:'Listening',general:'Sentences & words'},
+ B:['Strong','Good','Developing'],T:{grammar:'Practise sentence structure and verb tenses a little every day.',vocab:'Learn 10 new words daily and use each one in a sentence.',reading:'Read a short text each day and find its main idea.',listening:'Listen to short audio daily and note the numbers and key words.',general:'Review sentences and words you missed in the test.'},
+ C:{phone:'Phone',whatsapp:'WhatsApp',telegram:'Telegram',facebook:'Facebook',instagram:'Instagram',web:'Website'},cta:'Start your journey with BTL, contact us',note:'This report estimates your level on the test day and improves with regular practice.',loc:'en-GB'},
+ FR:{title:'RELEVÉ DE NIVEAU',sub:'Test de positionnement · Résultat officiel',cand:'CANDIDAT',lang:'Langue testée',langName:'Français',date:'Date du test',ref:'Référence',lvl:'NIVEAU CECRL',overall:'Score global',skills:'DÉTAIL DES COMPÉTENCES',str:'Points forts',foc:'À renforcer',grp:'Groupe recommandé',starts:'Début',nx:'Prochaine étape',
+ L:{A1:['Débutant','Peut comprendre et utiliser des expressions familières et des phrases très simples.'],A2:['Élémentaire','Peut communiquer lors de tâches simples et décrire ses besoins immédiats.'],B1:['Intermédiaire','Peut gérer la plupart des situations courantes et donner son avis sur des sujets familiers.'],B2:['Intermédiaire supérieur','Peut échanger avec aisance et traiter de nombreux sujets avec précision.']},K:['Niveau','Un départ ludique : premiers mots, phrases et écoute.'],
+ S:{grammar:'Grammaire',vocab:'Vocabulaire',reading:'Lecture',listening:'Écoute',general:'Langue'},SK:{grammar:'Phrases',vocab:'Mots',reading:'Lecture',listening:'Écoute',general:'Phrases et mots'},
+ B:['Fort','Bien','En progrès'],T:{grammar:'Travaillez la structure des phrases et les temps verbaux chaque jour.',vocab:'Apprenez 10 mots par jour et utilisez-les dans une phrase.',reading:'Lisez un court texte par jour et trouvez son idée principale.',listening:'Écoutez un court audio par jour et notez chiffres et mots clés.',general:'Révisez les phrases et mots manqués lors du test.'},
+ C:{phone:'Téléphone',whatsapp:'WhatsApp',telegram:'Telegram',facebook:'Facebook',instagram:'Instagram',web:'Site web'},cta:'Commencez votre parcours avec BTL, contactez-nous',note:'Ce relevé estime votre niveau le jour du test et progresse avec une pratique régulière.',loc:'fr-FR'}};
 function drawReport(r){
   return Promise.all([document.fonts.load('800 20px "Expo Arabic"'),document.fonts.load('400 20px "Expo Arabic"'),loadImg('assets/brand/logo-white.png'),svgImg(FLAG[r.language]||FLAG.EN)]).then(function(res){
     var logo=res[2],flag=res[3],K=1240/794,cv=document.createElement('canvas');cv.width=1240;cv.height=1754;var c=cv.getContext('2d');c.scale(K,K);
+    var T=RT[r.language]||RT.EN,BLUE='#2A1FB8',INK='#1B1740',MUTE='#6B6890';
     function rr(x,y,w,h,r_){c.beginPath();c.moveTo(x+r_,y);c.arcTo(x+w,y,x+w,y+h,r_);c.arcTo(x+w,y+h,x,y+h,r_);c.arcTo(x,y+h,x,y,r_);c.arcTo(x,y,x+w,y,r_);c.closePath()}
-    function tx(t,x,y,o){o=o||{};c.font=(o.w||800)+' '+(o.s||14)+'px "Expo Arabic"';c.fillStyle=o.c||'#1B1740';c.textAlign=o.a||'right';c.direction=o.d||'rtl';c.textBaseline='middle';c.fillText(String(t),x,y)}
-    function wrap(t,x,y,w,o,lh,max){var ws=String(t).split(' '),ln='',n=0;c.font=(o.w||400)+' '+o.s+'px "Expo Arabic"';ws.forEach(function(wd){var tt=ln?ln+' '+wd:wd;if(c.measureText(tt).width>w&&ln){tx(ln,x,y+n*lh,o);n++;ln=wd}else ln=tt});if(ln&&n<max)tx(ln,x,y+n*lh,o);return n+1}
+    function tx(t,x,y,o){o=o||{};c.font=(o.w||800)+' '+(o.s||14)+'px "Expo Arabic",Helvetica,Arial,sans-serif';c.fillStyle=o.c||INK;c.textAlign=o.a||'left';c.direction='ltr';c.textBaseline='middle';if(o.ls!==undefined)c.letterSpacing=o.ls+'px';c.fillText(String(t),x,y);c.letterSpacing='0px'}
+    function wrap(t,x,y,w,o,lh,max){var ws=String(t).split(' '),ln='',n=0;c.font=(o.w||400)+' '+o.s+'px "Expo Arabic",Helvetica,Arial,sans-serif';ws.forEach(function(wd){var tt=ln?ln+' '+wd:wd;if(c.measureText(tt).width>w&&ln){tx(ln,x,y+n*lh,o);n++;ln=wd}else ln=tt});if(ln&&n<max)tx(ln,x,y+n*lh,o);return n+1}
     var kid=/^K?\d$/.test(String(r.level)),ks=Object.keys(r.skills),sorted=ks.slice().sort(function(a,b){return spc(r.skills[b])-spc(r.skills[a])}),weak=sorted[sorted.length-1],strong=sorted.slice(0,2);
-    var kd=kid,SKN=function(k){return (kd?SKK[k]:SK[k])||''};
+    var SKN=function(k){return (kid?T.SK[k]:T.S[k])||k};
+    var avg=ks.length?Math.round(ks.reduce(function(a,k){return a+spc(r.skills[k])},0)/ks.length):0;
+    var dt=new Date(r.date+'T12:00:00'),dts=isNaN(dt)?r.date:dt.toLocaleDateString(T.loc,{day:'numeric',month:'long',year:'numeric'});
+    var ref='BTL-'+String(r.date).replace(/-/g,'')+'-'+String(r.name||'').replace(/[^A-Za-z]/g,'').slice(0,2).toUpperCase()+r.language;
     c.fillStyle='#fff';c.fillRect(0,0,794,1123);
-    // header
-    var g=c.createLinearGradient(0,0,794,150);g.addColorStop(0,'#2A1FB8');g.addColorStop(1,'#4B40F0');c.fillStyle=g;rr(0,-40,794,190,36);c.fill();
-    var rg=c.createRadialGradient(80,20,0,80,20,170);rg.addColorStop(0,'rgba(255,255,255,.2)');rg.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=rg;c.fillRect(0,0,300,150);
-    if(logo){var lh=58,lw=logo.width/logo.height*lh;c.drawImage(logo,40,46,lw,lh)}
-    tx('تقرير مستوى اللغة',754,62,{s:30,c:'#fff'});tx('BTL Languages School · أفضل مدرسة لغات أونلاين في الجزائر',754,106,{s:12.5,w:400,c:'#DAD8FF'});
-    // hero: level + language
-    c.fillStyle='#F6F5FF';rr(40,170,714,184,28);c.fill();
-    var bg=c.createLinearGradient(60,190,200,330);bg.addColorStop(0,'#4B40F0');bg.addColorStop(1,'#2A1FB8');c.fillStyle=bg;rr(60,190,140,144,34);c.fill();
-    c.strokeStyle='rgba(255,255,255,.28)';c.lineWidth=2;rr(67,197,126,130,28);c.stroke();
-    tx('مستواك',130,214,{s:13,c:'#FFE600',a:'center'});
-    tx(kid?String(r.level).replace('K',''):r.level,130,266,{s:kid?64:58,c:'#fff',a:'center',d:'ltr'});
-    tx(kid?'المستوى':(LVL[r.level]||''),130,312,{s:15,c:'#fff',a:'center'});
-    if(flag){c.save();c.beginPath();c.arc(716,214,30,0,7);c.clip();c.drawImage(flag,686,184,60,60);c.restore();c.strokeStyle='#fff';c.lineWidth=3;c.beginPath();c.arc(716,214,30,0,7);c.stroke()}
-    tx('اللغة',670,196,{s:12,w:400,c:'#5B5780'});tx(LANG[r.language]||'',670,226,{s:30});
-    tx(r.name,730,282,{s:20,d:'ltr'});tx('تاريخ الاختبار: '+dateTxt(r.date),730,314,{s:12.5,w:400,c:'#666'});
+    // header band
+    var g=c.createLinearGradient(0,0,794,120);g.addColorStop(0,'#2A1FB8');g.addColorStop(1,'#4B40F0');c.fillStyle=g;c.fillRect(0,0,794,112);
+    c.fillStyle='#FFE600';c.fillRect(0,112,794,5);
+    if(logo){var lh=56,lw=logo.width/logo.height*lh;c.drawImage(logo,40,28,lw,lh)}
+    tx(T.title,754,48,{s:27,c:'#fff',a:'right',ls:1.5});tx(T.sub,754,78,{s:12.5,w:400,c:'#DAD8FF',a:'right'});
+    // candidate
+    tx(T.cand,40,156,{s:11.5,w:600,c:MUTE,ls:2});
+    var nm=String(r.name||''),fs=44;c.font='800 '+fs+'px "Expo Arabic",Helvetica,Arial,sans-serif';while(c.measureText(nm).width>520&&fs>26){fs-=2;c.font='800 '+fs+'px "Expo Arabic",Helvetica,Arial,sans-serif'}
+    tx(nm,40,198,{s:fs});c.fillStyle='#FFE600';c.fillRect(40,230,84,5);
+    if(flag){c.save();c.beginPath();c.arc(722,192,32,0,7);c.clip();c.drawImage(flag,690,160,64,64);c.restore();c.strokeStyle='#E4E2FF';c.lineWidth=3;c.beginPath();c.arc(722,192,32,0,7);c.stroke()}
+    tx(T.langName,682,192,{s:22,a:'right'});
+    tx(dts+'   ·   '+T.ref+' '+ref,40,256,{s:13,w:600,c:MUTE});
+    // result panel
+    var py=282,ph=kid?190:250;c.fillStyle='#fff';c.strokeStyle='#E4E2FF';c.lineWidth=1.5;rr(40,py,714,ph,22);c.fill();c.stroke();
+    var bg=c.createLinearGradient(60,py+20,220,py+190);bg.addColorStop(0,'#4B40F0');bg.addColorStop(1,'#2A1FB8');c.fillStyle=bg;rr(62,py+22,176,146,26);c.fill();
+    tx(kid?T.K[0].toUpperCase():T.lvl,150,py+46,{s:11.5,w:600,c:'#FFE600',a:'center',ls:1.5});
+    tx(kid?String(r.level).replace('K',''):r.level,150,py+108,{s:kid?78:70,c:'#fff',a:'center'});
+    var ld=kid?[T.K[0]+' '+String(r.level).replace('K',''),T.K[1]]:(T.L[r.level]||['',''] );
+    tx(ld[0],270,py+54,{s:27});wrap(ld[1],270,py+90,470,{s:13,w:400,c:MUTE},19,2);
+    tx(T.overall.toUpperCase(),270,py+146,{s:10.5,w:600,c:MUTE,ls:1.5});tx(avg+'%',270,py+174,{s:30,c:BLUE});
+    c.fillStyle='#E4E2FF';rr(380,py+168,360,12,6);c.fill();c.fillStyle=BLUE;rr(380,py+168,Math.max(12,360*avg/100),12,6);c.fill();
+    if(!kid){var CL=['A1','A2','B1','B2','C1','C2'],sw=(670-5*6)/6,sy=py+198;CL.forEach(function(l,i){var x=62+i*(sw+6),on=l===r.level,av=!!T.L[l];c.fillStyle=on?BLUE:(av?'#E4E2FF':'#F1F0FA');rr(x,sy,sw,32,10);c.fill();tx(l,x+sw/2,sy+17,{s:13,c:on?'#fff':(av?BLUE:'#B5B2D6'),a:'center'})})}
     // skills
-    var y=374,hs=56+ks.length*36+8;c.fillStyle='#fff';c.strokeStyle='#E4E2FF';c.lineWidth=1.5;rr(40,y,714,hs,24);c.fill();c.stroke();
-    tx('مهاراتك',730,y+28,{s:17});
-    sorted.forEach(function(k,i){var p=spc(r.skills[k]),lo=k===weak&&ks.length>1,yy=y+66+i*36;tx(SKN(k),730,yy,{s:14.5});c.fillStyle='#E4E2FF';rr(150,yy-6,520,12,6);c.fill();c.fillStyle=lo?'#F5A400':'#4136E6';var w=Math.max(12,520*p/100);rr(670-w,yy-6,w,12,6);c.fill();tx(p+'%',130,yy,{s:14,c:lo?'#C98600':'#4136E6',a:'right',d:'ltr'})});
-    y+=hs+14;
-    if(ks.length>1){c.fillStyle='#E3F8EC';rr(404,y,350,52,18);c.fill();tx('نقاط قوتك',736,y+16,{s:12,c:'#11804A'});tx(strong.map(SKN).join(' و'),736,y+37,{s:15,c:'#0d6b3d'});
-      c.fillStyle='#FFF1D6';rr(40,y,350,52,18);c.fill();tx('فرصة للتطور',372,y+16,{s:12,c:'#8a5200'});tx(SKN(weak),372,y+37,{s:15,c:'#6b4300'});y+=66}
-    // topics
-    tx('ركّز عليها أولا',730,y+12,{s:16});y+=34;
-    sorted.slice().reverse().slice(0,2).forEach(function(k,i){var t=(TIPS[r.language]||TIPS.EN)[k]||['',''];c.fillStyle='#4136E6';c.beginPath();c.arc(716,y+14,14,0,7);c.fill();tx(i+1,716,y+14,{s:14,c:'#fff',a:'center',d:'ltr'});tx(t[0],690,y+8,{s:14.5});var n=wrap(t[1],690,y+30,600,{s:12,w:400,c:'#666'},17,2);y+=34+(n>1?17:0)+14});
-    // group
-    if(r.group_code){y+=4;var gg=c.createLinearGradient(40,y,754,y);gg.addColorStop(0,'#2A1FB8');gg.addColorStop(1,'#4136E6');c.fillStyle=gg;rr(40,y,714,60,22);c.fill();tx('فوجك المناسب',730,y+20,{s:12.5,w:400,c:'#DAD8FF'});tx(r.first_day!==null&&r.first_day!==undefined&&r.start_date?'يبدأ '+DAYS[r.first_day]+' '+dateTxt(r.start_date):'',730,y+42,{s:13,c:'#fff'});tx(r.group_code,70,y+30,{s:19,c:'#FFE600',a:'left',d:'ltr'})}
+    var y=py+ph+22;tx(T.skills,40,y,{s:12,w:600,c:MUTE,ls:2});y+=18;
+    var rh=38,hs=ks.length*rh+16;c.fillStyle='#fff';c.strokeStyle='#E4E2FF';c.lineWidth=1.5;rr(40,y,714,hs,20);c.fill();c.stroke();
+    sorted.forEach(function(k,i){var p=spc(r.skills[k]),yy=y+8+i*rh+rh/2,bi=p>=75?0:(p>=50?1:2),col=bi===0?'#11A05F':(bi===1?BLUE:'#F5A400');
+      tx(SKN(k),64,yy,{s:15});c.fillStyle='#EEEDFB';rr(220,yy-6,320,12,6);c.fill();c.fillStyle=col;rr(220,yy-6,Math.max(12,320*p/100),12,6);c.fill();
+      tx(p+'%',586,yy,{s:15,c:col,a:'right'});c.fillStyle=bi===0?'#E3F8EC':(bi===1?'#ECEBFF':'#FFF1D6');rr(612,yy-14,126,28,14);c.fill();tx(T.B[bi],675,yy,{s:12.5,c:col,a:'center'})});
+    y+=hs+18;
+    // strengths / focus
+    if(ks.length>1){var bw=347;c.fillStyle='#E3F8EC';rr(40,y,bw,54,16);c.fill();tx(T.str.toUpperCase(),58,y+19,{s:10.5,w:600,c:'#11804A',ls:1.5});tx(strong.map(SKN).join(' · '),58,y+41,{s:15.5,c:'#0d6b3d'});
+      c.fillStyle='#FFF1D6';rr(407,y,bw,54,16);c.fill();tx(T.foc.toUpperCase(),425,y+19,{s:10.5,w:600,c:'#8a5200',ls:1.5});tx(SKN(weak),425,y+41,{s:15.5,c:'#6b4300'});y+=66;
+      c.fillStyle='#F6F5FF';rr(40,y,714,48,16);c.fill();c.fillStyle='#FFE600';rr(40,y,6,48,3);c.fill();wrap(T.T[weak]||T.T.general,64,y+(String(T.T[weak]||'').length>100?16:24),670,{s:13,w:600,c:INK},18,2);y+=60}
+    if(r.group_code){var gg=c.createLinearGradient(40,y,754,y);gg.addColorStop(0,'#2A1FB8');gg.addColorStop(1,'#4136E6');c.fillStyle=gg;rr(40,y,714,52,18);c.fill();tx(T.grp.toUpperCase(),62,y+17,{s:10.5,w:600,c:'#DAD8FF',ls:1.5});tx(r.group_code,62,y+37,{s:17,c:'#FFE600'});
+      if(r.start_date){var sd=new Date(r.start_date+'T12:00:00');tx(T.starts+' '+sd.toLocaleDateString(T.loc,{weekday:'long',day:'numeric',month:'long'}),732,y+27,{s:13,c:'#fff',a:'right'})}}
     // footer
-    c.fillStyle='#1B1740';rr(0,925,794,260,34);c.fill();
-    tx('ابدأ رحلتك مع BTL، تواصل معنا',397,956,{s:16,c:'#FFE600',a:'center'});
-    var items=[['phone','الهاتف',CONTACT.phone],['whatsapp','واتساب',CONTACT.whatsapp],['telegram','تلغرام',CONTACT.telegram],['facebook','فايسبوك',CONTACT.facebook],['instagram','انستغرام',CONTACT.instagram],['web','الموقع',CONTACT.web]];
-    items.forEach(function(it,i){var col=i%3,row=Math.floor(i/3),w=226,x=754-col*(w+8)-w+0,yy=978+row*62;x=754-(col+1)*w-col*8;c.fillStyle='rgba(255,255,255,.09)';rr(x,yy,w,52,14);c.fill();
-      var ig=c.createLinearGradient(x+w-44,yy+6,x+w-8,yy+46);ig.addColorStop(0,'#4B40F0');ig.addColorStop(1,'#2A1FB8');c.fillStyle=ig;rr(x+w-44,yy+8,36,36,11);c.fill();
-      c.save();c.translate(x+w-44+9,yy+8+9);c.scale(.75,.75);c.strokeStyle='#fff';c.lineWidth=2.2;c.lineCap='round';c.lineJoin='round';RIC[it[0]].forEach(function(d){c.stroke(new Path2D(d))});c.restore();
-      tx(it[1],x+w-52,yy+16,{s:10.5,w:400,c:'#BDB9F5'});tx(it[2],x+w-52,yy+35,{s:12.5,c:'#fff',d:'ltr'})});
-    tx('هذا التقرير تقديري لمستواك يوم الاختبار، ويتحسن مع التدريب المنتظم.',397,1109,{s:11,w:400,c:'#9d99d6',a:'center'});
+    c.fillStyle=INK;c.fillRect(0,952,794,171);
+    tx(T.cta,397,974,{s:14.5,c:'#FFE600',a:'center'});
+    var items=[['phone',T.C.phone,CONTACT.phone],['whatsapp',T.C.whatsapp,CONTACT.whatsapp],['telegram',T.C.telegram,CONTACT.telegram],['facebook',T.C.facebook,CONTACT.facebook],['instagram',T.C.instagram,CONTACT.instagram],['web',T.C.web,CONTACT.web]];
+    items.forEach(function(it,i){var col=i%3,row=Math.floor(i/3),w=226,x=40+col*(w+18),yy=994+row*54;c.fillStyle='rgba(255,255,255,.09)';rr(x,yy,w,46,13);c.fill();
+      var ig=c.createLinearGradient(x+8,yy+6,x+44,yy+42);ig.addColorStop(0,'#4B40F0');ig.addColorStop(1,'#2A1FB8');c.fillStyle=ig;rr(x+8,yy+6,36,36,11);c.fill();
+      c.save();c.translate(x+8+9,yy+6+9);c.scale(.75,.75);c.strokeStyle='#fff';c.lineWidth=2.2;c.lineCap='round';c.lineJoin='round';RIC[it[0]].forEach(function(d){c.stroke(new Path2D(d))});c.restore();
+      tx(it[1],x+54,yy+15,{s:10,w:400,c:'#BDB9F5'});tx(it[2],x+54,yy+33,{s:12.5,c:'#fff'})});
+    tx(T.note,397,1108,{s:10,w:400,c:'#9d99d6',a:'center'});
     return cv})}
 function pdfFromCanvas(cv){
   var jpg=atob(cv.toDataURL('image/jpeg',.92).split(',')[1]),img=new Uint8Array(jpg.length),i;for(i=0;i<jpg.length;i++)img[i]=jpg.charCodeAt(i);
