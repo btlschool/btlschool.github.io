@@ -136,7 +136,7 @@ input:focus,select:focus{outline:0;border-color:var(--brand);box-shadow:0 0 0 4p
 .vtot{display:flex;justify-content:space-between;align-items:center;border:2px solid #E1B8EA;border-radius:18px;padding:14px;background:#fff}.vtot .amt{font-size:22px;font-weight:900;color:#7A0E8C}
 .vta{width:100%;border:2px solid #A11CB5;border-radius:18px;padding:14px;font:inherit;font-size:15px;resize:none;background:#fff;box-sizing:border-box}
 .vgrid{padding:8px 6px}.vh,.vr{display:grid;grid-template-columns:58px repeat(7,1fr);gap:4px;align-items:center;margin-bottom:4px}.vh span{font-size:9.5px;font-weight:800;color:var(--mute);text-align:center;direction:ltr}.vr b{font-size:12.5px}.vc{height:31px;border:1.5px solid var(--line);border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;padding:0;transition:transform .12s,background .15s,border-color .15s}button.vc:active{transform:scale(.86)}.vc.on{background:#E3F8EC;border-color:#7ED3A5}.vc.no{background:#FDECEE;border-color:#F4B4BA}.vc svg{fill:none;stroke-width:3.2;width:15px;height:15px}.vc.on svg{stroke:#11804A}.vc.no svg{stroke:#D92D3A}
-.voff{height:92px;overflow:auto;border:1.5px solid var(--line);background:#fff;border-radius:16px;padding:8px 12px;color:var(--ink);font-size:13px;line-height:1.6;font-weight:700}.voff>b{display:block;font-size:13.5px;margin-bottom:1px}.voff>b span{font-weight:700;font-size:12px;color:var(--mute)}.voff.none{color:var(--mute)}.voff #vol>div{margin:0;padding:0;min-height:0;height:auto;line-height:1.55}.vt{display:inline-block;direction:ltr;unicode-bidi:isolate}.vwarn{border:2px solid #E5484D;background:#FDECEE;color:#C62832;border-radius:14px;padding:10px 12px;text-align:center;font-weight:900;font-size:13.5px;line-height:1.5}
+.voff{height:92px;overflow:auto;border:1.5px solid var(--line);background:#fff;border-radius:16px;padding:8px 12px;color:var(--ink);font-size:13px;line-height:1.6;font-weight:700}.voff>b{display:block;font-size:13.5px;margin-bottom:1px}.voff>b span{font-weight:700;font-size:12px;color:var(--mute)}.voff.none{color:var(--mute)}.voff #vol>div{margin:0;padding:0;min-height:0;height:auto;line-height:1.55}.vt{display:inline-block;direction:ltr;unicode-bidi:isolate}.pg.vtm>*:not(.hd):not(.ft){margin-top:0;margin-bottom:0}.pg.vtm{display:flex;flex-direction:column}.pg.vtm>.vwarn,.pg.vtm>.vdm,.pg.vtm>.vgrid{flex:none;margin-top:10px}.pg.vtm>.voff{flex:1;height:auto;min-height:92px;margin-top:10px}.vhh{display:flex;flex-direction:column;align-items:center;line-height:1.15;font-size:11px}.vhh i{font-style:normal;font-size:11px;opacity:.7;border-top:1px solid #C9C5F0;margin-top:1px;padding-top:1px}.vwarn{border:2px solid #E5484D;background:#FDECEE;color:#C62832;border-radius:14px;padding:10px 12px;text-align:center;font-weight:900;font-size:13.5px;line-height:1.5}
 .vdm{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px dashed #E4B9EE;border-radius:14px;padding:8px 12px;font-size:13px;font-weight:700;color:#6d0e85}.vdc{position:relative;width:38px;height:38px;flex:none}.vdc i{position:absolute;inset:0;border-radius:10px;display:flex;align-items:center;justify-content:center;border:1.5px solid}.vdc i svg{width:15px;height:15px;fill:none;stroke-width:3.2}.vdc .a{background:#E3F8EC;border-color:#7ED3A5;animation:vda 3s infinite}.vdc .a svg{stroke:#11804A}.vdc .b{background:#FDECEE;border-color:#F4B4BA;animation:vdb 3s infinite}.vdc .b svg{stroke:#D92D3A}@keyframes vda{0%,40%{opacity:1;transform:scale(1)}50%{transform:scale(.8)}55%,95%{opacity:0}100%{opacity:1}}@keyframes vdb{0%,45%{opacity:0}55%,95%{opacity:1;transform:scale(1)}50%{transform:scale(1.15)}100%{opacity:0}}
 .vsum{border-radius:22px;padding:16px;background:linear-gradient(120deg,#8E0FA3,#B21AC4);color:#fff}
 .pg.vp:not(.dark):not(.hero)>.hd{background:linear-gradient(150deg,#B433CF,#7A0E94 75%);box-shadow:0 12px 28px rgba(122,14,148,.28)}.pg.still>*,.pg.still>*>*{animation:none!important}
@@ -408,7 +408,7 @@ function showQ(){
     card='<div class="cd">'+qpic(q)+'<div class="qs">'+(/_{2,}/.test(stem)?'أكمل الجملة':'اختر الإجابة الصحيحة')+'</div><div class="q">'+bl(stem)+'</div></div>';
   }
   var MOT=['ممتاز، واصل!','أنت تتقدم بثبات','ركّز، أنت قادر على ذلك','كل إجابة تقرّبك من مستواك الحقيقي','لا تتوقف عند سؤال صعب، تخطَّ بثقة','أحسنت، استمر'],half=T.idx===Math.floor(T.t.total/2),mot=half?'نصف الطريق تمّ! واصل بنفس الحماس':(T.idx>0&&T.idx%4===1?MOT[(T.idx>>2)%MOT.length]:'');
-  var body='<div><div class="sk" style="margin-top:0">'+skills.map(function(k){return '<span class="'+(k===q.skill?'on':'')+'">'+skl(k)+'</span>'}).join('')+'</div></div>'+
+  var body='<div><div class="sk" style="margin-top:0">'+skills.map(function(k){return '<span class="'+(k===(q.skill==='general'?(/_{2,}/.test(stem)?'grammar':'vocab'):q.skill)?'on':'')+'">'+skl(k)+'</span>'}).join('')+'</div></div>'+
    '<div class="mid"><div>'+card+qq+'</div><div style="display:flex;flex-direction:column;gap:10px">'+
    q.options.map(function(o,i){return '<button class="opt" data-i="'+i+'"><i></i><span>'+esc(o)+'</span></button>'}).join('')+'</div></div>';
   page({step:'السؤال '+(T.idx+1)+' من '+T.t.total,pct:Math.round(T.idx/T.t.total*100),cls:'tst',still:1,
@@ -558,7 +558,7 @@ function home(){
       nx='<div class="cd" style="margin:0"><b style="font-size:16px">خطواتك حتى تبدأ الدراسة</b>'+
         stp(1,'انضم إلى مجموعة الفوج','فيها الروابط والتسجيلات وتنبيهات الأستاذ.','<a class="btn" style="min-height:44px;font-size:14.5px;margin-top:8px;background:#229ED9;box-shadow:none;animation:none;text-decoration:none" href="https://t.me/'+esc(tg)+'" target="_blank" rel="noopener">انضم إلى المجموعة</a>')+
         stp(2,'ثبّت التطبيق وادخل منصتك','عد إلى هذا الموقع، ثبّت التطبيق ثم ادخل منصتك برمز دخولك.')+
-        stp(3,'الحصة الافتتاحية (15 دقيقة)','نتعرف فيها على أستاذك ونتفق على مواقيت حصص الفوج.',idt?'<div class="tag pu" style="margin-top:8px;font-size:14px;padding:6px 12px">'+esc(idt)+(x.intro_time?' · <bdi dir="ltr">'+esc(x.intro_time)+'</bdi>':'')+'</div>':'')+'</div>'}
+        stp(3,'الحصة الافتتاحية (15 دقيقة)','حصة تعريفية قصيرة مدتها 15 دقيقة فقط، نتفق فيها مع أستاذك على مواقيت حصص الفوج.',idt?'<div class="tag pu" style="margin-top:8px;font-size:14px;padding:6px 12px">'+esc(idt)+(x.intro_time?' · <bdi dir="ltr">'+esc(x.intro_time)+'</bdi>':'')+'</div>':'')+'</div>'}
     var rn=x.renewal?'<div style="border-radius:24px;padding:16px;background:linear-gradient(160deg,#FFE600,#FFD000);color:#1B1740"><div class="row"><b style="font-size:17px">جدّد مبكرا بخصم '+x.renewal.pct+'%</b><span class="tag" style="background:#1B1740;color:#fff">المستوى التالي '+esc(x.renewal.next_level)+'</span></div><div style="margin-top:8px"><span class="amt" style="font-size:30px">'+esc(nb(x.renewal.net))+' DA</span> <span class="amt" style="text-decoration:line-through;opacity:.6;font-size:14px">'+esc(nb(x.renewal.gross))+' DA</span></div><div class="sm" style="color:#1B1740;font-weight:700">'+esc(words(x.renewal.net_cents))+'</div><div class="sm" style="color:#5a4a00;margin:6px 0 10px">يظهر بعد 70% من الدروس، وينتهي يوم الحصة الأخيرة في المستوى</div><button class="btn" data-rn="'+esc(x.renewal.enroll_id)+'" data-l="'+esc(x.language)+'" style="background:#1B1740;animation:none">جدّد الآن بنقرة واحدة</button></div>':'';
     return '<div style="display:flex;flex-direction:column;gap:12px"><div style="border-radius:24px;padding:16px;color:#fff;background:linear-gradient(120deg,#2A1FB8,#4136E6);box-shadow:0 10px 24px rgba(65,54,230,.22)"><div class="row"><b dir="ltr" style="color:#FFE600;font-size:19px">'+esc(x.group_code)+'</b><span class="tag" style="background:rgba(255,255,255,.2);color:#fff">'+(x.started?'يدرس':'ينتظر البداية')+'</span></div>'+
      (x.started?'<div class="row" style="margin-top:12px"><span style="font-weight:700;color:#DAD8FF">تقدّمك في المستوى</span><span><b style="font-size:26px">'+x.done+'</b> من '+x.total+' حصة</span></div><div class="prog" style="margin-top:8px"><i style="width:'+x.pct+'%"></i></div><div class="sm" style="color:#DAD8FF;margin-top:8px">بقي '+x.left+' حصص'+(x.end_date?'، وينتهي المستوى في '+esc(dateTxt(x.end_date)):'')+'</div>':'<div style="margin-top:10px;font-weight:700">يبدأ فوجك يوم '+esc(dateTxt(x.start_date))+'.</div>')+'</div>'+nx+rn+'<button class="rep" data-rp="'+esc(x.language)+'"><span class="doc"><b>'+esc(x.report_level||'—')+'</b><small>'+esc(x.language)+'</small></span><span class="tx"><b>تقرير مستواك (PDF)</b><span>مهاراتك ومحاور المراجعة</span></span><span class="dl">'+svg('dl')+'</span></button>'+(x.stopped?'':'<button class="lnk" data-st="'+esc(x.enroll_id)+'" style="align-self:center">لا أنوي المواصلة</button>')+'</div>';
@@ -581,21 +581,80 @@ function pendingHome(){
 
 var TIPS={EN:{grammar:['المضارع البسيط مع he / she','انتبه إلى إضافة s في آخر الفعل.'],vocab:['المفردات اليومية والأفعال الشائعة','تعلّم 10 كلمات جديدة يوميا مع جملة لكل كلمة.'],reading:['الفكرة العامة قبل التفاصيل','اقرأ نصا قصيرا يوميا وحدّد فكرته الرئيسية.'],listening:['فهم الأرقام في الاستماع','تدرّب على سماع الأسعار والساعات والتواريخ.']},
  FR:{grammar:['الفعل المساعد avoir / être مع الماضي المركب','احفظ الأفعال التي تأخذ être.'],vocab:['مفردات الحياة اليومية','تعلّم 10 كلمات جديدة يوميا مع جملة لكل كلمة.'],reading:['الفكرة العامة قبل التفاصيل','اقرأ نصا قصيرا يوميا وحدّد فكرته الرئيسية.'],listening:['تمييز الأصوات والأرقام الفرنسية','استمع لنشرة مبسطة وسجّل الأرقام التي تسمعها.']}};
+var CONTACT={phone:'0699184817',whatsapp:'0699184817',telegram:'@BTLSchool',facebook:'BTL School',instagram:'@btl_school',web:'btlschool.github.io'};
+function loadImg(src){return new Promise(function(ok){var i=new Image();i.onload=function(){ok(i)};i.onerror=function(){ok(null)};i.src=src})}
+function svgImg(x){return loadImg('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(x.replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" ')))}
+var RIC={phone:['M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z'],whatsapp:['M3 21l1.6-4.8A8.5 8.5 0 118 19.6z','M9 9c0 3 3 6 6 6l1.2-1.4-2-1-.9.7c-.9-.4-1.8-1.3-2.2-2.2l.7-.9-1-2z'],telegram:['M21 4L3 11l5 2 2 6 3-4 5 4z','M8 13l9-6'],facebook:['M14 8h3V4h-3a4 4 0 00-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8z'],instagram:['M8 3h8a5 5 0 015 5v8a5 5 0 01-5 5H8a5 5 0 01-5-5V8a5 5 0 015-5z','M12 8a4 4 0 100 8 4 4 0 000-8z'],web:['M12 3a9 9 0 100 18 9 9 0 000-18z','M3 12h18','M12 3c3 3 3 15 0 18','M12 3c-3 3-3 15 0 18']};
+function drawReport(r){
+  return Promise.all([document.fonts.load('800 20px "Expo Arabic"'),document.fonts.load('400 20px "Expo Arabic"'),loadImg('assets/brand/logo-white.png'),svgImg(FLAG[r.language]||FLAG.EN)]).then(function(res){
+    var logo=res[2],flag=res[3],K=1240/794,cv=document.createElement('canvas');cv.width=1240;cv.height=1754;var c=cv.getContext('2d');c.scale(K,K);
+    function rr(x,y,w,h,r_){c.beginPath();c.moveTo(x+r_,y);c.arcTo(x+w,y,x+w,y+h,r_);c.arcTo(x+w,y+h,x,y+h,r_);c.arcTo(x,y+h,x,y,r_);c.arcTo(x,y,x+w,y,r_);c.closePath()}
+    function tx(t,x,y,o){o=o||{};c.font=(o.w||800)+' '+(o.s||14)+'px "Expo Arabic"';c.fillStyle=o.c||'#1B1740';c.textAlign=o.a||'right';c.direction=o.d||'rtl';c.textBaseline='middle';c.fillText(String(t),x,y)}
+    function wrap(t,x,y,w,o,lh,max){var ws=String(t).split(' '),ln='',n=0;c.font=(o.w||400)+' '+o.s+'px "Expo Arabic"';ws.forEach(function(wd){var tt=ln?ln+' '+wd:wd;if(c.measureText(tt).width>w&&ln){tx(ln,x,y+n*lh,o);n++;ln=wd}else ln=tt});if(ln&&n<max)tx(ln,x,y+n*lh,o);return n+1}
+    var kid=/^K?\d$/.test(String(r.level)),ks=Object.keys(r.skills),sorted=ks.slice().sort(function(a,b){return spc(r.skills[b])-spc(r.skills[a])}),weak=sorted[sorted.length-1],strong=sorted.slice(0,2);
+    var kd=kid,SKN=function(k){return (kd?SKK[k]:SK[k])||''};
+    c.fillStyle='#fff';c.fillRect(0,0,794,1123);
+    // header
+    var g=c.createLinearGradient(0,0,794,150);g.addColorStop(0,'#2A1FB8');g.addColorStop(1,'#4B40F0');c.fillStyle=g;rr(0,-40,794,190,36);c.fill();
+    var rg=c.createRadialGradient(80,20,0,80,20,170);rg.addColorStop(0,'rgba(255,255,255,.2)');rg.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=rg;c.fillRect(0,0,300,150);
+    if(logo){var lh=58,lw=logo.width/logo.height*lh;c.drawImage(logo,40,46,lw,lh)}
+    tx('تقرير مستوى اللغة',754,62,{s:30,c:'#fff'});tx('BTL Languages School · أفضل مدرسة لغات أونلاين في الجزائر',754,106,{s:12.5,w:400,c:'#DAD8FF'});
+    // hero: level + language
+    c.fillStyle='#F6F5FF';rr(40,170,714,184,28);c.fill();
+    var bg=c.createLinearGradient(60,190,200,330);bg.addColorStop(0,'#4B40F0');bg.addColorStop(1,'#2A1FB8');c.fillStyle=bg;rr(60,190,140,144,34);c.fill();
+    c.strokeStyle='rgba(255,255,255,.28)';c.lineWidth=2;rr(67,197,126,130,28);c.stroke();
+    tx('مستواك',130,214,{s:13,c:'#FFE600',a:'center'});
+    tx(kid?String(r.level).replace('K',''):r.level,130,266,{s:kid?64:58,c:'#fff',a:'center',d:'ltr'});
+    tx(kid?'المستوى':(LVL[r.level]||''),130,312,{s:15,c:'#fff',a:'center'});
+    if(flag){c.save();c.beginPath();c.arc(716,214,30,0,7);c.clip();c.drawImage(flag,686,184,60,60);c.restore();c.strokeStyle='#fff';c.lineWidth=3;c.beginPath();c.arc(716,214,30,0,7);c.stroke()}
+    tx('اللغة',670,196,{s:12,w:400,c:'#5B5780'});tx(LANG[r.language]||'',670,226,{s:30});
+    tx(r.name,730,282,{s:20,d:'ltr'});tx('تاريخ الاختبار: '+dateTxt(r.date),730,314,{s:12.5,w:400,c:'#666'});
+    // skills
+    var y=374,hs=56+ks.length*36+8;c.fillStyle='#fff';c.strokeStyle='#E4E2FF';c.lineWidth=1.5;rr(40,y,714,hs,24);c.fill();c.stroke();
+    tx('مهاراتك',730,y+28,{s:17});
+    sorted.forEach(function(k,i){var p=spc(r.skills[k]),lo=k===weak&&ks.length>1,yy=y+66+i*36;tx(SKN(k),730,yy,{s:14.5});c.fillStyle='#E4E2FF';rr(150,yy-6,520,12,6);c.fill();c.fillStyle=lo?'#F5A400':'#4136E6';var w=Math.max(12,520*p/100);rr(670-w,yy-6,w,12,6);c.fill();tx(p+'%',130,yy,{s:14,c:lo?'#C98600':'#4136E6',a:'right',d:'ltr'})});
+    y+=hs+14;
+    if(ks.length>1){c.fillStyle='#E3F8EC';rr(404,y,350,52,18);c.fill();tx('نقاط قوتك',736,y+16,{s:12,c:'#11804A'});tx(strong.map(SKN).join(' و'),736,y+37,{s:15,c:'#0d6b3d'});
+      c.fillStyle='#FFF1D6';rr(40,y,350,52,18);c.fill();tx('فرصة للتطور',372,y+16,{s:12,c:'#8a5200'});tx(SKN(weak),372,y+37,{s:15,c:'#6b4300'});y+=66}
+    // topics
+    tx('ركّز عليها أولا',730,y+12,{s:16});y+=34;
+    sorted.slice().reverse().slice(0,2).forEach(function(k,i){var t=(TIPS[r.language]||TIPS.EN)[k]||['',''];c.fillStyle='#4136E6';c.beginPath();c.arc(716,y+14,14,0,7);c.fill();tx(i+1,716,y+14,{s:14,c:'#fff',a:'center',d:'ltr'});tx(t[0],690,y+8,{s:14.5});var n=wrap(t[1],690,y+30,600,{s:12,w:400,c:'#666'},17,2);y+=34+(n>1?17:0)+14});
+    // group
+    if(r.group_code){y+=4;var gg=c.createLinearGradient(40,y,754,y);gg.addColorStop(0,'#2A1FB8');gg.addColorStop(1,'#4136E6');c.fillStyle=gg;rr(40,y,714,60,22);c.fill();tx('فوجك المناسب',730,y+20,{s:12.5,w:400,c:'#DAD8FF'});tx(r.first_day!==null&&r.first_day!==undefined&&r.start_date?'يبدأ '+DAYS[r.first_day]+' '+dateTxt(r.start_date):'',730,y+42,{s:13,c:'#fff'});tx(r.group_code,70,y+30,{s:19,c:'#FFE600',a:'left',d:'ltr'})}
+    // footer
+    c.fillStyle='#1B1740';rr(0,925,794,260,34);c.fill();
+    tx('ابدأ رحلتك مع BTL، تواصل معنا',397,956,{s:16,c:'#FFE600',a:'center'});
+    var items=[['phone','الهاتف',CONTACT.phone],['whatsapp','واتساب',CONTACT.whatsapp],['telegram','تلغرام',CONTACT.telegram],['facebook','فايسبوك',CONTACT.facebook],['instagram','انستغرام',CONTACT.instagram],['web','الموقع',CONTACT.web]];
+    items.forEach(function(it,i){var col=i%3,row=Math.floor(i/3),w=226,x=754-col*(w+8)-w+0,yy=978+row*62;x=754-(col+1)*w-col*8;c.fillStyle='rgba(255,255,255,.09)';rr(x,yy,w,52,14);c.fill();
+      var ig=c.createLinearGradient(x+w-44,yy+6,x+w-8,yy+46);ig.addColorStop(0,'#4B40F0');ig.addColorStop(1,'#2A1FB8');c.fillStyle=ig;rr(x+w-44,yy+8,36,36,11);c.fill();
+      c.save();c.translate(x+w-44+9,yy+8+9);c.scale(.75,.75);c.strokeStyle='#fff';c.lineWidth=2.2;c.lineCap='round';c.lineJoin='round';RIC[it[0]].forEach(function(d){c.stroke(new Path2D(d))});c.restore();
+      tx(it[1],x+w-52,yy+16,{s:10.5,w:400,c:'#BDB9F5'});tx(it[2],x+w-52,yy+35,{s:12.5,c:'#fff',d:'ltr'})});
+    tx('هذا التقرير تقديري لمستواك يوم الاختبار، ويتحسن مع التدريب المنتظم.',397,1109,{s:11,w:400,c:'#9d99d6',a:'center'});
+    return cv})}
+function pdfFromCanvas(cv){
+  var jpg=atob(cv.toDataURL('image/jpeg',.92).split(',')[1]),img=new Uint8Array(jpg.length),i;for(i=0;i<jpg.length;i++)img[i]=jpg.charCodeAt(i);
+  var enc=function(s){var u=new Uint8Array(s.length);for(var k=0;k<s.length;k++)u[k]=s.charCodeAt(k);return u},parts=[],off=[],len=0;
+  function add(u){parts.push(u);len+=u.length}
+  add(enc('%PDF-1.4\n'));
+  off[1]=len;add(enc('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n'));
+  off[2]=len;add(enc('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n'));
+  off[3]=len;add(enc('3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>\nendobj\n'));
+  off[4]=len;add(enc('4 0 obj\n<< /Type /XObject /Subtype /Image /Width '+cv.width+' /Height '+cv.height+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+img.length+' >>\nstream\n'));add(img);add(enc('\nendstream\nendobj\n'));
+  var cs='q 595.28 0 0 841.89 0 0 cm /Im0 Do Q';
+  off[5]=len;add(enc('5 0 obj\n<< /Length '+cs.length+' >>\nstream\n'+cs+'\nendstream\nendobj\n'));
+  var x=len,t='xref\n0 6\n0000000000 65535 f \n';for(i=1;i<=5;i++)t+=('0000000000'+off[i]).slice(-10)+' 00000 n \n';
+  add(enc(t+'trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n'+x+'\n%%EOF'));
+  return new Blob(parts,{type:'application/pdf'})}
+function saveBlob(b,name){var a=document.createElement('a'),u=URL.createObjectURL(b);a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(u);a.remove()},4000)}
 function report(lang){
   call('report',{language:lang}).then(function(r){
-    var ks=Object.keys(r.skills),sorted=ks.slice().sort(function(a,b){return spc(r.skills[b])-spc(r.skills[a])}),weak=sorted[sorted.length-1],strong=sorted.slice(0,2);
-    var bars=ks.map(function(k){var p=spc(r.skills[k]),lo=k===weak&&ks.length>1;return '<div class="row" style="gap:10px;margin:9px 0"><span style="width:64px;font-weight:800;font-size:13.5px">'+SK[k]+'</span><div class="bar"><i class="'+(lo?'lo':'')+'" style="width:'+p+'%"></i></div><b style="width:44px;text-align:left;direction:ltr;color:'+(lo?'#E08600':'#4136E6')+'">'+p+'%</b></div>'}).join('');
-    var topics=sorted.slice().reverse().slice(0,3).map(function(k,i){var t=(TIPS[r.language]||TIPS.EN)[k]||['',''];return '<div class="row" style="justify-content:flex-start;gap:12px;align-items:flex-start;margin:10px 0"><span class="num">'+(i+1)+'</span><div><b style="font-size:14.5px">'+esc(t[0])+'</b><div class="sm">'+esc(t[1])+'</div></div></div>'}).join('');
-    var grp=r.group_code?'<div style="border-radius:20px;padding:14px 16px;color:#fff;background:linear-gradient(120deg,#2A1FB8,#4136E6)" class="row"><div><div style="font-size:12.5px;color:#DAD8FF;font-weight:700">فوجك المناسب</div>'+(r.first_day!==null?'<div style="font-size:13px;font-weight:700;color:#E4E2FF">يبدأ أول حصة: '+DAYS[r.first_day]+' '+esc(dateTxt(r.start_date))+'</div>':'')+'</div><b dir="ltr" style="color:#FFE600;font-size:16px;white-space:nowrap">'+esc(r.group_code)+'</b></div>':'';
-    var C=2*Math.PI*54,pc=0;
-    $('scr').innerHTML='<div class="pg" style="padding:0;background:#fff"><div style="background:linear-gradient(120deg,#2A1FB8,#4136E6);color:#fff;padding:22px 22px 20px;display:flex;align-items:center;gap:12px"><button class="ib noprint" id="bk" aria-label="رجوع">'+svg('back')+'</button><div style="flex:1"><div style="font-size:12.5px;font-weight:700;color:#DAD8FF">BTL Languages School</div><div style="font-size:22px;font-weight:900">تقرير مستوى اللغة</div></div><img src="assets/brand/logo-white.png" alt="BTL" style="height:36px"></div>'+
-     '<div style="padding:18px 22px 24px;display:flex;flex-direction:column;gap:14px"><div class="row" style="gap:14px"><div><div class="sm">الطالب</div><div dir="ltr" style="font-size:22px;font-weight:900;text-align:right">'+esc(r.name)+'</div><div class="sm">اللغة: '+LANG[r.language]+' · تاريخ الاختبار: '+esc(dateTxt(r.date))+'</div></div><div style="width:104px;height:104px;border-radius:50%;border:7px solid #FFE600;background:#EEEDFF;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none"><b style="font-size:30px;line-height:1;color:#2A1FB8">'+esc(r.level)+'</b><span style="font-size:12px;font-weight:800">'+esc(LVL[r.level]||'')+'</span></div></div>'+
-     '<div class="cd" style="background:#F6F5FF;border:0"><b style="font-size:16px">مهاراتك</b>'+bars+'</div>'+
-     '<div class="cards2"><div style="background:#E3F8EC;border-radius:18px;padding:12px 14px"><div style="color:#11804A;font-weight:800;font-size:13px">نقاط قوتك</div><b>'+strong.map(function(k){return SK[k]}).join(' و')+'</b></div><div style="background:#FFF1D6;border-radius:18px;padding:12px 14px"><div style="color:#8a5200;font-weight:800;font-size:13px">فرصة للتطور</div><b>'+SK[weak]+'</b></div></div>'+
-     '<div><b style="font-size:16px">محاور للمراجعة</b>'+topics+'</div>'+grp+'<div class="sm" style="text-align:center">هذا التقرير تقديري لمستواك يوم الاختبار، ويتحسن مع التدريب المنتظم.</div>'+
-     '<button class="btn noprint" id="pr"><span>حفظ كملف PDF</span>'+svg('dl')+'</button></div></div>';
-    $('bk').onclick=function(){if(S.home&&S.home.subs&&S.home.subs.length)home();else route()};$('pr').onclick=function(){try{window.print()}catch(e){toast('استعمل قائمة المتصفح ثم «طباعة» لحفظ الملف',true)}};window.scrollTo(0,0);
-  },function(e){fail(e)});
+    return drawReport(r).then(function(cv){
+      var url=cv.toDataURL('image/jpeg',.9),base='BTL-report-'+String(r.name||'').replace(/[^A-Za-z0-9]+/g,'-')+'-'+r.language;
+      page({title:'تقرير مستواك',back:function(){if(S.home&&S.home.subs&&S.home.subs.length)home();else route()}},'<img src="'+url+'" alt="تقرير مستوى اللغة" style="width:100%;border-radius:14px;box-shadow:0 8px 24px rgba(27,23,64,.18);margin-top:4px">','<button class="btn" id="dp"><span>تحميل PDF</span>'+svg('dl')+'</button><button class="btn sec" id="di">تحميل كصورة</button>');
+      function done(b,t){var o=b.innerHTML;b.innerHTML='<span>تم التحميل</span>'+svg('chk');setTimeout(function(){b.innerHTML=o},1800)}
+      $('dp').onclick=function(){saveBlob(pdfFromCanvas(cv),base+'.pdf');done(this)};
+      $('di').onclick=function(){var b=this;cv.toBlob(function(bl){saveBlob(bl,base+'.png');done(b)},'image/png')};
+    })},function(e){fail(e)});
 }
 var STOPR=[['busy','انشغال أو ضيق وقت'],['exams','الامتحانات أو الدراسة'],['price','السعر'],['style','لم يناسبني الأسلوب أو الأستاذ'],['learned','تعلّمت ما يكفي'],['personal','ظروف شخصية'],['other','سبب آخر']],STOPW=[['month','بعد شهر'],['three_months','بعد 3 أشهر'],['after_exams','بعد الامتحانات'],['summer','في الصيف'],['unknown','لا أعرف بعد']];
 function stopScreen(eid){
@@ -729,7 +788,7 @@ var SOON=function(){toast('قريبا إن شاء الله')};
 var WHY={rating:'4.2',votes:'947',recommend:'97',seats:'4256',teachers:'50',years:'6'};
 var WHY_I={tc:'<path d="M3 9l9-5 9 5-9 5z"/><path d="M7 11v5c2 2 8 2 10 0v-5"/>',gr:'<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 19c0-3 3-5 6-5s6 2 6 5M15 15c3 0 6 1 6 4"/>',lv:'<rect x="3" y="6" width="18" height="12" rx="3"/><circle cx="12" cy="12" r="2.5"/>',rc:'<circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5z"/>',cu:'<path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M5 17a3 3 0 013-3h11"/>',tm:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
 var VIPPOP=20;
-function applySite(c){if(c&&c.why)Object.keys(c.why).forEach(function(k){WHY[k]=c.why[k]});if(c&&c.vip){VIPP=[[10,c.vip.p10*100],[20,c.vip.p20*100],[30,c.vip.p30*100]];VIPPOP=c.vip.popular}}
+function applySite(c){if(c&&c.contact)Object.keys(c.contact).forEach(function(k){if(c.contact[k])CONTACT[k]=c.contact[k]});if(c&&c.why)Object.keys(c.why).forEach(function(k){WHY[k]=c.why[k]});if(c&&c.vip){VIPP=[[10,c.vip.p10*100],[20,c.vip.p20*100],[30,c.vip.p30*100]];VIPPOP=c.vip.popular}}
 function loadSite(){return call('site_config',{},true).then(function(c){applySite(c);try{ls('site',JSON.stringify(c))}catch(e){}},function(){})}
 function whyBtl(){
   var feats=[['tc','أساتذة من أفضل أساتذة الجزائر','يمرّون بمقابلة وتقييم، ويقيّمهم المشاركون بعد كل مستوى، فنبقي الأفضل فقط.','#EEEDFF','#4136E6'],['gr','أفواج صغيرة','عدد محدود ليتسنى لكل مشارك أن يتحدث ويتدرب ويستوعب.','#FFE8F4','#C4087A'],['lv','حصص مباشرة وتفاعلية','تتحدث وتشارك وتصحّح مع أستاذك وزملائك مباشرة، لا مجرد مشاهدة.','#E3F8EC','#11804A'],['rc','تسجيلات تبقى معك مدى الحياة','كل حصة تُسجَّل، تعود إليها متى شئت وتبقى عندك دائما.','#FFF1D6','#E08600'],['cu','منهاج معتمد يُقدَّم لك مجانا','يقودك خطوة بخطوة، لكل لغة وفئة، ومحادثة حقيقية في كل حصة.','#EEEDFF','#4136E6'],['tm','وقتك أنت من يحدّده','تختار أنت وفوجك الوقت المناسب لكم من بين المواعيد المتاحة.','#FFE8F4','#C4087A']];
@@ -793,15 +852,15 @@ function vipGoal(){
   $('nt').oninput=function(){v.note=this.value;VIPG.forEach(function(g,i){var on_=this.value.indexOf('• '+g)>=0;v.goals[i]=on_;var bt=document.querySelector('[data-g="'+i+'"]');if(bt)bt.classList.toggle('on',on_)}.bind(this))};
   $('nx').onclick=function(){v.note=$('nt').value.trim();if(!v.note)return toast('اختر هدفا أو اكتب هدفك',true);vipTimes()}}
 function vipOff(v){var out=[];VIPD.forEach(function(d,di){var off=[],run=null;VIPS.forEach(function(sl,si){var on_=v.slots[di+'_'+si];if(!on_){if(run)run.e=sl.split('-')[1];else{run={s:sl.split('-')[0],e:sl.split('-')[1]};off.push(run)}}else run=null});
-    if(off.length===VIPS.length)out.push([d[0],'اليوم كاملا']);else if(off.length)out.push([d[0],off.map(function(r){return '<span class="vt">'+r.s+'-'+r.e+'</span>'}).join(' ، ')])});return out}
+    if(off.length===VIPS.length)out.push([d[0],'اليوم كاملا']);else if(off.length)out.push([d[0],off.map(function(r){return 'من '+r.s+' إلى '+r.e}).join(' ، ')])});return out}
 function vcI(on){return on?svg('chk',15):svg('x',15)}
 function vipTimes(){
   var v=vipS();if(!v.slotsInit){VIPD.forEach(function(d,di){VIPS.forEach(function(x,si){v.slots[di+'_'+si]=true})});v.slotsInit=1}
   function cnt(){return Object.keys(v.slots).filter(function(k){return v.slots[k]}).length}
   function offHtml(){var o=vipOff(v);return o.length?o.map(function(r){return '<div><b>'+r[0]+':</b> '+r[1]+'</div>'}).join(''):'<div>لا شيء، كل أوقات الأسبوع متاحة لك.</div>'}
-  page(vipHead('دروس VIP الفردية',vipGoal),'<h1>أخبرنا بأوقاتك</h1><div class="vwarn">أزل الأوقات التي لديك فيها التزامات بالضغط عليها</div>'+
+  page(Object.assign(vipHead('دروس VIP الفردية',vipGoal),{cls:'vp vtm',spread:0}),'<h1>أخبرنا بأوقاتك</h1><div class="vwarn">أزل الأوقات التي لديك فيها التزامات بالضغط عليها</div>'+
    '<div class="vdm"><span class="vdc"><i class="a">'+svg('chk',15)+'</i><i class="b">'+svg('x',15)+'</i></span><span>اضغط على الخانة الخضراء لتصبح حمراء</span></div>'+
-   '<div class="cd vgrid"><div class="vh"><i></i>'+VIPS.map(function(s){return '<span>'+s+'</span>'}).join('')+'</div>'+VIPD.map(function(d,di){return '<div class="vr"><b>'+d[0]+'</b>'+VIPS.map(function(s,si){var k=di+'_'+si;return '<button class="vc '+(v.slots[k]?'on':'no')+'" data-k="'+k+'" aria-label="'+d[0]+' '+s+'">'+vcI(v.slots[k])+'</button>'}).join('')+'</div>'}).join('')+'</div>'+
+   '<div class="cd vgrid"><div class="vh"><i></i>'+VIPS.map(function(s){return '<span class="vhh">'+s.split('-')[0]+'<i>'+s.split('-')[1]+'</i></span>'}).join('')+'</div>'+VIPD.map(function(d,di){return '<div class="vr"><b>'+d[0]+'</b>'+VIPS.map(function(s,si){var k=di+'_'+si;return '<button class="vc '+(v.slots[k]?'on':'no')+'" data-k="'+k+'" aria-label="'+d[0]+' '+s+'">'+vcI(v.slots[k])+'</button>'}).join('')+'</div>'}).join('')+'</div>'+
    '<div class="voff'+(vipOff(v).length?'':' none')+'" id="voff"><b>الأوقات غير المتاحة لك <span>(لن نبرمج لك حصصا فيها)</span></b><div id="vol">'+offHtml()+'</div></div>',
    '<button class="btn vbtn" id="nx"><span>التالي: الدفع</span>'+svg('next')+'</button>');
   on($('scr'),'.vc',function(b){var k=b.getAttribute('data-k');v.slots[k]=!v.slots[k];b.className='vc '+(v.slots[k]?'on':'no');b.innerHTML=vcI(v.slots[k]);$('vol').innerHTML=offHtml();$('voff').className='voff'+(vipOff(v).length?'':' none')});
@@ -883,7 +942,7 @@ function previewIdx(){
   page({title:'معاينة الشاشات',back:welcome},'<h1 style="margin-top:14px;font-size:24px">معاينة الشاشات</h1><p class="sub">للتصميم فقط: كل الشاشات ببيانات تجريبية، وأزرار الإجراءات الحقيقية تعرض «قريبا».</p>'+Object.keys(PREV).map(function(k,i){return '<button class="cd" data-pv="'+i+'" style="display:flex;justify-content:space-between;align-items:center;text-align:start;width:100%;font-weight:800;font-size:15.5px">'+k+svg('next',18)+'</button>'}).join(''));
   on($('scr'),'[data-pv]',function(b){PREV[Object.keys(PREV)[+b.getAttribute('data-pv')]]()})}
 
-window.BTLX={home:home,vipTimes:vipTimes,logoutAsk:logoutAsk,slowOn:slowOn,setTm:function(v){TMNEW=v},S:S,showQ:showQ,showResult:showResult,groups:groups,previewIdx:previewIdx,vipReceipt:vipReceipt,vipStatus:vipStatus,vipConfirmed:vipConfirmed,vipHome:vipHome,trialHome:trialHome,promoGroup:promoGroup,notifHelp:notifHelp,testOrderDemo:testOrderDemo,whyBtl:whyBtl,vipRequest:vipRequest,vipGoal:vipGoal,vipTimes:vipTimes,vipPay:vipPay,toolsSetup:toolsSetup,remindSheet:remindSheet,retakeModal:retakeModal,testReady:testReady};
+window.BTLX={report:report,home:home,vipTimes:vipTimes,logoutAsk:logoutAsk,slowOn:slowOn,setTm:function(v){TMNEW=v},S:S,showQ:showQ,showResult:showResult,groups:groups,previewIdx:previewIdx,vipReceipt:vipReceipt,vipStatus:vipStatus,vipConfirmed:vipConfirmed,vipHome:vipHome,trialHome:trialHome,promoGroup:promoGroup,notifHelp:notifHelp,testOrderDemo:testOrderDemo,whyBtl:whyBtl,vipRequest:vipRequest,vipGoal:vipGoal,vipTimes:vipTimes,vipPay:vipPay,toolsSetup:toolsSetup,remindSheet:remindSheet,retakeModal:retakeModal,testReady:testReady};
 (function(){try{applySite(JSON.parse(ls('site')||'null'))}catch(e){}if(/^#preview/.test(location.hash)){var sp0=$('sp');if(sp0)sp0.onclick=skipSplash;return previewIdx()}var t=ls('tok'),sp=$('sp');if(sp)sp.onclick=skipSplash;if(t){S.token=t;route()}else{welcome();setTimeout(loadSite,50)}})();
 })();
 </script>
