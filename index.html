@@ -181,6 +181,8 @@ textarea{font:inherit;width:100%;min-height:92px;border-radius:16px;border:2px s
 <div id="scr"></div>
 <script src="config.js"></script>
 <script>
+(function(){try{var m=/[?&]src=([a-zA-Z]{1,10})(?:&|#|$)/.exec(location.search);if(m&&!localStorage.getItem('btl_src'))localStorage.setItem('btl_src',m[1].toLowerCase())}catch(e){}})();
+function getSrc(){try{return localStorage.getItem('btl_src')||''}catch(e){return ''}}
 (function(){
 'use strict';
 var CFG=window.BTL_CONFIG||{},testIv=0,S={token:'',me:null,results:{},order:null,T:null,sel:{},sug:null},timers=[],T0=Date.now();
@@ -299,7 +301,7 @@ function contact(){
         S.reg.catch(function(){});profile()}})}
     ask('<h2 style="margin:0;font-size:20px">هل رقم الواتساب هذا صحيح؟</h2><div class="cd" style="text-align:center"><span class="amt" style="font-size:26px;color:#2A1FB8">'+esc(nb(full))+'</span></div><p class="sm">سيصلك عليه رمز الدخول ونتيجة اختبارك. إن أخطأت فلن نستطيع الوصول إليك.</p><button class="btn" id="y" style="animation:none">نعم، الرقم صحيح</button><button class="btn sec" id="n">تعديل الرقم</button>',function(m){
       m.querySelector('#n').onclick=closeM;m.querySelector('#y').onclick=function(){closeM();
-        S.reg=call('reg_contact',{name:nm,phone:ph,country:cc,phone2:ph2,country2:$('cc2')?$('cc2').value:cc,device:navigator.userAgent.slice(0,80)},true).then(function(r){
+        S.reg=call('reg_contact',{name:nm,phone:ph,country:cc,phone2:ph2,country2:$('cc2')?$('cc2').value:cc,src:getSrc(),device:navigator.userAgent.slice(0,80)},true).then(function(r){
           if(r.existing){S.reg=null;toast('هذا الرقم مسجل من قبل، سجّل الدخول',true);login();return Promise.reject({code:'handled'})}
           S.token=r.token;ls('tok',r.token)},function(e){S.reg=null;fail(e);contact();throw {code:'handled'}});
         S.reg.catch(function(){});profile()}})};
