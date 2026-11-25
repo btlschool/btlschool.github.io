@@ -146,6 +146,7 @@ input:focus,select:focus{outline:0;border-color:var(--brand);box-shadow:0 0 0 4p
 .rc{border:2px solid var(--line);background:#fff;border-radius:22px;padding:14px;text-align:center;color:var(--ink);font-weight:800;width:100%}.rc.on{border-color:var(--brand);box-shadow:0 8px 22px rgba(65,54,230,.18)}.cards2.one{grid-template-columns:minmax(0,260px);justify-content:center}
 .conf{position:absolute;top:0;width:9px;height:14px;border-radius:2px;animation:fall 3.4s linear infinite;opacity:0}
 #ov{position:fixed;top:0;left:0;right:0;height:4px;background:rgba(65,54,230,.15);overflow:hidden;z-index:80;pointer-events:none}.sp{height:100%;width:40%;background:var(--brand);border-radius:9px;animation:loadbar 1.1s ease-in-out infinite}.ld{pointer-events:none}.ld:before{content:'';flex:none;width:18px;height:18px;border:3px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;margin-inline-end:8px;opacity:.85}.ld>span{opacity:.9}
+#nt{display:flex;gap:10px;align-items:flex-start;background:#FFF1F3;border:2px solid #E5484D;color:#8f1230;border-radius:16px;padding:12px 14px;margin:12px 0 4px;font-weight:800;font-size:15px;line-height:1.6;animation:up .3s ease both}#nt .tx{flex:1}#nt .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}#nt .acts .btn{min-height:44px;padding:8px 16px;font-size:14px;width:auto;flex:1 1 140px}#nt .x{flex:none;background:none;border:0;color:#8f1230;font-size:22px;line-height:1;padding:0 4px;cursor:pointer}#nt.inf{background:#EEF0FF;border-color:#4136E6;color:#2A1FB8}#nt.inf .x{color:#2A1FB8}
 #toast{position:fixed;bottom:90px;inset-inline:16px;margin:auto;max-width:420px;background:#fff;color:var(--ink);padding:13px 16px;border-radius:16px;border:1.5px solid var(--line);border-inline-start:6px solid var(--brand);box-shadow:0 10px 30px rgba(42,31,184,.18);z-index:60;text-align:center;font-weight:800}#toast.bad{border-inline-start-color:var(--bad);color:#8f1230}
 .modal{position:fixed;inset:0;background:rgba(27,23,64,.55);display:flex;align-items:flex-end;justify-content:center;z-index:55}.modal>div{background:#fff;border-radius:26px 26px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));width:100%;max-width:480px;display:flex;flex-direction:column;gap:12px;animation:up .3s ease}
 .splash{position:fixed;inset:0;z-index:70;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:space-between;background:linear-gradient(170deg,#2A1FB8 0%,#4136E6 55%,#5A4DF0 100%);color:#fff;text-align:center;transition:opacity .35s;padding:28px 22px 30px;cursor:pointer}
@@ -189,7 +190,7 @@ function getSrc(){try{return localStorage.getItem('btl_src')||''}catch(e){return
 var CFG=window.BTL_CONFIG||{},testIv=0,S={token:'',me:null,results:{},order:null,T:null,sel:{},sug:null},timers=[],T0=Date.now();
 var LANG={EN:'الإنجليزية',FR:'الفرنسية'},DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],SK={grammar:'القواعد',vocab:'المفردات',reading:'القراءة',listening:'الاستماع',general:'اللغة'};
 var LVL={A1:'مبتدئ',A2:'أساسي',B1:'متوسط',B2:'فوق المتوسط'};
-var ERR={storage_error:'تعذر حفظ الملف، حاول مجددا بعد قليل',test_closed:'الاختبار مغلق مؤقتا، حاول لاحقا',no_free_slot:'لا توجد مقاعد متاحة حاليا في هذا الفوج',price_not_set:'السعر غير متوفر حاليا، تواصل معنا',profile_incomplete:'أكمل بياناتك أولا ثم أعد المحاولة',not_finished:'لم يكتمل الاختبار بعد',bad_value:'قيمة غير صالحة، راجع البيانات',bad_item:'اختيار غير صالح، أعد المحاولة',bad_items:'اختيار غير صالح، أعد المحاولة',bad_lines:'اختيار غير صالح، أعد المحاولة',bad_language:'لغة غير صالحة',bad_choice:'اختيار غير صالح، أعد المحاولة',duplicate_line:'هذا الاختيار مضاف من قبل',bad_question:'تعذر تحميل السؤال، أعد المحاولة',phone_taken:'هذا الرقم مسجل بحساب آخر',bad_phone:'رقم الهاتف غير صالح',bad_name:'اكتب الاسم واللقب بالحروف اللاتينية',bad_gender:'اختر الجنس',bad_birth_year:'سنة الميلاد غير مقبولة',bad_languages:'اختر لغة واحدة على الأقل',registration_closed:'التسجيل مغلق مؤقتا',rate_limited:'محاولات كثيرة، انتظر قليلا ثم أعد',unauthorized:'انتهت الجلسة، سجّل الدخول من جديد',bad_credentials:'الرقم أو رمز الدخول غير صحيح',retake_limit:'استنفدت محاولاتك لهذه اللغة، تواصل مع الإدارة',time_up:'انتهى وقت الاختبار',already_enrolled:'أنت مشترك بالفعل في هذه اللغة',not_ready:'أكمل الاختبار أولا',line_taken:'هذا الفوج لم يعد متاحا لك',payments_closed:'الدفع متوقف مؤقتا',no_pay_account:'لا يوجد حساب دفع متاح حاليا',bad_file:'صورة الوصل غير صالحة (jpeg أو png)',not_allowed:'هذا الإجراء غير متاح الآن',code_exists:'ظهر رمزك من قبل',maintenance:'المنصة في الصيانة، عد لاحقا',network:'تعذر الاتصال، تحقق من الشبكة',timeout:'تأخر الخادم في الرد، أعد المحاولة',bad_response:'ردّ الخادم غير صالح (تحقق من رابط النشر)',order_locked:'طلبك قيد الدفع بالفعل',renewal_unavailable:'انتهى عرض التجديد المبكر',phone_taken:'هذا الرقم مسجل من قبل',same_phone:'اكتب رقم الشخص الآخر لا رقمك',too_many_children:'بلغت الحد الأقصى من الأبناء',forbidden:'غير مسموح',nothing_ready:'لا أحد جاهز للدفع بعد',bad_reasons:'اختر سببا واحدا على الأقل',not_found:'لا يوجد تقرير بعد',invalid_link:'الرابط غير صالح أو انتهت صلاحيته'};
+var ERR={storage_error:'تعذر حفظ الملف، حاول مجددا بعد قليل',test_closed:'الاختبار مغلق مؤقتا، حاول لاحقا',no_free_slot:'لا توجد مقاعد متاحة حاليا في هذا الفوج',price_not_set:'السعر غير متوفر حاليا، تواصل معنا',profile_incomplete:'أكمل بياناتك أولا ثم أعد المحاولة',not_finished:'لم يكتمل الاختبار بعد',bad_value:'قيمة غير صالحة، راجع البيانات',bad_item:'اختيار غير صالح، أعد المحاولة',bad_items:'اختيار غير صالح، أعد المحاولة',bad_lines:'اختيار غير صالح، أعد المحاولة',bad_language:'لغة غير صالحة',bad_choice:'اختيار غير صالح، أعد المحاولة',duplicate_line:'هذا الاختيار مضاف من قبل',bad_question:'تعذر تحميل السؤال، أعد المحاولة',phone_taken:'هذا الرقم مسجل بحساب آخر',bad_phone:'رقم الهاتف غير صالح',bad_name:'اكتب الاسم واللقب بالحروف اللاتينية',bad_gender:'اختر الجنس',bad_birth_year:'سنة الميلاد غير مقبولة',bad_languages:'اختر لغة واحدة على الأقل',registration_closed:'التسجيل مغلق مؤقتا',rate_limited:'محاولات كثيرة، انتظر قليلا ثم أعد',unauthorized:'انتهت الجلسة، سجّل الدخول من جديد',bad_credentials:'الرقم أو رمز الدخول غير صحيح',retake_limit:'استنفدت محاولاتك لهذه اللغة، تواصل مع الإدارة',time_up:'انتهى وقت الاختبار',already_enrolled:'أنت مشترك بالفعل في هذه اللغة',not_ready:'أكمل الاختبار أولا',line_taken:'هذا الفوج لم يعد متاحا لك',payments_closed:'الدفع متوقف مؤقتا',no_pay_account:'لا يوجد حساب دفع متاح حاليا',bad_file:'صورة الوصل غير صالحة (jpeg أو png)',not_allowed:'هذا الإجراء غير متاح الآن',code_exists:'ظهر رمزك من قبل',maintenance:'المنصة في الصيانة، عد لاحقا',network:'تحقق من اتصالك بالإنترنت ثم أعد المحاولة',timeout:'الاتصال بطيء أو منقطع. تحقق من الإنترنت ثم أعد المحاولة',bad_response:'ردّ الخادم غير صالح (تحقق من رابط النشر)',order_locked:'طلبك قيد الدفع بالفعل',renewal_unavailable:'انتهى عرض التجديد المبكر',phone_taken:'هذا الرقم مسجل من قبل',same_phone:'اكتب رقم الشخص الآخر لا رقمك',too_many_children:'بلغت الحد الأقصى من الأبناء',forbidden:'غير مسموح',nothing_ready:'لا أحد جاهز للدفع بعد',bad_reasons:'اختر سببا واحدا على الأقل',not_found:'لا يوجد تقرير بعد',invalid_link:'الرابط غير صالح أو انتهت صلاحيته'};
 function $(i){return document.getElementById(i)}
 function P0(){return S.P||(S.P={id:null})}
 function pName(){return P0().id?P0().name:((S.me&&S.me.name)||'')}
@@ -205,7 +206,13 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){retur
 function nb(s){return String(s).replace(/ /g,' ')}
 function da(s,cls){return '<span class="amt"'+(cls?' style="'+cls+'"':'')+'>'+esc(nb(s))+' DA</span>'}
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}}
-function toast(m,bad){var t=$('toast');t.textContent=m;t.className=bad?'bad':'';clearTimeout(toast.h);toast.h=setTimeout(function(){t.className='hidden'},3400)}
+function note(m,o){o=o||{};var old=$('nt');if(old)old.remove();var d=document.createElement('div');d.id='nt';d.setAttribute('role','alert');if(o.info)d.className='inf';
+  d.innerHTML='<div class="tx">'+(o.html?m:esc(m))+(o.acts||'')+'</div><button class="x" aria-label="إغلاق">×</button>';
+  d.querySelector('.x').onclick=function(){d.remove()};
+  var md=$('modal'),host=md&&!md.classList.contains('hidden')?$('mb'):document.querySelector('#scr .pg>.hd');
+  if(host&&host.id==='mb')host.insertBefore(d,host.firstChild);else if(host)host.parentNode.insertBefore(d,host.nextSibling);else return false;
+  try{d.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}return d}
+function toast(m,bad){if(bad&&note(m))return;var t=$('toast');t.textContent=m;t.className=bad?'bad':'';clearTimeout(toast.h);toast.h=setTimeout(function(){t.className='hidden'},3400)}
 var LASTB=null,LASTT=0,BL=null;document.addEventListener('pointerdown',function(e){var t=e.target&&e.target.closest?e.target.closest('button,a.btn'):null;LASTB=t;LASTT=Date.now()},true);
 function busy(on){$('ov').classList.toggle('hidden',!on);clearTimeout(busy.h);if(BL){BL.classList.remove('ld');BL=null}
   if(on){if(LASTB&&Date.now()-LASTT<2500&&document.body.contains(LASTB)&&!LASTB.classList.contains('ib')){BL=LASTB;BL.classList.add('ld')}var e=$('slow');if(e&&!e.classList.contains('hidden')){clearTimeout(slowOn.o);e.classList.remove('fade')}else busy.h=setTimeout(slowOn,Date.now()-slowEnd<2500?0:3000)}else slowOff()}
@@ -220,16 +227,17 @@ function svg(n,w){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentCo
 var FLAGX={ES:'<svg viewBox="0 0 60 60"><clipPath id="fes"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#fes)"><rect width="60" height="60" fill="#C60B1E"/><rect y="15" width="60" height="30" fill="#FFC400"/></g></svg>',DE:'<svg viewBox="0 0 60 60"><clipPath id="fde"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#fde)"><rect width="60" height="20" fill="#111"/><rect y="20" width="60" height="20" fill="#DD0000"/><rect y="40" width="60" height="20" fill="#FFCE00"/></g></svg>'};
 var FLAG={EN:'<svg viewBox="0 0 60 60"><clipPath id="uk"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#uk)"><rect width="60" height="60" fill="#1F3A7A"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#D1223B" stroke-width="4"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="16"/><path d="M30 0V60M0 30H60" stroke="#D1223B" stroke-width="9"/></g></svg>',FR:'<svg viewBox="0 0 60 60"><clipPath id="fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#fr)"><rect width="20" height="60" fill="#2342A0"/><rect x="20" width="20" height="60" fill="#fff" stroke="#E4E2F6"/><rect x="40" width="20" height="60" fill="#EE2A35"/></g></svg>'};
 function call(a,d,q){
+  var o0=$('nt');if(o0&&!o0.classList.contains('inf'))o0.remove();
   if(!CFG.apiUrl)return Promise.reject({code:'network'});
   if(!q)busy(true);
   var ac=window.AbortController?new AbortController():null,tm=setTimeout(function(){if(ac)ac.abort()},a==='order_receipt'?60000:30000);
   return fetch(CFG.apiUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:a,token:S.token,data:d||{}}),signal:ac?ac.signal:undefined})
-   .then(function(r){clearTimeout(tm);return r.json().catch(function(){throw{code:'bad_response'}})},function(){clearTimeout(tm);throw{code:'timeout'}})
+   .then(function(r){clearTimeout(tm);return r.json().catch(function(){throw{code:'bad_response'}})},function(e){clearTimeout(tm);throw{code:(e&&e.name==='AbortError')?'timeout':'network'}})
    .then(function(j){if(!j.ok)throw{code:j.error};return j.result})
    .then(function(x){busy(false);return x},function(e){busy(false);if(e&&e.code==='unauthorized'&&S.token){S.token='';ls('tok',null);welcome()}throw e})
 }
 function fail(e){toast(ERR[e&&e.code]||'حدث خطأ، حاول مجددا'+(e&&e.code?' ('+e.code+')':''),true)}
-function ask(html,cb){clearTimeout(toast.h);$('toast').className='hidden';$('mb').innerHTML=html;$('modal').classList.remove('hidden');if(cb)cb($('mb'))}
+function ask(html,cb){var o0=$('nt');if(o0)o0.remove();clearTimeout(toast.h);$('toast').className='hidden';$('mb').innerHTML=html;$('modal').classList.remove('hidden');if(cb)cb($('mb'))}
 function closeM(){$('modal').classList.add('hidden');$('mb').innerHTML=''}
 $('modal').addEventListener('click',function(e){if(e.target===this)closeM()});
 function on(root,sel,fn){Array.prototype.forEach.call(root.querySelectorAll(sel),function(el){el.onclick=function(ev){fn(el,ev)}})}
@@ -298,14 +306,18 @@ function contact(){
     if(kn&&kn.nm===nm&&kn.ph===ph&&kn.cc===cc&&kn.ph2===ph2)return profile();
     if(kn){return ask('<h2 style="margin:0;font-size:20px">حفظ التعديل؟</h2><div class="cd" style="text-align:center"><span class="amt" style="font-size:26px;color:#2A1FB8">'+esc(nb(full))+'</span></div><p class="sm">سنحفظ بياناتك الجديدة ثم نكمل.</p><button class="btn" id="y" style="animation:none">نعم، احفظ وتابع</button><button class="btn sec" id="n">رجوع</button>',function(m){
       m.querySelector('#n').onclick=closeM;m.querySelector('#y').onclick=function(){closeM();
-        S.reg=call('contact_update',{name:nm,phone:ph,country:cc,phone2:ph2,country2:cur.cc2},true).then(function(){S.me.name=nm;S.me.reg=Object.assign({},S.me.reg,{phone:dial+ph.replace(/^0/,'')})},function(e){S.reg=null;fail(e);contact();throw{code:'handled'}});
-        S.reg.catch(function(){});profile()}})}
+        call('contact_update',{name:nm,phone:ph,country:cc,phone2:ph2,country2:cur.cc2}).then(function(){S.me.name=nm;S.me.reg=Object.assign({},S.me.reg,{phone:dial+ph.replace(/^0/,'')});profile()},fail)}})}
     ask('<h2 style="margin:0;font-size:20px">هل رقم الواتساب هذا صحيح؟</h2><div class="cd" style="text-align:center"><span class="amt" style="font-size:26px;color:#2A1FB8">'+esc(nb(full))+'</span></div><p class="sm">سيصلك عليه رمز الدخول ونتيجة اختبارك. إن أخطأت فلن نستطيع الوصول إليك.</p><button class="btn" id="y" style="animation:none">نعم، الرقم صحيح</button><button class="btn sec" id="n">تعديل الرقم</button>',function(m){
       m.querySelector('#n').onclick=closeM;m.querySelector('#y').onclick=function(){closeM();
-        S.reg=call('reg_contact',{name:nm,phone:ph,country:cc,phone2:ph2,country2:$('cc2')?$('cc2').value:cc,src:getSrc(),device:navigator.userAgent.slice(0,80)},true).then(function(r){
-          if(r.existing){S.reg=null;toast('هذا الرقم مسجل من قبل، سجّل الدخول',true);login();return Promise.reject({code:'handled'})}
-          S.token=r.token;ls('tok',r.token)},function(e){S.reg=null;fail(e);contact();throw {code:'handled'}});
-        S.reg.catch(function(){});profile()}})};
+        call('reg_contact',{name:nm,phone:ph,country:cc,phone2:ph2,country2:$('cc2')?$('cc2').value:cc,src:getSrc(),device:navigator.userAgent.slice(0,80)}).then(function(r){
+          if(r.existing)return existingNote(ph,cc);
+          S.reg=null;S.token=r.token;ls('tok',r.token);profile()},fail)}})};
+}
+function existingNote(ph,cc){
+  var d=note('هذا الرقم مسجَّل لدينا من قبل.<div style="font-weight:700;font-size:14px;margin-top:4px">ادخل إلى حسابك بدل التسجيل من جديد. ولتسجيل ابنك أو شخص آخر برقمك: ادخل أولا ثم اختر «إضافة شخص آخر».</div>',{html:true,info:true,acts:'<div class="acts"><button class="btn" id="ntl">تسجيل الدخول</button><button class="btn sec" id="ntf">تعديل الرقم</button></div>'});
+  if(!d)return toast('هذا الرقم مسجَّل من قبل، سجّل الدخول',true);
+  $('ntl').onclick=function(){login();$('ph').value=ph;$('cc').value=cc};
+  $('ntf').onclick=function(){d.remove();var e=$('ph');if(e){e.focus();e.select()}};
 }
 function profile(){
   var y=new Date().getFullYear(),yrs='<option value="">اختر</option>';for(var i=y-5;i>=y-80;i--)yrs+='<option>'+i+'</option>';
@@ -765,7 +777,7 @@ function addPerson(){
     m.querySelector('#cl').onclick=closeM;m.querySelector('#pc').onclick=function(){closeM();personForm('kid')};m.querySelector('#pa').onclick=function(){closeM();personForm('adult')}});
 }
 function personForm(kind){
-  var y=new Date().getFullYear(),lo=kind==='kid'?y-14:y-80,hi=kind==='kid'?y-8:y-15,yrs='<option value="">اختر</option>';for(var i=hi;i>=lo;i--)yrs+='<option>'+i+'</option>';
+  var y=new Date().getFullYear(),lo=kind==='kid'?y-14:y-80,hi=kind==='kid'?y-5:y-15,yrs='<option value="">اختر</option>';for(var i=hi;i>=lo;i--)yrs+='<option>'+i+'</option>';
   var F={g:'',l:{}};
   page({title:kind==='kid'?'تسجيل ابن أو ابنة':'تسجيل شخص بالغ',back:function(){S.order||S.sug?(S.me.children&&S.me.children.length||S.hasInvites?cart():groups()):route()}},
    '<h1 style="font-size:22px;margin:26px 0 0">'+(kind==='kid'?'بيانات ابنك':'بيانات الشخص الآخر')+'</h1>'+
@@ -989,6 +1001,11 @@ function previewIdx(){
   on($('scr'),'[data-pv]',function(b){PREV[Object.keys(PREV)[+b.getAttribute('data-pv')]]()})}
 
 window.BTLX={availScreen:availScreen,report:report,home:home,vipTimes:vipTimes,logoutAsk:logoutAsk,slowOn:slowOn,setTm:function(v){TMNEW=v},S:S,showQ:showQ,showResult:showResult,groups:groups,previewIdx:previewIdx,vipReceipt:vipReceipt,vipStatus:vipStatus,vipConfirmed:vipConfirmed,vipHome:vipHome,trialHome:trialHome,promoGroup:promoGroup,notifHelp:notifHelp,testOrderDemo:testOrderDemo,whyBtl:whyBtl,vipRequest:vipRequest,vipGoal:vipGoal,vipTimes:vipTimes,vipPay:vipPay,toolsSetup:toolsSetup,remindSheet:remindSheet,retakeModal:retakeModal,testReady:testReady};
+(function(){try{history.replaceState({b:0},'');history.pushState({b:1},'')}catch(e){return}
+  window.addEventListener('popstate',function(){
+    var md=$('modal');if(md&&!md.classList.contains('hidden')){closeM();try{history.pushState({b:1},'')}catch(e){}return}
+    var bk=$('bk');if(bk&&!bk.disabled){try{history.pushState({b:1},'')}catch(e){}bk.click();return}
+    history.back()})})();
 (function(){try{applySite(JSON.parse(ls('site')||'null'))}catch(e){}if(/^#preview/.test(location.hash)){var sp0=$('sp');if(sp0)sp0.onclick=skipSplash;return previewIdx()}var t=ls('tok'),sp=$('sp');if(sp)sp.onclick=skipSplash;if(t){S.token=t;route()}else{welcome();setTimeout(loadSite,50)}})();
 })();
 </script>
