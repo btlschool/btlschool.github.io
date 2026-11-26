@@ -63,6 +63,7 @@ details{background:#fff;border:1px solid var(--line);border-radius:14px;margin-b
 
 <script src="config.js"></script>
 <script src="assets/ad.js"></script>
+<script src="assets/week.js"></script>
 <script>
 (function(){
 'use strict';
@@ -142,18 +143,13 @@ function vTimes(){
   Promise.all([api('staff_schedule_board',TF),api('staff_avail_missing',{},true)]).then(function(r){
     var b=r[0],ms=r[1].list,isAdmin=STAFF&&STAFF.role==='admin';BOARD=b;var today=new Date().toISOString().slice(0,10),pend=[];b.groups.forEach(function(g){if(g.status==='cancelled'||!g.start_date||g.start_date<today)return;if(!g.ad_open_at)pend.push([g,'open']);if(g.times_set&&!g.ad_launch_at)pend.push([g,'launch'])});
     var adp=pend.length?'<div class="card" style="border:2px solid #E5484D"><b>إعلانات بانتظار النشر ('+pend.length+')</b>'+pend.map(function(p){return '<div class="row" style="margin-top:6px"><span><bdi dir="ltr">'+esc(p[0].code)+'</bdi> · '+(p[1]==='open'?'الحصة الافتتاحية':'انطلاق الفوج')+'</span><button class="btn" data-ad="'+esc(p[0].group_id)+'" data-k="'+p[1]+'" style="width:auto;padding:6px 14px">الإعلان</button></div>'}).join('')+'</div>':'';
-    function sel(k,lab,opts){return '<select data-f="'+k+'" aria-label="'+lab+'"><option value="">'+lab+'</option>'+opts.map(function(o){return '<option value="'+esc(o[0])+'"'+(TF[k]===o[0]?' selected':'')+'>'+esc(o[1])+'</option>'}).join('')+'</select>'}
     var miss=ms.length?'<div class="card" style="border:2px solid #E5484D"><div class="row"><b>لم يحفظوا أوقاتهم ('+ms.length+')</b><button class="btn" id="rm" style="width:auto;padding:6px 14px">ذكّر الجميع</button></div>'+ms.slice(0,8).map(function(m){return '<div class="mute" style="margin-top:4px">'+esc(m.name)+' · <bdi>'+esc(m.group_code)+'</bdi> · <bdi dir="ltr">'+esc(m.phone)+'</bdi></div>'}).join('')+(ms.length>8?'<div class="mute">و'+(ms.length-8)+' آخرون</div>':'')+'</div>':'';
-    $('view').innerHTML=adp+miss+'<div class="card" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+sel('language','اللغة',[['EN','الإنجليزية'],['FR','الفرنسية']])+sel('age_group','الفئة',[['adult','كبار'],['kids','صغار']])+sel('level','المستوى',['A1','A2','B1','B2','C1','C2','K1','K2','K3','K4','K5','K6'].map(function(x){return [x,x]}))+sel('teacher_id','الأستاذ',b.teachers.map(function(t){return [t.id,t.name]}))+'</div>'+
-     (b.groups.length?b.groups.map(function(g){return '<div class="card"><div class="row"><b dir="ltr">'+esc(g.code)+'</b><span class="tag'+(g.closed&&!g.late_ok?' urgent':'')+'">'+(g.late_ok?'مفتوح استثناءً':g.closed?'مغلق للانضمام':'مفتوح')+'</span></div>'+
-       '<div class="mute" style="margin-top:4px">'+esc(g.age_group==='kids'?'صغار':'كبار')+' · '+(g.teacher?esc(g.teacher):'بلا أستاذ')+' · يبدأ '+esc(g.start_date)+'</div>'+
-       '<div style="margin:8px 0;font-weight:700">'+(g.times_set?schTxt(g.schedule):'<span style="color:#C62832">لم تُثبَّت المواقيت</span>')+'</div>'+
-       '<div class="row"><span class="mute">'+g.members+' مشترك · حفظ أوقاته '+g.saved+'</span><span><button class="btn sec" data-ad="'+esc(g.group_id)+'" style="width:auto;padding:6px 14px">الإعلان</button> <button class="btn" data-t="'+esc(g.group_id)+'" style="width:auto;padding:6px 14px">'+(g.times_set?'تعديل المواقيت':'اختيار المواقيت')+'</button>'+(isAdmin&&g.closed?' <button class="btn sec" data-l="'+esc(g.group_id)+'" data-on="'+(g.late_ok?0:1)+'" style="width:auto;padding:6px 14px">'+(g.late_ok?'إلغاء الاستثناء':'فتح استثناءً')+'</button>':'')+'</span></div></div>'}).join(''):'<div class="card mute">لا توجد أفواج بهذه المعايير.</div>');
-    Array.prototype.forEach.call(document.querySelectorAll('#view [data-f]'),function(e){e.onchange=function(){TF[e.getAttribute('data-f')]=e.value;vTimes()}});
+    function paint(){BTLWEEK.init({ask:ask,closeModal:closeModal,busy:busy,toast:toast,timesPick:timesPick,adPick:adPick,lateAsk:lateAsk});$('view').innerHTML=adp+miss+BTLWEEK.html(b,isAdmin);BTLWEEK.bind(paint);
     Array.prototype.forEach.call(document.querySelectorAll('#view [data-t]'),function(e){e.onclick=function(){timesPick(e.getAttribute('data-t'))}});
     Array.prototype.forEach.call(document.querySelectorAll('#view [data-ad]'),function(e){e.onclick=function(){adPick(e.getAttribute('data-ad'),e.getAttribute('data-k'))}});
     Array.prototype.forEach.call(document.querySelectorAll('#view [data-l]'),function(e){e.onclick=function(){lateAsk(e.getAttribute('data-l'),e.getAttribute('data-on')==='1')}});
-    if($('rm'))$('rm').onclick=function(){api('staff_avail_remind',{}).then(function(x){toast('أُرسل التذكير إلى '+x.sent);refreshInbox()},fail)};
+    if($('rm'))$('rm').onclick=function(){api('staff_avail_remind',{}).then(function(x){toast('أُرسل التذكير إلى '+x.sent);refreshInbox()},fail)};}
+    paint();
   },fail)}
 var BOARD=null,AD_SRC=[['tg','تيليجرام'],['wa','واتساب'],['fb','فيسبوك'],['ig','إنستغرام'],['story','ستوري']],ADS={};
 function adGroup(gid){return BOARD&&BOARD.groups.filter(function(g){return g.group_id===gid})[0]}
