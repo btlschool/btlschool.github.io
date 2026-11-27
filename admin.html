@@ -64,10 +64,11 @@ details{background:#fff;border:1px solid var(--line);border-radius:14px;margin-b
 <script src="config.js"></script>
 <script src="assets/ad.js"></script>
 <script src="assets/week.js"></script>
+<script src="assets/demo.js"></script>
 <script>
 (function(){
 'use strict';
-var CFG=window.BTL_CONFIG||{},TOK='',STAFF=null,TAB='inbox',INBOX=null;
+var DEMO=!!(window.BTLDEMO&&BTLDEMO.on),CFG=window.BTL_CONFIG||{},TOK='',STAFF=null,TAB='inbox',INBOX=null;
 var ERR={bad_ccp:'رقم CCP غير صالح (أرقام فقط)',bad_rip:'RIP يجب أن يكون 20 رقما',account_exists:'هذا الحساب مسجل من قبل',last_active_account:'لا يمكن إيقاف آخر حساب مفعّل',bad_value:'قيمة غير صالحة',unauthorized:'انتهت الجلسة، سجّل الدخول من جديد',forbidden:'لا تملك صلاحية هذا الإجراء',bad_credentials:'هذا الحساب غير معتمد في الإدارة',not_found:'العنصر غير موجود أو أُغلق',not_allowed:'تمت معالجته من إداري آخر',note_required:'اكتب سبب الرفض',telegram_not_linked:'حساب تلغرام غير مربوط، استخدم واتساب',bad_value:'قيمة غير صالحة',auth_not_ready:'تسجيل الدخول غير مهيأ بعد',rate_limited:'محاولات كثيرة، انتظر قليلا',maintenance:'المنصة في الصيانة',network:'تعذر الاتصال، تحقق من الشبكة'};
 function $(i){return document.getElementById(i)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
@@ -76,6 +77,7 @@ function store(k,v){try{if(v===undefined)return sessionStorage.getItem(k);if(v==
 function toast(m,bad){var t=$('toast');t.textContent=m;t.className=bad?'err':'';clearTimeout(toast.h);toast.h=setTimeout(function(){t.className='hidden'},3200)}
 function busy(on){$('ov').classList.toggle('hidden',!on)}
 function api(action,data,silent){
+  if(DEMO){if(!silent)busy(true);return BTLDEMO.api(action,data).then(function(x){busy(false);return x})}
   if(!CFG.apiUrl)return Promise.reject({code:'auth_not_ready'});
   if(!silent)busy(true);
   return fetch(CFG.apiUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:action,token:TOK,data:data||{}})})
@@ -358,7 +360,13 @@ function vSettings(){
 }
 
 // ---------- الإقلاع ----------
-(function(){var t=store('t');if(t){TOK=t;busy(true);api('staff_inbox',{},true).then(function(x){busy(false);INBOX=x;STAFF=x.staff;start()},function(){busy(false);showLogin('')})}else showLogin('')})();
+(function(){
+  if(DEMO){STAFF=BTLDEMO.role();document.title='تجريبي · لوحة BTL';
+    var o=$('out');o.outerHTML='<select id="drole" aria-label="تبديل الدور" style="width:auto;padding:6px 8px;font-size:12px">'+Object.keys(BTLDEMO.roles).map(function(k){return '<option value="'+k+'">'+esc(BTLDEMO.roles[k].name)+'</option>'}).join('')+'</select>';
+    $('drole').onchange=function(){BTLDEMO.role(this.value);INBOX=null;STAFF=BTLDEMO.role();start()};
+    var b=document.createElement('div');b.style.cssText='background:#FFF7D6;color:#7A5B00;text-align:center;font-size:12px;padding:4px';b.textContent='وضع تجريبي: بيانات وهمية، لا شيء يُحفظ';document.body.insertBefore(b,document.body.firstChild);
+    return start()}
+  var t=store('t');if(t){TOK=t;busy(true);api('staff_inbox',{},true).then(function(x){busy(false);INBOX=x;STAFF=x.staff;start()},function(){busy(false);showLogin('')})}else showLogin('')})();
 })();
 </script>
 </body>
