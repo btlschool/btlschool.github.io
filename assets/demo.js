@@ -50,6 +50,7 @@ function h(action,data){
  case 'staff_settings_get':return SETS;
  case 'staff_notif_list':return {rules:[{event:'pay_ok',label:'تأكيد الدفع',desc:'يصل المشترك عند تأكيد دفعه',aud:'user',aud_label:'للمشتركين',enabled:true,push:true,tg:true,title:'تم تأكيد دفعك',body:'مرحبا {name}، تم تأكيد اشتراكك.',timing:null}],vars:['name','group'],quiet:{from:22,to:7}};
  case 'staff_user_find':return [{id:'u1',name:'Amine Bouzid',phone:'0555123456',telegram:'123'}];
+ case 'staff_kpis':return {reg_week:18,reg_target:25,revenue_month:148000,revenue_target:200000,conv:9,conv_target:15};
  case 'staff_logout':return {};
  default:return {saved:0,sent:0,posted:false,reason:'demo'}}}
 window.BTLDEMO={

@@ -40,6 +40,10 @@ details{background:#fff;border:1px solid var(--line);border-radius:14px;margin-b
 #toast{position:fixed;bottom:84px;inset-inline:16px;margin:auto;max-width:420px;background:var(--ink);color:#fff;padding:12px 14px;border-radius:12px;z-index:60;text-align:center}#toast.err{background:var(--bad)}
 .modal{position:fixed;inset:0;background:rgba(27,23,64,.5);display:flex;align-items:flex-end;justify-content:center;z-index:55}.modal>div{background:#fff;border-radius:18px 18px 0 0;padding:16px;width:100%;max-width:640px}
 #login{max-width:420px;margin:12vh auto;padding:16px;text-align:center}
+.mi{display:flex;align-items:center;gap:10px;width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:6px;background:#fff;font:inherit;text-align:start;color:var(--ink)}.mi svg{width:20px;height:20px;stroke:var(--brand);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.mi em{margin-inline-start:auto;font-style:normal;font-size:10px;background:#FFF1B8;color:#7A5B00;border-radius:99px;padding:2px 8px;font-weight:800}.mi:disabled{opacity:.6}
+.hks{display:grid;grid-template-columns:1fr 1fr;gap:8px}.hk{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;position:relative;overflow:hidden;text-align:start;font:inherit;color:var(--ink)}.hk:before{content:"";position:absolute;inset-inline-start:0;top:0;bottom:0;width:5px;background:var(--hc)}.hk b{font-size:22px;display:block}.hk span{font-size:12px;color:var(--mute)}.hk i{display:block;font-style:normal;font-size:11px;font-weight:800;color:var(--hc);margin-top:2px}
+.hg{--hc:#1FA14A}.ho{--hc:#F59E0B}.hr{--hc:#E5484D}.hn{--hc:#B9B6DA}
+.hal{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-inline-start:5px solid var(--hc);border-radius:12px;padding:10px 12px;margin-bottom:8px;width:100%;font:inherit;text-align:start;color:var(--ink)}.hal small{display:block;color:var(--mute)}.hal .go{background:var(--brand);color:#fff;border-radius:10px;padding:7px 14px;font-weight:700}
 </style>
 </head>
 <body>
@@ -107,22 +111,67 @@ $('out').onclick=function(){var t=TOK;api('staff_logout',{},true).then(function(
 
 // ---------- الهيكل ----------
 var ICON={times:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',today:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',offers:'<path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',acc:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>',notif:'<path d="M6 8a6 6 0 1112 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 004 0"/>',stops:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',inbox:'<path d="M3 13l2-8h14l2 8M3 13v6h18v-6M3 13h5l1 2h6l1-2h5"/>',pay:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/>',contact:'<path d="M21 12a8 8 0 01-11.5 7.2L4 20l1-4.5A8 8 0 1121 12z"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 000 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/>'};
-function renderNav(){
-  var tabs=[['today','اليوم'],['inbox','الوارد'],['pay','المدفوعات'],['contact','التواصل'],['stops','التوقف'],['times','الأفواج']];
-  if(STAFF&&STAFF.role==='teacher')tabs=[['times','الأفواج']];
-  if(STAFF&&STAFF.role==='admin'){tabs.push(['acc','الحسابات']);tabs.push(['notif','الإشعارات']);tabs.push(['offers','العروض']);tabs.push(['settings','الإعدادات'])}
-  var cnt={times:INBOX&&((INBOX.avail_missing||0)+(INBOX.ad_pending||0)),pay:INBOX&&INBOX.payments_pending,contact:INBOX&&INBOX.outreach_pending,stops:INBOX&&INBOX.stops_pending};
-  $('nav').innerHTML=tabs.map(function(t){return '<button data-t="'+t[0]+'" class="'+(TAB===t[0]?'on':'')+'"><svg viewBox="0 0 24 24">'+ICON[t[0]]+'</svg>'+t[1]+(cnt[t[0]]?'<span class="badge">'+cnt[t[0]]+'</span>':'')+'</button>'}).join('');
-  Array.prototype.forEach.call($('nav').children,function(b){b.onclick=function(){go(b.getAttribute('data-t'))}});
+ICON.home='<path d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/>';ICON.more='<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>';ICON.chart='<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>';ICON.cap='<path d="M2 9l10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5"/>';ICON.user='<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/>';
+var TITLES={home:'الرئيسية',times:'الأفواج وأوقاتها',offers:'الخصومات والعروض',pay:'المدفوعات',contact:'التواصل',stops:'طلبات التوقف',acc:'حسابات CCP',notif:'الإشعارات',settings:'الإعدادات'};
+/** التنقل بحسب الدور: أربعة تبويبات ثابتة و«المزيد». المدير يملك كل الصلاحيات. */
+function navFor(){
+  var r=STAFF&&STAFF.role;
+  var T={home:'الرئيسية',times:'الأفواج',pay:'المدفوعات',contact:'التواصل',stops:'التوقف',acc:'الحسابات'};
+  var tabs={admin:['home','times','pay','contact'],support:['home','times','contact','stops'],finance:['home','pay','acc'],teacher:['home','times']}[r]||['home','times','pay','contact'];
+  var more={
+   admin:[['العمليات',[['stops','طلبات التوقف']]],['الفريق',[['cap','الأساتذة والتوظيف','قريبا']]],['المالية والأداء',[['chart','التقارير والمؤشرات','قريبا'],['acc','حسابات CCP']]],['الإعدادات',[['offers','الخصومات والعروض'],['notif','الإشعارات'],['settings','الإعدادات']]]],
+   support:[['أدوات',[['pay','المدفوعات']]]],
+   finance:[['أدوات',[['offers','الخصومات والعروض']]]],
+   teacher:[]}[r]||[];
+  if(r==='teacher')T.times='أفواجي';
+  return {tabs:tabs.map(function(k){return [k,T[k]]}),more:more};
 }
-function go(t){TAB=t;var f={today:vToday,offers:vOffers,inbox:vInbox,pay:vPay,contact:vContact,stops:vStops,times:vTimes,acc:vAcc,notif:vNotif,settings:vSettings}[t];$('title').textContent={times:'الأفواج وأوقاتها',today:'مهام الإداري',offers:'الخصومات والعروض',inbox:'الإدارة',pay:'المدفوعات',contact:'بانتظار التواصل',stops:'طلبات التوقف',acc:'حسابات CCP',notif:'الإشعارات',settings:'الإعدادات'}[t];renderNav();f()}
+function renderNav(){
+  var nv=navFor(),cnt={times:INBOX&&STAFF&&STAFF.role!=='teacher'&&((INBOX.avail_missing||0)+(INBOX.ad_pending||0)),pay:INBOX&&INBOX.payments_pending,contact:INBOX&&INBOX.outreach_pending,stops:INBOX&&INBOX.stops_pending};
+  var h=nv.tabs.map(function(t){return '<button data-t="'+t[0]+'" class="'+(TAB===t[0]?'on':'')+'"><svg viewBox="0 0 24 24">'+ICON[t[0]]+'</svg>'+t[1]+(cnt[t[0]]?'<span class="badge">'+cnt[t[0]]+'</span>':'')+'</button>'}).join('');
+  if(nv.more.length)h+='<button data-t="more" class="'+(nv.more.some(function(g){return g[1].some(function(i){return i[0]===TAB})})?'on':'')+'"><svg viewBox="0 0 24 24">'+ICON.more+'</svg>المزيد</button>';
+  $('nav').innerHTML=h;
+  Array.prototype.forEach.call($('nav').children,function(b){b.onclick=function(){var t=b.getAttribute('data-t');t==='more'?moreSheet(nv.more):go(t)}});
+}
+function moreSheet(groups){
+  ask(groups.map(function(g){return '<div class="mute" style="font-weight:800;margin:10px 2px 6px">'+esc(g[0])+'</div>'+g[1].map(function(i){var soon=!!i[2];return '<button class="mi" data-g="'+i[0]+'"'+(soon?' disabled':'')+'><svg viewBox="0 0 24 24">'+(ICON[i[0]]||'')+'</svg>'+esc(i[1])+(soon?'<em>'+esc(i[2])+'</em>':'')+'</button>'}).join('')}).join(''),function(m){
+    Array.prototype.forEach.call(m.querySelectorAll('[data-g]:not([disabled])'),function(b){b.onclick=function(){closeModal();go(b.getAttribute('data-g'))}})})}
+function go(t){if(t==='inbox'||t==='today')t='home';TAB=t;var f={home:vHome,offers:vOffers,pay:vPay,contact:vContact,stops:vStops,times:vTimes,acc:vAcc,notif:vNotif,settings:vSettings}[t];$('title').textContent=TITLES[t]||'';renderNav();f()}
 function start(){
   $('login').classList.add('hidden');$('app').classList.remove('hidden');$('who').textContent=(STAFF&&STAFF.name)||'';
-  api('staff_inbox').then(function(x){INBOX=x;STAFF=Object.assign({},STAFF,x.staff);$('who').textContent=STAFF.name;go(STAFF&&STAFF.role==='teacher'?'times':'inbox')},function(e){renderNav();fail(e)});
+  api('staff_inbox').then(function(x){INBOX=x;STAFF=Object.assign({},STAFF,x.staff);$('who').textContent=STAFF.name;go('home')},function(e){renderNav();fail(e)});
 }
 function refreshInbox(){return api('staff_inbox',{},true).then(function(x){INBOX=x;renderNav()},function(){})}
 function ago(iso){var h=Math.max(0,Math.round((Date.now()-new Date(iso+'+01:00').getTime())/36e5));if(h<1)return 'قبل قليل';if(h<24)return 'منذ '+h+' ساعة';return 'منذ '+Math.round(h/24)+' يوم'}
 
+// ---------- الرئيسية (لوحة الدور) ----------
+function fmtDA(n){var x=Math.round(+n||0).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');return '<bdi dir="ltr">'+x+'.00 DA</bdi>'}
+function hk(c,v,l,sub,go){return '<button class="hk h'+c+'" '+(go?'data-g="'+go+'"':'')+'><b>'+v+'</b><span>'+esc(l)+'</span>'+(sub?'<i>'+esc(sub)+'</i>':'')+'</button>'}
+function vHome(){
+  var i=INBOX||{},r=STAFF&&STAFF.role,isA=r==='admin';
+  var jobs=[api('staff_schedule_board',{},true).catch(function(){return null}),isA?api('staff_kpis',{},true).catch(function(){return null}):Promise.resolve(null),isA?api('staff_src_stats',{},true).catch(function(){return null}):Promise.resolve(null)];
+  Promise.all(jobs).then(function(x){
+    var b=x[0],k=x[1],src=x[2],kp=[],al=[];
+    var gs=b?b.groups.filter(function(g){return g.status!=='cancelled'&&!g.closed}):[],cap=0,mem=0,notimes=0;
+    gs.forEach(function(g){cap+=g.seats_max||0;mem+=g.members||0;if(!g.times_set)notimes++});
+    var fill=cap?Math.round(mem/cap*100):null;
+    if(fill!==null&&r!=='finance')kp.push(hk(fill>=55?'g':fill>=40?'o':'r',fill+'%','امتلاء الأفواج المفتوحة',gs.length+' فوج','times'));
+    if(k&&isA){
+      if(k.reg_week!=null)kp.push(hk(k.reg_week>=k.reg_target?'g':k.reg_week>=k.reg_target*.6?'o':'r',k.reg_week,'تسجيلات الأسبوع','الهدف '+k.reg_target));
+      if(k.revenue_month!=null)kp.push(hk(k.revenue_month>=k.revenue_target*.7?'g':k.revenue_month>=k.revenue_target*.4?'o':'r',fmtDA(k.revenue_month),'إيرادات الشهر',Math.round(k.revenue_month/k.revenue_target*100)+'% من الهدف','pay'));
+      if(k.conv!=null)kp.push(hk(k.conv>=k.conv_target?'g':k.conv>=k.conv_target*.6?'o':'r',k.conv+'%','تحويل الاختبار إلى دفع','الهدف '+k.conv_target+'%'));
+    }
+    if(r==='teacher'){kp.push(hk(notimes?'r':'g',notimes,'فوج يحتاج تأكيد وقته',notimes?'أكّد الآن':'كل شيء مؤكَّد','times'))}
+    function A(c,t,s,go){al.push({c:c,h:'<button class="hal h'+c+'" data-g="'+go+'"><span><b>'+esc(t)+'</b>'+(s?'<small>'+esc(s)+'</small>':'')+'</span><span class="go">فتح</span></button>'})}
+    if(r==='admin'||r==='finance'){if(i.payments_pending)A('r',i.payments_pending+' وصولات بانتظار التأكيد','','pay')}
+    if(r==='admin'||r==='support'||r==='teacher'){if(notimes&&r!=='teacher')A('r',notimes+' أفواج بلا أوقات مثبّتة','','times');if(r!=='teacher'&&i.avail_missing)A('r',i.avail_missing+' مشتركين لم يحفظوا أوقاتهم','','times');if(r!=='teacher'&&i.ad_pending)A('r',i.ad_pending+' إعلانات بانتظار النشر','','times')}
+    if(r==='admin'||r==='support'){if(i.outreach_pending)A(i.outreach_urgent?'r':'o',i.outreach_pending+' بانتظار التواصل',i.outreach_urgent?i.outreach_urgent+' عاجل':'','contact');if(i.stops_pending)A(i.stops_final?'r':'o',i.stops_pending+' طلبات توقف',i.stops_final?i.stops_final+' نهائي':'','stops');if(i.orders_unpaid&&isA)A('o',i.orders_unpaid+' طلبات لم تُدفع بعد','','pay')}
+    al.sort(function(a,c){return (a.c==='r'?0:1)-(c.c==='r'?0:1)});
+    var h=(kp.length?'<div class="hks">'+kp.join('')+'</div>':'')+'<h2>يحتاج انتباهك الآن</h2>'+(al.length?al.map(function(a){return a.h}).join(''):'<div class="card mute">لا شيء يحتاج انتباهك الآن.</div>');
+    if(src&&src.list&&src.list.length){var L={tg:'تيليجرام',wa:'واتساب',fb:'فيسبوك',ig:'إنستغرام',story:'ستوري',ad:'إعلان','-':'مباشر أو غير معروف'};h+='<div class="card"><b>من أين جاء المسجلون</b>'+src.list.map(function(y){return '<div class="row" style="margin-top:6px"><span>'+esc(L[y.src]||y.src)+'</span><span class="mute">'+y.users+' مسجَّل · '+y.paid+' مؤكَّد</span></div>'}).join('')+'<div class="mute" style="margin-top:6px">يُحتسب من الرمز المطبوع في صورة الإعلان.</div></div>'}
+    $('view').innerHTML=h;
+    Array.prototype.forEach.call($('view').querySelectorAll('[data-g]'),function(e){e.onclick=function(){go(e.getAttribute('data-g'))}});
+  },fail)}
 // ---------- الوارد ----------
 function vInbox(){
   var i=INBOX||{};
